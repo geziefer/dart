@@ -24,6 +24,23 @@ class MainApp extends StatelessWidget {
           child: Column(
             children: [
               image,
+              const SizedBox(height: 10),
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                      width: 3.0,
+                      color: Colors.white,
+                    ),
+                    minimumSize: const Size(400, 50)),
+                child: const Text(
+                  '170 to 0',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 215, 198, 132),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
