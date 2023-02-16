@@ -34,8 +34,8 @@ class View170 extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(width: 50),
                             // ########## Throw number
                             ScoreColumn(
                                 label: 'A',
@@ -102,29 +102,29 @@ class View170 extends StatelessWidget {
                 const Text(
                   "Runde: ",
                   style: TextStyle(
-                      fontSize: 36, color: Color.fromARGB(255, 215, 198, 132)),
+                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
                   "${stats['round']}",
-                  style: const TextStyle(fontSize: 36, color: Colors.white),
+                  style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
                 const Text(
                   "   Ø Punkte: ",
                   style: TextStyle(
-                      fontSize: 36, color: Color.fromARGB(255, 215, 198, 132)),
+                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
                   "${stats['avgScore']}",
-                  style: const TextStyle(fontSize: 36, color: Colors.white),
+                  style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
                 const Text(
                   "   Ø Darts: ",
                   style: TextStyle(
-                      fontSize: 36, color: Color.fromARGB(255, 215, 198, 132)),
+                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
                   "${stats['avgDarts']}",
-                  style: const TextStyle(fontSize: 36, color: Colors.white),
+                  style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
               ],
             ),

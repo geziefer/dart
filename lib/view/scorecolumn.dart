@@ -21,14 +21,14 @@ class ScoreColumn extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 50,
+            fontSize: 60,
             color: Color.fromARGB(255, 215, 198, 132),
           ),
         ),
         Text(
           content,
           style: TextStyle(
-            fontSize: 50,
+            fontSize: 60,
             fontFeatures: const <FontFeature>[
               FontFeature.tabularFigures(),
             ],

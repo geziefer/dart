@@ -13,6 +13,7 @@ class Header extends StatelessWidget {
     Image image = Image.asset('assets/images/logo.png');
     return Row(
       children: [
+        const SizedBox(height: 20),
         Expanded(
           flex: 2,
           child: image,
@@ -23,7 +24,7 @@ class Header extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 42,
+                fontSize: 60,
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 215, 198, 132),
               ),
