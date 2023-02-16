@@ -16,6 +16,7 @@ class View170 extends StatelessWidget {
       body: Column(
         children: [
           // ########## Top row with logo, game title and back button
+          const SizedBox(height: 20),
           const Expanded(
             flex: 1,
             child: Header(label: '170'),

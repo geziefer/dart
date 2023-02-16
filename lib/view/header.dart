@@ -13,7 +13,6 @@ class Header extends StatelessWidget {
     Image image = Image.asset('assets/images/logo.png');
     return Row(
       children: [
-        const SizedBox(height: 20),
         Expanded(
           flex: 2,
           child: image,

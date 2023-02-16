@@ -16,19 +16,19 @@ class Controller170 implements NumpadController {
   }
 
   String getCurrentRounds() {
-    return '\n1\n2\n3';
+    return '1\n2\n3\n4\n5';
   }
 
   String getCurrentScores() {
-    return '\n100\n30\n40';
+    return '100\n30\n0\n20\n20';
   }
 
   String getCurrentRemainings() {
-    return '170\n70\n40\n0';
+    return '70\n40\n40\n20\n0';
   }
 
   String getCurrentDarts() {
-    return '\n3\n6\n8';
+    return '3\n6\n9\n12\n13';
   }
 
   Map getCurrentStats() {
