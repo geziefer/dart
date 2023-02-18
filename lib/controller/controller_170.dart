@@ -1,7 +1,7 @@
 import 'package:dart/view/numpad.dart';
 import 'package:flutter/material.dart';
 
-class Controller170 implements NumpadController {
+class Controller170 extends ChangeNotifier implements NumpadController {
   static final Controller170 _instance = Controller170._private();
 
   Controller170._private();
@@ -10,28 +10,81 @@ class Controller170 implements NumpadController {
     return _instance;
   }
 
+  List<int> rounds = <int>[];
+  List<int> scores = <int>[];
+  List<int> remainings = <int>[];
+  List<int> darts = <int>[];
+  int set = 1;
+  int round = 1;
+  int score = 0;
+  int remaining = 170;
+  int dart = 0;
+  int totalDarts = 0;
+  int totalScore = 0;
+  int totalRounds = 0;
+  int avgScore = 0;
+  int avgDarts = 0;
+  String input = "0";
+
   @override
   pressNumpadButton(int value) {
-    debugPrint("$value pressed");
+    if (value == -2) {
+      if (input == "0") {
+        debugPrint('zurück');
+      }
+      input = "0";
+    } else if (value == -1) {
+      rounds.add(round);
+      round++;
+      totalRounds++;
+      dart += 3; // adapt for checkout
+      totalDarts += 3;
+      darts.add(dart);
+      score += int.parse(input);
+      totalScore += score;
+      scores.add(score);
+      remaining -= score;
+      remainings.add(remaining);
+      avgScore = (totalScore / totalRounds).round();
+      avgDarts = (totalDarts / set).round();
+
+      input = "0";
+      score = 0;
+      notifyListeners();
+    } else {
+      input += value.toString();
+    }
   }
 
   String getCurrentRounds() {
-    return '1\n2\n3\n4\n5';
+    return createMultilineString(rounds);
   }
 
   String getCurrentScores() {
-    return '100\n30\n0\n20\n20';
+    return createMultilineString(scores);
   }
 
   String getCurrentRemainings() {
-    return '70\n40\n40\n20\n0';
+    return createMultilineString(remainings);
   }
 
   String getCurrentDarts() {
-    return '3\n6\n9\n12\n13';
+    return createMultilineString(darts);
   }
 
   Map getCurrentStats() {
-    return {'round': 10, 'avgScore': 70, 'avgDarts': 7};
+    return {'round': set, 'avgScore': avgScore, 'avgDarts': avgDarts};
+  }
+
+  String createMultilineString(List list) {
+    String result = "";
+    for (var i in list) {
+      result += '$i\n';
+    }
+    // delete last line break if any
+    if (result.isNotEmpty) {
+      result = result.substring(0, result.length - 1);
+    }
+    return result;
   }
 }

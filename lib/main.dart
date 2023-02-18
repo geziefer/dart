@@ -1,9 +1,18 @@
+import 'package:dart/controller/controller_170.dart';
 import 'package:dart/view/menu.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    title: 'DART - Damit Alex Richtig Trainiert',
-    home: Menu(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Controller170()),
+      ],
+      child: const MaterialApp(
+        title: 'DART - Damit Alex Richtig Trainiert',
+        home: Menu(),
+      ),
+    ),
+  );
 }

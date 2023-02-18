@@ -3,13 +3,14 @@ import 'package:dart/view/header.dart';
 import 'package:dart/view/numpad.dart';
 import 'package:dart/view/scorecolumn.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class View170 extends StatelessWidget {
   const View170({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Controller170 controller = Controller170();
+    Controller170 controller = Provider.of<Controller170>(context);
     Map stats = controller.getCurrentStats();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
