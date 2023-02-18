@@ -24,36 +24,44 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   int totalRounds = 0;
   int avgScore = 0;
   int avgDarts = 0;
-  String input = "0";
+  String input = "";
 
   @override
   pressNumpadButton(int value) {
     if (value == -2) {
-      if (input == "0") {
+      if (input.isEmpty) {
         debugPrint('zurück');
       }
-      input = "0";
+      input = "";
     } else if (value == -1) {
-      rounds.add(round);
-      round++;
-      totalRounds++;
-      dart += 3; // adapt for checkout
-      totalDarts += 3;
-      darts.add(dart);
-      score += int.parse(input);
-      totalScore += score;
-      scores.add(score);
-      remaining -= score;
-      remainings.add(remaining);
-      avgScore = (totalScore / totalRounds).round();
-      avgDarts = (totalDarts / set).round();
+      if (input.isNotEmpty) {
+        rounds.add(round);
+        round++;
+        totalRounds++;
+        dart += 3; // adapt for checkout
+        totalDarts += 3;
+        darts.add(dart);
+        score += int.parse(input);
+        totalScore += score;
+        scores.add(score);
+        remaining -= score;
+        remainings.add(remaining);
+        avgScore = (totalScore / totalRounds).round();
+        avgDarts = (totalDarts / set).round();
 
-      input = "0";
-      score = 0;
-      notifyListeners();
+        input = "";
+        score = 0;
+      }
     } else {
       input += value.toString();
     }
+
+    notifyListeners();
+  }
+
+  @override
+  String getInput() {
+    return input;
   }
 
   String getCurrentRounds() {

@@ -83,9 +83,9 @@ class View170 extends StatelessWidget {
                       const VerticalDivider(color: Colors.white, thickness: 3),
 
                       // ########## Right column with num pad
-                      const Expanded(
+                      Expanded(
                         flex: 5,
-                        child: Numpad(),
+                        child: Numpad(controller: controller),
                       ),
                     ],
                   ),
