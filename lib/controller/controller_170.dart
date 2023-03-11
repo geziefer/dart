@@ -31,26 +31,33 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   pressNumpadButton(int value) {
     // undo
     if (value == -2) {
-      if (input.isEmpty) {
-        debugPrint('zurück');
+      if (input.isEmpty && rounds.isNotEmpty) {
+        rounds.removeLast();
+        round--;
+        totalRounds--;
+        dart -= 3;
+        totalDarts -= 3;
+        darts.removeLast();
+        int lastscore = scores.removeLast();
+        totalScore -= lastscore;
+        remaining += lastscore;
+        remainings.removeLast();
       }
       input = "";
       // return
     } else if (value == -1) {
       if (input.isNotEmpty) {
+        score = int.parse(input);
         rounds.add(round);
         round++;
         totalRounds++;
-        dart += 3; // adapt for checkout
+        dart += 3;
         totalDarts += 3;
+        remaining -= score;
         darts.add(dart);
-        score += int.parse(input);
         totalScore += score;
         scores.add(score);
-        remaining -= score;
         remainings.add(remaining);
-        avgScore = (totalScore / totalRounds).round();
-        avgDarts = (totalDarts / leg).round();
 
         input = "";
         score = 0;
@@ -92,6 +99,8 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   }
 
   Map getCurrentStats() {
+    avgScore = totalRounds == 0 ? 0 : (totalScore / totalRounds).round();
+    avgDarts = (totalDarts / leg).round();
     return {'round': leg, 'avgScore': avgScore, 'avgDarts': avgDarts};
   }
 
