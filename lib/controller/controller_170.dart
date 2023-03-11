@@ -167,7 +167,7 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   }
 
   Map getCurrentStats() {
-    avgScore = totalRounds == 0 ? 0 : (totalScore / totalRounds).round();
+    avgScore = totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3).round();
     avgDarts = (totalDarts / leg).round();
     return {'round': leg, 'avgScore': avgScore, 'avgDarts': avgDarts};
   }
