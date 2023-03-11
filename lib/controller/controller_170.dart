@@ -3,10 +3,20 @@ import 'package:dart/view/numpad.dart';
 import 'package:flutter/material.dart';
 
 class Controller170 extends ChangeNotifier implements NumpadController {
+  static final Controller170 _instance = Controller170._private();
+
+  // singleton
+  Controller170._private();
+
+  factory Controller170() {
+    return _instance;
+  }
+
   List<int> rounds = <int>[]; // list of rounds in leg
   List<int> scores = <int>[]; // list of thrown scores in leg
   List<int> remainings = <int>[]; // list of remaining points after each throw
   List<int> darts = <int>[]; // list of used darts in leg
+  List<int> results = <int>[]; // list of used darts per leg
   int leg = 1; // leg number
   int round = 1; // round number in leg
   int score = 0; // current score in leg
@@ -18,6 +28,25 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   int avgScore = 0; // average of score in all legs
   int avgDarts = 0; // average number of darts used in all legs
   String input = ""; // current input from numbpad
+
+  void init() {
+    rounds = <int>[];
+    scores = <int>[];
+    remainings = <int>[];
+    darts = <int>[];
+    results = <int>[];
+    leg = 1;
+    round = 1;
+    score = 0;
+    remaining = 170;
+    dart = 0;
+    totalDarts = 0;
+    totalScore = 0;
+    totalRounds = 0;
+    avgScore = 0;
+    avgDarts = 0;
+    input = "";
+  }
 
   @override
   pressNumpadButton(BuildContext context, int value) {
@@ -61,7 +90,44 @@ class Controller170 extends ChangeNotifier implements NumpadController {
                 return const Dialog(
                   child: Checkout(),
                 );
-              });
+              }).then((value) {
+            results.add(dart);
+            round = 1;
+            remaining = 170;
+            dart = 0;
+            rounds.clear();
+            scores.clear();
+            remainings.clear();
+            darts.clear();
+
+            // check for end of game
+            if (leg == 10) {
+              // TODO: replace by summary in view
+              String result = "";
+              for (int i = 0; i < results.length; i++) {
+                result += '${results[i]} ';
+              }
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Spiel vorbei"),
+                    content: Text(result),
+                    actions: <Widget>[
+                      TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  );
+                },
+              );
+            } else {
+              leg++;
+            }
+          });
         }
       }
       // number

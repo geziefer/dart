@@ -1,5 +1,4 @@
 import 'package:dart/controller/controller_170.dart';
-import 'package:dart/view/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +54,7 @@ class Checkout extends StatelessWidget {
                     child: TextButton(
                       onPressed: () {
                         // correct previously counted 3 darts to 2
-                        controller.correctDarts(2);
+                        controller.correctDarts(1);
                         Navigator.pop(context);
                       },
                       style: TextButton.styleFrom(
@@ -75,7 +74,8 @@ class Checkout extends StatelessWidget {
                     margin: const EdgeInsets.all(5),
                     child: TextButton(
                       onPressed: () {
-                        // nothing to correct
+                        // nothing to correct, but call for update
+                        controller.correctDarts(0);
                         Navigator.pop(context);
                       },
                       style: TextButton.styleFrom(

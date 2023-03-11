@@ -1,3 +1,4 @@
+import 'package:dart/controller/controller_170.dart';
 import 'package:dart/view/view_170.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,7 @@ class Menu extends StatelessWidget {
             const SizedBox(height: 10),
             OutlinedButton(
               onPressed: () {
+                Controller170().init();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const View170()),
