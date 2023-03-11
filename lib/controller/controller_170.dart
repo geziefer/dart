@@ -3,15 +3,6 @@ import 'package:dart/view/numpad.dart';
 import 'package:flutter/material.dart';
 
 class Controller170 extends ChangeNotifier implements NumpadController {
-  static final Controller170 _instance = Controller170._private();
-
-  // singleton
-  Controller170._private();
-
-  factory Controller170() {
-    return _instance;
-  }
-
   List<int> rounds = <int>[]; // list of rounds in leg
   List<int> scores = <int>[]; // list of thrown scores in leg
   List<int> remainings = <int>[]; // list of remaining points after each throw
