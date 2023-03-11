@@ -19,7 +19,7 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   int round = 1; // round number in leg
   int score = 0; // current score in leg
   int remaining = 170; // current remaining points in leg
-  int dart = 0; // cureent used darts in leg
+  int dart = 0; // current used darts in leg
   int totalDarts = 0; // total number of darts used in all legs
   int totalScore = 0; // total score in all legs
   int totalRounds = 0; // total rounds played in all legs
@@ -28,9 +28,16 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   String input = ""; // current input from numbpad
 
   @override
-  pressNumpadButton(int value) {
+  pressNumpadButton(BuildContext context, int value) {
     // undo
     if (value == -2) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              child: createCheckoutDialog(context),
+            );
+          });
       if (input.isEmpty && rounds.isNotEmpty) {
         rounds.removeLast();
         round--;
@@ -58,7 +65,6 @@ class Controller170 extends ChangeNotifier implements NumpadController {
         totalScore += score;
         scores.add(score);
         remainings.add(remaining);
-
         input = "";
         score = 0;
       }
@@ -117,5 +123,94 @@ class Controller170 extends ChangeNotifier implements NumpadController {
       result = result.substring(0, result.length - 1);
     }
     return result;
+  }
+
+  Widget createCheckoutDialog(BuildContext context) {
+    return SizedBox(
+      height: 250,
+      width: 550,
+      child: Column(
+        children: [
+          const Text(
+            "Wie viele Darts zum Checkout?",
+            style: TextStyle(fontSize: 40, color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            flex: 1,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: TextButton(
+                      onPressed: () {
+                        // correct previously counted 3 darts to 1
+                        dart -= 2;
+                        totalDarts -= 2;
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                      child: const Text(
+                        "1",
+                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: TextButton(
+                      onPressed: () {
+                        // correct previously counted 3 darts to 2
+                        dart -= 1;
+                        totalDarts -= 1;
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                      child: const Text(
+                        "2",
+                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: TextButton(
+                      onPressed: () {
+                        // nothing to correct
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                      child: const Text(
+                        "3",
+                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
