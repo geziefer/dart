@@ -1,3 +1,4 @@
+import 'package:dart/view/checkout.dart';
 import 'package:dart/view/numpad.dart';
 import 'package:flutter/material.dart';
 
@@ -31,13 +32,6 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   pressNumpadButton(BuildContext context, int value) {
     // undo
     if (value == -2) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Dialog(
-              child: createCheckoutDialog(context),
-            );
-          });
       if (input.isEmpty && rounds.isNotEmpty) {
         rounds.removeLast();
         round--;
@@ -67,6 +61,17 @@ class Controller170 extends ChangeNotifier implements NumpadController {
         remainings.add(remaining);
         input = "";
         score = 0;
+
+        // check for checkout
+        if (remaining == 0) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return const Dialog(
+                  child: Checkout(),
+                );
+              });
+        }
       }
       // number
     } else {
@@ -125,92 +130,10 @@ class Controller170 extends ChangeNotifier implements NumpadController {
     return result;
   }
 
-  Widget createCheckoutDialog(BuildContext context) {
-    return SizedBox(
-      height: 250,
-      width: 550,
-      child: Column(
-        children: [
-          const Text(
-            "Wie viele Darts zum Checkout?",
-            style: TextStyle(fontSize: 40, color: Colors.black),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            flex: 1,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(5),
-                    child: TextButton(
-                      onPressed: () {
-                        // correct previously counted 3 darts to 1
-                        dart -= 2;
-                        totalDarts -= 2;
-                        Navigator.pop(context);
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        "1",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(5),
-                    child: TextButton(
-                      onPressed: () {
-                        // correct previously counted 3 darts to 2
-                        dart -= 1;
-                        totalDarts -= 1;
-                        Navigator.pop(context);
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        "2",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(5),
-                    child: TextButton(
-                      onPressed: () {
-                        // nothing to correct
-                        Navigator.pop(context);
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                      child: const Text(
-                        "3",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  void correctDarts(int value) {
+    dart -= value;
+    totalDarts -= value;
+
+    notifyListeners();
   }
 }
