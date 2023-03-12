@@ -5,12 +5,46 @@ import 'package:provider/provider.dart';
 class Checkout extends StatelessWidget {
   const Checkout({
     super.key,
+    required this.remaining,
   });
+
+  final int remaining;
 
   @override
   Widget build(BuildContext context) {
     ControllerXXXCheckout controller =
         Provider.of<ControllerXXXCheckout>(context);
+    if (remaining > 0) {
+      return SizedBox(
+        height: 130,
+        width: 600,
+        child: Column(
+          children: [
+            const Text(
+              "Maximale Dart-Anzahl erreicht",
+              style: TextStyle(fontSize: 40, color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+            Container(
+              margin: const EdgeInsets.all(5),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(fontSize: 50, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return SizedBox(
       height: 250,
       width: 550,

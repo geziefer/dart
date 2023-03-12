@@ -28,18 +28,24 @@ class Menu extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
+                children: [
                   MenuItem(
                     label: '170 x 10',
-                    view: ViewXXXCheckout(),
+                    view: const ViewXXXCheckout(title: '170 x 10'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 170, 'max': -1},
                   ),
                   MenuItem(
                     label: '501 x 5',
-                    view: ViewXXXCheckout(),
+                    view: const ViewXXXCheckout(title: '501 x 5'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 501, 'max': -1},
                   ),
                   MenuItem(
-                    label: '999 x 5 max 3',
-                    view: ViewXXXCheckout(),
+                    label: '999 x 5',
+                    view: const ViewXXXCheckout(title: '999 x 5'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 999, 'max': -1},
                   ),
                 ],
               ),
@@ -48,18 +54,24 @@ class Menu extends StatelessWidget {
               flex: 1,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
+                children: [
                   MenuItem(
                     label: '170 x 10 max 3',
-                    view: ViewXXXCheckout(),
+                    view: const ViewXXXCheckout(title: '170 x 10 max 3'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 170, 'max': 3},
                   ),
                   MenuItem(
                     label: '501 x 5 max 7',
-                    view: ViewXXXCheckout(),
+                    view: const ViewXXXCheckout(title: '501 x 5 max 7'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 501, 'max': 7},
                   ),
                   MenuItem(
                     label: '999 x 5 max 14',
-                    view: ViewXXXCheckout(),
+                    view: const ViewXXXCheckout(title: '999 x 5 max 14'),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 999, 'max': 14},
                   ),
                 ],
               ),
@@ -76,10 +88,14 @@ class MenuItem extends StatelessWidget {
     super.key,
     required this.label,
     required this.view,
+    required this.controller,
+    required this.params,
   });
 
   final String label;
   final Widget view;
+  final Initializable controller;
+  final Map params;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +105,7 @@ class MenuItem extends StatelessWidget {
         margin: const EdgeInsets.all(5),
         child: OutlinedButton(
           onPressed: () {
-            ControllerXXXCheckout().init();
+            controller.init(params);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => view),
@@ -107,4 +123,9 @@ class MenuItem extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Interface for Controller to initialize
+abstract class Initializable {
+  void init(Map params);
 }

@@ -169,6 +169,6 @@ class NumpadButton extends StatelessWidget {
 
 /// Interface for NumpadButton
 abstract class NumpadController {
-  pressNumpadButton(BuildContext context, int value);
-  getInput();
+  void pressNumpadButton(BuildContext context, int value);
+  String getInput();
 }

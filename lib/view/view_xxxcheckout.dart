@@ -8,7 +8,10 @@ import 'package:provider/provider.dart';
 class ViewXXXCheckout extends StatelessWidget {
   const ViewXXXCheckout({
     super.key,
+    required this.title,
   });
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +24,9 @@ class ViewXXXCheckout extends StatelessWidget {
         children: [
           // ########## Top row with logo, game title and back button
           const SizedBox(height: 20),
-          const Expanded(
+          Expanded(
             flex: 1,
-            child: Header(label: '170'),
+            child: Header(label: title),
           ),
 
           // ########## Main part with game results and num pad
