@@ -1,7 +1,7 @@
 import 'package:dart/controller/controller_170.dart';
-import 'package:dart/view/header.dart';
-import 'package:dart/view/numpad.dart';
-import 'package:dart/view/scorecolumn.dart';
+import 'package:dart/widget/header.dart';
+import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

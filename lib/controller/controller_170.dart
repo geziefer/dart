@@ -1,5 +1,5 @@
-import 'package:dart/view/checkout.dart';
-import 'package:dart/view/numpad.dart';
+import 'package:dart/widget/checkout.dart';
+import 'package:dart/widget/numpad.dart';
 import 'package:flutter/material.dart';
 
 class Controller170 extends ChangeNotifier implements NumpadController {
