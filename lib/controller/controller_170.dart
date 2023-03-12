@@ -1,5 +1,6 @@
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/summary.dart';
 import 'package:flutter/material.dart';
 
 class Controller170 extends ChangeNotifier implements NumpadController {
@@ -102,28 +103,13 @@ class Controller170 extends ChangeNotifier implements NumpadController {
 
             // check for end of game
             if (leg == 10) {
-              // TODO: replace by summary in view
-              String result = "";
-              for (int i = 0; i < results.length; i++) {
-                result += '${results[i]} ';
-              }
               showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text("Spiel vorbei"),
-                    content: Text(result),
-                    actions: <Widget>[
-                      TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          }),
-                    ],
-                  );
-                },
-              );
+                  context: context,
+                  builder: (context) {
+                    return const Dialog(
+                      child: Summary(),
+                    );
+                  });
             } else {
               leg++;
             }
@@ -151,19 +137,19 @@ class Controller170 extends ChangeNotifier implements NumpadController {
   }
 
   String getCurrentRounds() {
-    return createMultilineString(rounds);
+    return createMultilineString(rounds, '', '', 6, false);
   }
 
   String getCurrentScores() {
-    return createMultilineString(scores);
+    return createMultilineString(scores, '', '', 6, false);
   }
 
   String getCurrentRemainings() {
-    return createMultilineString(remainings);
+    return createMultilineString(remainings, '', '', 6, false);
   }
 
   String getCurrentDarts() {
-    return createMultilineString(darts);
+    return createMultilineString(darts, '', '', 6, false);
   }
 
   Map getCurrentStats() {
@@ -172,13 +158,20 @@ class Controller170 extends ChangeNotifier implements NumpadController {
     return {'round': leg, 'avgScore': avgScore, 'avgDarts': avgDarts};
   }
 
-  String createMultilineString(List list) {
+  String createMultilineString(
+      List list, String prefix, String postfix, int limit, bool enumarate) {
     String result = "";
-    // max 6 entries
+    String enhancedPrefix = "";
+    String enhancesPostfix = "";
+    // max limit entries
     int to = list.length;
-    int from = (to > 6) ? to - 6 : 0;
+    int from = (to > limit) ? to - limit : 0;
     for (int i = from; i < list.length; i++) {
-      result += '${list[i]}\n';
+      enhancedPrefix = enumarate
+          ? '$prefix ${i + 1}: '
+          : (prefix.isNotEmpty ? '$prefix: ' : '');
+      enhancesPostfix = postfix.isNotEmpty ? ' $postfix' : '';
+      result += '$enhancedPrefix${list[i]}$enhancesPostfix\n';
     }
     // delete last line break if any
     if (result.isNotEmpty) {
