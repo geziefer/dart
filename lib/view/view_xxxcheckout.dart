@@ -8,25 +8,26 @@ import 'package:provider/provider.dart';
 class ViewXXXCheckout extends StatelessWidget {
   const ViewXXXCheckout({
     super.key,
-    required this.title,
+    required this.gameno,
   });
 
-  final String title;
+  final int gameno;
 
   @override
   Widget build(BuildContext context) {
     ControllerXXXCheckout controller =
         Provider.of<ControllerXXXCheckout>(context);
-    Map stats = controller.getCurrentStats();
+    Map currentStats = controller.getCurrentStats();
+    String stats = controller.getStats();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Column(
         children: [
-          // ########## Top row with logo, game title and back button
+          // ########## Top row with logo, game title, stats and back button
           const SizedBox(height: 20),
           Expanded(
             flex: 1,
-            child: Header(label: title),
+            child: Header(gameno: gameno, label: stats),
           ),
 
           // ########## Main part with game results and num pad
@@ -113,7 +114,7 @@ class ViewXXXCheckout extends StatelessWidget {
                       fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
-                  "${stats['round']}",
+                  "${currentStats['round']}",
                   style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
                 const Text(
@@ -122,7 +123,7 @@ class ViewXXXCheckout extends StatelessWidget {
                       fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
-                  "${stats['avgScore']}",
+                  "${currentStats['avgScore']}",
                   style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
                 const Text(
@@ -131,7 +132,7 @@ class ViewXXXCheckout extends StatelessWidget {
                       fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 ),
                 Text(
-                  "${stats['avgDarts']}",
+                  "${currentStats['avgDarts']}",
                   style: const TextStyle(fontSize: 50, color: Colors.white),
                 ),
               ],

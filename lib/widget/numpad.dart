@@ -1,3 +1,4 @@
+import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
 
 /// Build 4x3 numpad 0-9, undo, return
@@ -165,10 +166,4 @@ class NumpadButton extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Interface for NumpadButton
-abstract class NumpadController {
-  void pressNumpadButton(BuildContext context, int value);
-  String getInput();
 }

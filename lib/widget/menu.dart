@@ -1,8 +1,8 @@
 import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Menu extends StatelessWidget {
   const Menu({
@@ -26,9 +26,6 @@ class Menu extends StatelessWidget {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
-    // read stats from shared preferences on device
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Center(
@@ -44,19 +41,19 @@ class Menu extends StatelessWidget {
                 children: [
                   MenuItem(
                     gameno: 1,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 1),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 170, 'max': -1, 'end': 10},
                   ),
                   MenuItem(
                     gameno: 2,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 2),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': -1, 'end': 5},
                   ),
                   MenuItem(
                     gameno: 3,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 3),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 999, 'max': -1, 'end': 5},
                   ),
@@ -70,19 +67,19 @@ class Menu extends StatelessWidget {
                 children: [
                   MenuItem(
                     gameno: 4,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 4),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 170, 'max': 3, 'end': 10},
                   ),
                   MenuItem(
                     gameno: 5,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 5),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': 7, 'end': 5},
                   ),
                   MenuItem(
                     gameno: 6,
-                    view: ViewXXXCheckout(title: games[1]),
+                    view: const ViewXXXCheckout(gameno: 6),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 999, 'max': 14, 'end': 5},
                   ),
@@ -107,7 +104,7 @@ class MenuItem extends StatelessWidget {
 
   final int gameno;
   final Widget view;
-  final Initializable controller;
+  final MenuitemController controller;
   final Map params;
 
   @override
@@ -118,7 +115,7 @@ class MenuItem extends StatelessWidget {
         margin: const EdgeInsets.all(5),
         child: OutlinedButton(
           onPressed: () {
-            controller.init(params);
+            controller.init(gameno, params);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => view),
@@ -135,23 +132,10 @@ class MenuItem extends StatelessWidget {
                 style: const TextStyle(
                     fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
               ),
-              const SizedBox(height: 10),
-              Text(
-                '',
-                style: const TextStyle(
-                  fontSize: 40,
-                  color: Colors.white,
-                ),
-              ),
             ],
           ),
         ),
       ),
     );
   }
-}
-
-/// Interface for Controller to initialize
-abstract class Initializable {
-  void init(Map params);
 }

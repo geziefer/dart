@@ -1,11 +1,14 @@
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
   const Header({
     super.key,
+    required this.gameno,
     required this.label,
   });
 
+  final int gameno;
   final String label;
 
   @override
@@ -19,15 +22,29 @@ class Header extends StatelessWidget {
         ),
         Expanded(
           flex: 7,
-          child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 60,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 215, 198, 132),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                Menu.games[gameno],
+                style: const TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 215, 198, 132),
+                ),
               ),
-            ),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -38,7 +55,7 @@ class Header extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
                 side: const BorderSide(width: 3.0, color: Colors.white),
-                minimumSize: const Size(40, 50)),
+                minimumSize: const Size(40, 70)),
             child: const Icon(
               Icons.arrow_back,
               color: Color.fromARGB(255, 215, 198, 132),

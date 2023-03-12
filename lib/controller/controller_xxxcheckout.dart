@@ -1,11 +1,12 @@
+import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
-import 'package:dart/widget/menu.dart';
-import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/summary.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ControllerXXXCheckout extends ChangeNotifier
-    implements Initializable, NumpadController {
+    implements MenuitemController, NumpadController {
   static final ControllerXXXCheckout _instance =
       ControllerXXXCheckout._private();
 
@@ -16,6 +17,7 @@ class ControllerXXXCheckout extends ChangeNotifier
     return _instance;
   }
 
+  late int gameno; // number of game in Menu map, used also for stat reference
   late int xxx; // score to start with
   late int max; // limit of rounds per leg (-1 = unlimited)
   late int end; // number of rounds after game ends
@@ -39,7 +41,8 @@ class ControllerXXXCheckout extends ChangeNotifier
   String input = ""; // current input from numbpad
 
   @override
-  void init(Map params) {
+  void init(gameno, Map params) {
+    this.gameno = gameno;
     xxx = params['xxx'];
     max = params['max'];
     end = params['end'];
@@ -65,7 +68,7 @@ class ControllerXXXCheckout extends ChangeNotifier
 
   @override
   void pressNumpadButton(BuildContext context, int value) {
-    // undo
+    // undo button pressed
     if (value == -2) {
       if (input.isEmpty && rounds.isNotEmpty) {
         rounds.removeLast();
@@ -80,7 +83,7 @@ class ControllerXXXCheckout extends ChangeNotifier
         remainings.removeLast();
       }
       input = "";
-      // return
+      // return button pressed
     } else if (value == -1) {
       if (input.isNotEmpty) {
         score = int.parse(input);
@@ -119,10 +122,37 @@ class ControllerXXXCheckout extends ChangeNotifier
             notifyListeners();
 
             // check for end of game
-            if (leg == end) {
+            if (leg == 3) {
               showDialog(
                   context: context,
                   builder: (context) {
+                    // save stats to device, use gameno as key
+                    GetStorage storage = GetStorage(gameno.toString());
+                    int numberGames = storage.read('numberGames') ?? 0;
+                    int recordScore = storage.read('recordScore') ?? 0;
+                    int recordDarts = storage.read('recordDarts') ?? 0;
+                    int longtermScore = storage.read('longtermScore') ?? 0;
+                    int longtermDarts = storage.read('longtermDarts') ?? 0;
+                    int avgScore = getAvgScore();
+                    int avgDarts = getAvgDarts();
+                    storage.write('numberGames', numberGames + 1);
+                    if (recordScore == 0 || avgScore < recordScore) {
+                      storage.write('recordScore', avgScore);
+                    }
+                    if (recordDarts == 0 || avgDarts < recordDarts) {
+                      storage.write('recordDarts', avgDarts);
+                    }
+                    storage.write(
+                        'longtermScore',
+                        (((longtermScore * numberGames) + avgScore) /
+                                (numberGames + 1))
+                            .round());
+                    storage.write(
+                        'longtermDarts',
+                        (((longtermDarts * numberGames) + avgDarts) /
+                                (numberGames + 1))
+                            .round());
+
                     return const Dialog(
                       child: Summary(),
                     );
@@ -133,7 +163,7 @@ class ControllerXXXCheckout extends ChangeNotifier
           });
         }
       }
-      // number
+      // number button pressed
     } else {
       // only accept current digit if it fits in remaining and does not use >4 digits
       String newInput = input + value.toString();
@@ -170,10 +200,16 @@ class ControllerXXXCheckout extends ChangeNotifier
     return createMultilineString(darts, '', '', 6, false);
   }
 
+  int getAvgScore() {
+    return totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3).round();
+  }
+
+  int getAvgDarts() {
+    return (leg > 1) ? (lastTotalDarts / (leg - 1)).round() : 0;
+  }
+
   Map getCurrentStats() {
-    avgScore = totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3).round();
-    avgDarts = (leg > 1) ? (lastTotalDarts / (leg - 1)).round() : 0;
-    return {'round': leg, 'avgScore': avgScore, 'avgDarts': avgDarts};
+    return {'round': leg, 'avgScore': getAvgScore(), 'avgDarts': getAvgDarts()};
   }
 
   String createMultilineString(
@@ -203,5 +239,17 @@ class ControllerXXXCheckout extends ChangeNotifier
     totalDarts -= value;
 
     notifyListeners();
+  }
+
+  @override
+  String getStats() {
+    // read stats from device, use gameno as key
+    GetStorage storage = GetStorage(gameno.toString());
+    int numberGames = storage.read('numberGames') ?? 0;
+    int recordScore = storage.read('recordScore') ?? 0;
+    int recordDarts = storage.read('recordDarts') ?? 0;
+    int longtermScore = storage.read('longtermScore') ?? 0;
+    int longtermDarts = storage.read('longtermDarts') ?? 0;
+    return '#S: $numberGames  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
   }
 }
