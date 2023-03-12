@@ -1,16 +1,19 @@
-import 'package:dart/controller/controller_170.dart';
+import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class View170 extends StatelessWidget {
-  const View170({super.key});
+class ViewXXXCheckout extends StatelessWidget {
+  const ViewXXXCheckout({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Controller170 controller = Provider.of<Controller170>(context);
+    ControllerXXXCheckout controller =
+        Provider.of<ControllerXXXCheckout>(context);
     Map stats = controller.getCurrentStats();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),

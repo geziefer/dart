@@ -1,4 +1,4 @@
-import 'package:dart/controller/controller_170.dart';
+import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +9,8 @@ class Checkout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Controller170 controller = Provider.of<Controller170>(context);
+    ControllerXXXCheckout controller =
+        Provider.of<ControllerXXXCheckout>(context);
     return SizedBox(
       height: 250,
       width: 550,

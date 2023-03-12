@@ -1,5 +1,5 @@
-import 'package:dart/controller/controller_170.dart';
-import 'package:dart/view/view_170.dart';
+import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -31,11 +31,15 @@ class Menu extends StatelessWidget {
                 children: const [
                   MenuItem(
                     label: '170 x 10',
-                    view: View170(),
+                    view: ViewXXXCheckout(),
                   ),
                   MenuItem(
-                    label: '170 x 10 max 3',
-                    view: View170(),
+                    label: '501 x 5',
+                    view: ViewXXXCheckout(),
+                  ),
+                  MenuItem(
+                    label: '999 x 5 max 3',
+                    view: ViewXXXCheckout(),
                   ),
                 ],
               ),
@@ -46,12 +50,16 @@ class Menu extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [
                   MenuItem(
-                    label: '501 x 5',
-                    view: View170(),
+                    label: '170 x 10 max 3',
+                    view: ViewXXXCheckout(),
                   ),
                   MenuItem(
                     label: '501 x 5 max 7',
-                    view: View170(),
+                    view: ViewXXXCheckout(),
+                  ),
+                  MenuItem(
+                    label: '999 x 5 max 14',
+                    view: ViewXXXCheckout(),
                   ),
                 ],
               ),
@@ -81,7 +89,7 @@ class MenuItem extends StatelessWidget {
         margin: const EdgeInsets.all(5),
         child: OutlinedButton(
           onPressed: () {
-            Controller170().init();
+            ControllerXXXCheckout().init();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => view),

@@ -3,13 +3,14 @@ import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/summary.dart';
 import 'package:flutter/material.dart';
 
-class Controller170 extends ChangeNotifier implements NumpadController {
-  static final Controller170 _instance = Controller170._private();
+class ControllerXXXCheckout extends ChangeNotifier implements NumpadController {
+  static final ControllerXXXCheckout _instance =
+      ControllerXXXCheckout._private();
 
   // singleton
-  Controller170._private();
+  ControllerXXXCheckout._private();
 
-  factory Controller170() {
+  factory ControllerXXXCheckout() {
     return _instance;
   }
 
