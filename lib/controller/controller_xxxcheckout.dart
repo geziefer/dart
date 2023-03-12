@@ -18,6 +18,7 @@ class ControllerXXXCheckout extends ChangeNotifier
 
   late int xxx; // score to start with
   late int max; // limit of rounds per leg (-1 = unlimited)
+  late int end; // number of rounds after game ends
 
   List<int> rounds = <int>[]; // list of rounds in leg
   List<int> scores = <int>[]; // list of thrown scores in leg
@@ -30,6 +31,7 @@ class ControllerXXXCheckout extends ChangeNotifier
   late int remaining; // current remaining points in leg, will be set in init
   int dart = 0; // current used darts in leg
   int totalDarts = 0; // total number of darts used in all legs
+  int lastTotalDarts = 0; // total darts after last end of leg for average
   int totalScore = 0; // total score in all legs
   int totalRounds = 0; // total rounds played in all legs
   int avgScore = 0; // average of score in all legs
@@ -40,6 +42,7 @@ class ControllerXXXCheckout extends ChangeNotifier
   void init(Map params) {
     xxx = params['xxx'];
     max = params['max'];
+    end = params['end'];
 
     rounds = <int>[];
     scores = <int>[];
@@ -52,6 +55,7 @@ class ControllerXXXCheckout extends ChangeNotifier
     remaining = xxx;
     dart = 0;
     totalDarts = 0;
+    lastTotalDarts = 0;
     totalScore = 0;
     totalRounds = 0;
     avgScore = 0;
@@ -105,6 +109,7 @@ class ControllerXXXCheckout extends ChangeNotifier
             results.add(dart);
             round = 1;
             remaining = xxx;
+            lastTotalDarts = totalDarts;
             dart = 0;
             rounds.clear();
             scores.clear();
@@ -114,7 +119,7 @@ class ControllerXXXCheckout extends ChangeNotifier
             notifyListeners();
 
             // check for end of game
-            if (leg == 10) {
+            if (leg == end) {
               showDialog(
                   context: context,
                   builder: (context) {
@@ -167,7 +172,7 @@ class ControllerXXXCheckout extends ChangeNotifier
 
   Map getCurrentStats() {
     avgScore = totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3).round();
-    avgDarts = (totalDarts / leg).round();
+    avgDarts = (leg > 1) ? (lastTotalDarts / (leg - 1)).round() : 0;
     return {'round': leg, 'avgScore': avgScore, 'avgDarts': avgDarts};
   }
 
