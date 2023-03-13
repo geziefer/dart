@@ -26,13 +26,13 @@ class ViewXXXCheckout extends StatelessWidget {
           // ########## Top row with logo, game title, stats and back button
           const SizedBox(height: 20),
           Expanded(
-            flex: 1,
-            child: Header(gameno: gameno, label: stats),
+            flex: 10,
+            child: Header(gameno: gameno),
           ),
 
           // ########## Main part with game results and num pad
           Expanded(
-            flex: 8,
+            flex: 72,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -104,37 +104,53 @@ class ViewXXXCheckout extends StatelessWidget {
 
           // ########## Bottom row with stats
           Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            flex: 18,
+            child: Column(
               children: [
-                const Text(
-                  "Runde: ",
-                  style: TextStyle(
-                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Runde: ",
+                      style: TextStyle(
+                          fontSize: 50,
+                          color: Color.fromARGB(255, 215, 198, 132)),
+                    ),
+                    Text(
+                      "${currentStats['round']}",
+                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                    ),
+                    const Text(
+                      "   Ø Punkte: ",
+                      style: TextStyle(
+                          fontSize: 50,
+                          color: Color.fromARGB(255, 215, 198, 132)),
+                    ),
+                    Text(
+                      "${currentStats['avgScore']}",
+                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                    ),
+                    const Text(
+                      "   Ø Darts: ",
+                      style: TextStyle(
+                          fontSize: 50,
+                          color: Color.fromARGB(255, 215, 198, 132)),
+                    ),
+                    Text(
+                      "${currentStats['avgDarts']}",
+                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                    ),
+                  ],
                 ),
-                Text(
-                  "${currentStats['round']}",
-                  style: const TextStyle(fontSize: 50, color: Colors.white),
-                ),
-                const Text(
-                  "   Ø Punkte: ",
-                  style: TextStyle(
-                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
-                ),
-                Text(
-                  "${currentStats['avgScore']}",
-                  style: const TextStyle(fontSize: 50, color: Colors.white),
-                ),
-                const Text(
-                  "   Ø Darts: ",
-                  style: TextStyle(
-                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
-                ),
-                Text(
-                  "${currentStats['avgDarts']}",
-                  style: const TextStyle(fontSize: 50, color: Colors.white),
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      stats,
+                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

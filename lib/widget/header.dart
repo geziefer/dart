@@ -5,11 +5,9 @@ class Header extends StatelessWidget {
   const Header({
     super.key,
     required this.gameno,
-    required this.label,
   });
 
   final int gameno;
-  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -17,38 +15,23 @@ class Header extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          flex: 2,
+          flex: 20,
           child: image,
         ),
         Expanded(
-          flex: 7,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                Menu.games[gameno],
-                style: const TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 215, 198, 132),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+          flex: 75,
+          child: Text(
+            Menu.games[gameno],
+            style: const TextStyle(
+              fontSize: 60,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 215, 198, 132),
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
         Expanded(
-          flex: 1,
+          flex: 5,
           child: OutlinedButton(
             onPressed: () {
               Navigator.pop(context);
