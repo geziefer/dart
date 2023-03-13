@@ -26,8 +26,8 @@ class Summary extends StatelessWidget {
           Container(
             margin: const EdgeInsets.all(5),
             child: Text(
-              controller.createMultilineString(
-                  controller.results, 'Leg', 'Darts', 10, true),
+              controller.createMultilineString(controller.results, 'Leg',
+                  'Darts', controller.finishes, 10, true),
               style: const TextStyle(
                 fontSize: 40,
                 color: Colors.black,

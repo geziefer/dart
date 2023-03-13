@@ -24,11 +24,13 @@ class ControllerXXXCheckout extends ChangeNotifier
 
   List<int> rounds = <int>[]; // list of rounds in leg
   List<int> scores = <int>[]; // list of thrown scores in leg
+  List<bool> finishes = <bool>[]; // list of flags if leg was finished
   List<int> remainings = <int>[]; // list of remaining points after each throw
   List<int> darts = <int>[]; // list of used darts in leg
   List<int> results = <int>[]; // list of used darts per leg
   int leg = 1; // leg number
   int round = 1; // round number in leg
+  int wins = 0; // number of finished legs
   int score = 0; // current score in leg
   late int remaining; // current remaining points in leg, will be set in init
   int dart = 0; // current used darts in leg
@@ -49,11 +51,13 @@ class ControllerXXXCheckout extends ChangeNotifier
 
     rounds = <int>[];
     scores = <int>[];
+    finishes = <bool>[];
     remainings = <int>[];
     darts = <int>[];
     results = <int>[];
     leg = 1;
     round = 1;
+    wins = 0;
     score = 0;
     remaining = xxx;
     dart = 0;
@@ -111,6 +115,12 @@ class ControllerXXXCheckout extends ChangeNotifier
                 );
               }).then((value) {
             results.add(dart);
+            if (remaining == 0) {
+              wins += 1;
+              finishes.add(true);
+            } else {
+              finishes.add(false);
+            }
             round = 1;
             remaining = xxx;
             lastTotalDarts = totalDarts;
@@ -131,6 +141,7 @@ class ControllerXXXCheckout extends ChangeNotifier
                     // save stats to device, use gameno as key
                     GetStorage storage = GetStorage(gameno.toString());
                     int numberGames = storage.read('numberGames') ?? 0;
+                    int recordFinishes = storage.read('recordFinishes') ?? 0;
                     int recordScore = storage.read('recordScore') ?? 0;
                     int recordDarts = storage.read('recordDarts') ?? 0;
                     int longtermScore = storage.read('longtermScore') ?? 0;
@@ -138,6 +149,9 @@ class ControllerXXXCheckout extends ChangeNotifier
                     int avgScore = getAvgScore();
                     int avgDarts = getAvgDarts();
                     storage.write('numberGames', numberGames + 1);
+                    if (wins == 0 || wins > recordFinishes) {
+                      storage.write('recordFinishes', recordFinishes + 1);
+                    }
                     if (recordScore == 0 || avgScore < recordScore) {
                       storage.write('recordScore', avgScore);
                     }
@@ -187,19 +201,19 @@ class ControllerXXXCheckout extends ChangeNotifier
   }
 
   String getCurrentRounds() {
-    return createMultilineString(rounds, '', '', 6, false);
+    return createMultilineString(rounds, '', '', [], 6, false);
   }
 
   String getCurrentScores() {
-    return createMultilineString(scores, '', '', 6, false);
+    return createMultilineString(scores, '', '', [], 6, false);
   }
 
   String getCurrentRemainings() {
-    return createMultilineString(remainings, '', '', 6, false);
+    return createMultilineString(remainings, '', '', [], 6, false);
   }
 
   String getCurrentDarts() {
-    return createMultilineString(darts, '', '', 6, false);
+    return createMultilineString(darts, '', '', [], 6, false);
   }
 
   int getAvgScore() {
@@ -214,11 +228,12 @@ class ControllerXXXCheckout extends ChangeNotifier
     return {'round': leg, 'avgScore': getAvgScore(), 'avgDarts': getAvgDarts()};
   }
 
-  String createMultilineString(
-      List list, String prefix, String postfix, int limit, bool enumarate) {
+  String createMultilineString(List list, String prefix, String postfix,
+      List optional, int limit, bool enumarate) {
     String result = "";
     String enhancedPrefix = "";
     String enhancesPostfix = "";
+    String optionalStatus = "";
     // max limit entries
     int to = list.length;
     int from = (to > limit) ? to - limit : 0;
@@ -227,7 +242,10 @@ class ControllerXXXCheckout extends ChangeNotifier
           ? '$prefix ${i + 1}: '
           : (prefix.isNotEmpty ? '$prefix: ' : '');
       enhancesPostfix = postfix.isNotEmpty ? ' $postfix' : '';
-      result += '$enhancedPrefix${list[i]}$enhancesPostfix\n';
+      if (optional.isNotEmpty) {
+        optionalStatus = optional[i] ? " ✅" : " ❌";
+      }
+      result += '$enhancedPrefix${list[i]}$enhancesPostfix$optionalStatus\n';
     }
     // delete last line break if any
     if (result.isNotEmpty) {
@@ -248,10 +266,11 @@ class ControllerXXXCheckout extends ChangeNotifier
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
+    int recordFinishes = storage.read('recordFinishes') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
     int longtermScore = storage.read('longtermScore') ?? 0;
     int longtermDarts = storage.read('longtermDarts') ?? 0;
-    return '#S: $numberGames  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
+    return '#S: $numberGames ♛G: $recordFinishes  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
   }
 }
