@@ -104,6 +104,7 @@ class ControllerXXXCheckout extends ChangeNotifier
         if (remaining == 0 || (max != -1 && round > max)) {
           showDialog(
               context: context,
+              barrierDismissible: false,
               builder: (context) {
                 return Dialog(
                   child: Checkout(remaining: remaining),
@@ -122,9 +123,10 @@ class ControllerXXXCheckout extends ChangeNotifier
             notifyListeners();
 
             // check for end of game
-            if (leg == 3) {
+            if (leg == end) {
               showDialog(
                   context: context,
+                  barrierDismissible: false,
                   builder: (context) {
                     // save stats to device, use gameno as key
                     GetStorage storage = GetStorage(gameno.toString());

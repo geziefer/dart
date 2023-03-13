@@ -16,14 +16,16 @@ class Checkout extends StatelessWidget {
         Provider.of<ControllerXXXCheckout>(context);
     if (remaining > 0) {
       return SizedBox(
-        height: 130,
-        width: 600,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Maximale Dart-Anzahl erreicht",
-              style: TextStyle(fontSize: 40, color: Colors.black),
-              textAlign: TextAlign.center,
+            Container(
+              margin: const EdgeInsets.all(5),
+              child: const Text(
+                "Maximale Dart-Anzahl erreicht",
+                style: TextStyle(fontSize: 40, color: Colors.black),
+                textAlign: TextAlign.center,
+              ),
             ),
             Container(
               margin: const EdgeInsets.all(5),
@@ -33,6 +35,7 @@ class Checkout extends StatelessWidget {
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.black,
+                  minimumSize: const Size(150, 80),
                 ),
                 child: const Text(
                   'OK',

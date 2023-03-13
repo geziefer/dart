@@ -12,10 +12,8 @@ class Menu extends StatelessWidget {
   static final Map games = {
     1: '170 x 10',
     2: '501 x 5',
-    3: '999 x 5',
-    4: '170 x 10 max 3',
-    5: '501 x 5 max 7',
-    6: '999 x 5 max 14'
+    3: '170 x 10 max 3',
+    4: '501 x 5 max 7',
   };
 
   @override
@@ -51,12 +49,6 @@ class Menu extends StatelessWidget {
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': -1, 'end': 5},
                   ),
-                  MenuItem(
-                    gameno: 3,
-                    view: const ViewXXXCheckout(gameno: 3),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 999, 'max': -1, 'end': 5},
-                  ),
                 ],
               ),
             ),
@@ -66,22 +58,16 @@ class Menu extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   MenuItem(
-                    gameno: 4,
-                    view: const ViewXXXCheckout(gameno: 4),
+                    gameno: 3,
+                    view: const ViewXXXCheckout(gameno: 3),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 170, 'max': 3, 'end': 10},
                   ),
                   MenuItem(
-                    gameno: 5,
-                    view: const ViewXXXCheckout(gameno: 5),
+                    gameno: 4,
+                    view: const ViewXXXCheckout(gameno: 4),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': 7, 'end': 5},
-                  ),
-                  MenuItem(
-                    gameno: 6,
-                    view: const ViewXXXCheckout(gameno: 6),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 999, 'max': 14, 'end': 5},
                   ),
                 ],
               ),
