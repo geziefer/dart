@@ -89,95 +89,100 @@ class ControllerXXXCheckout extends ChangeNotifier
       input = "";
       // return button pressed
     } else if (value == -1) {
-      if (input.isNotEmpty) {
-        score = int.parse(input);
-        rounds.add(round);
-        round++;
-        totalRounds++;
-        dart += 3;
-        totalDarts += 3;
-        remaining -= score;
-        darts.add(dart);
-        totalScore += score;
-        scores.add(score);
-        remainings.add(remaining);
-        input = "";
+      if (input.isEmpty) {
         score = 0;
+      } else {
+        score = int.parse(input);
+      }
+      rounds.add(round);
+      round++;
+      totalRounds++;
+      dart += 3;
+      totalDarts += 3;
+      remaining -= score;
+      darts.add(dart);
+      totalScore += score;
+      scores.add(score);
+      remainings.add(remaining);
+      input = "";
+      score = 0;
 
-        // check for checkout or limit of rounds
-        if (remaining == 0 || (max != -1 && round > max)) {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return Dialog(
-                  child: Checkout(remaining: remaining),
-                );
-              }).then((value) {
-            results.add(dart);
-            if (remaining == 0) {
-              wins += 1;
-              finishes.add(true);
-            } else {
-              finishes.add(false);
-            }
-            round = 1;
-            remaining = xxx;
-            lastTotalDarts = totalDarts;
-            dart = 0;
-            rounds.clear();
-            scores.clear();
-            remainings.clear();
-            darts.clear();
+      // check for checkout or limit of rounds
+      if (remaining == 0 || (max != -1 && round > max)) {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return Dialog(
+                child: Checkout(
+                  remaining: remaining,
+                  controller: this,
+                ),
+              );
+            }).then((value) {
+          results.add(dart);
+          if (remaining == 0) {
+            wins += 1;
+            finishes.add(true);
+          } else {
+            finishes.add(false);
+          }
+          round = 1;
+          remaining = xxx;
+          lastTotalDarts = totalDarts;
+          dart = 0;
+          rounds.clear();
+          scores.clear();
+          remainings.clear();
+          darts.clear();
 
-            notifyListeners();
+          notifyListeners();
 
-            // check for end of game
-            if (leg == end) {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    // save stats to device, use gameno as key
-                    GetStorage storage = GetStorage(gameno.toString());
-                    int numberGames = storage.read('numberGames') ?? 0;
-                    int recordFinishes = storage.read('recordFinishes') ?? 0;
-                    int recordScore = storage.read('recordScore') ?? 0;
-                    int recordDarts = storage.read('recordDarts') ?? 0;
-                    int longtermScore = storage.read('longtermScore') ?? 0;
-                    int longtermDarts = storage.read('longtermDarts') ?? 0;
-                    int avgScore = getAvgScore();
-                    int avgDarts = getAvgDarts();
-                    storage.write('numberGames', numberGames + 1);
-                    if (wins == 0 || wins > recordFinishes) {
-                      storage.write('recordFinishes', recordFinishes + 1);
-                    }
-                    if (recordScore == 0 || avgScore < recordScore) {
-                      storage.write('recordScore', avgScore);
-                    }
-                    if (recordDarts == 0 || avgDarts < recordDarts) {
-                      storage.write('recordDarts', avgDarts);
-                    }
-                    storage.write(
-                        'longtermScore',
-                        (((longtermScore * numberGames) + avgScore) /
-                                (numberGames + 1))
-                            .round());
-                    storage.write(
-                        'longtermDarts',
-                        (((longtermDarts * numberGames) + avgDarts) /
-                                (numberGames + 1))
-                            .round());
+          // check for end of game
+          if (leg == end) {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  // save stats to device, use gameno as key
+                  GetStorage storage = GetStorage(gameno.toString());
+                  int numberGames = storage.read('numberGames') ?? 0;
+                  int recordFinishes = storage.read('recordFinishes') ?? 0;
+                  int recordScore = storage.read('recordScore') ?? 0;
+                  int recordDarts = storage.read('recordDarts') ?? 0;
+                  int longtermScore = storage.read('longtermScore') ?? 0;
+                  int longtermDarts = storage.read('longtermDarts') ?? 0;
+                  int avgScore = getAvgScore();
+                  int avgDarts = getAvgDarts();
+                  storage.write('numberGames', numberGames + 1);
+                  if (wins == 0 || wins > recordFinishes) {
+                    storage.write('recordFinishes', recordFinishes + 1);
+                  }
+                  if (recordScore == 0 || avgScore < recordScore) {
+                    storage.write('recordScore', avgScore);
+                  }
+                  if (recordDarts == 0 || avgDarts < recordDarts) {
+                    storage.write('recordDarts', avgDarts);
+                  }
+                  storage.write(
+                      'longtermScore',
+                      (((longtermScore * numberGames) + avgScore) /
+                              (numberGames + 1))
+                          .round());
+                  storage.write(
+                      'longtermDarts',
+                      (((longtermDarts * numberGames) + avgDarts) /
+                              (numberGames + 1))
+                          .round());
 
-                    return const Dialog(
-                      child: Summary(),
-                    );
-                  });
-            } else {
-              leg++;
-            }
-          });
-        }
+                  return const Dialog(
+                    child: Summary(),
+                  );
+                });
+          } else {
+            leg++;
+          }
+        });
       }
       // number button pressed
     } else {
@@ -254,6 +259,7 @@ class ControllerXXXCheckout extends ChangeNotifier
     return result;
   }
 
+  @override
   void correctDarts(int value) {
     dart -= value;
     totalDarts -= value;

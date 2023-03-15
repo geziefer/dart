@@ -1,5 +1,7 @@
+import 'package:dart/controller/controller_rtcdouble.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/view/view_rtcdouble.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +14,10 @@ class Menu extends StatelessWidget {
   static final Map games = {
     1: '170 x 10',
     2: '501 x 5',
-    3: '170 x 10 max 3',
-    4: '501 x 5 max 7',
+    3: '170 x 10\nmax 3',
+    4: '501 x 5\nmax 7',
+    5: 'Round the clock D',
+    6: 'Round the clock D\nmax 20',
   };
 
   @override
@@ -49,6 +53,12 @@ class Menu extends StatelessWidget {
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': -1, 'end': 5},
                   ),
+                  MenuItem(
+                    gameno: 5,
+                    view: const ViewRTCDouble(gameno: 5),
+                    controller: ControllerRTCDouble(),
+                    params: const {'max': -1},
+                  ),
                 ],
               ),
             ),
@@ -68,6 +78,12 @@ class Menu extends StatelessWidget {
                     view: const ViewXXXCheckout(gameno: 4),
                     controller: ControllerXXXCheckout(),
                     params: const {'xxx': 501, 'max': 7, 'end': 5},
+                  ),
+                  MenuItem(
+                    gameno: 6,
+                    view: const ViewRTCDouble(gameno: 6),
+                    controller: ControllerRTCDouble(),
+                    params: const {'max': 20},
                   ),
                 ],
               ),
@@ -117,6 +133,7 @@ class MenuItem extends StatelessWidget {
                 Menu.games[gameno],
                 style: const TextStyle(
                     fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

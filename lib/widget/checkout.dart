@@ -1,19 +1,18 @@
-import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Checkout extends StatelessWidget {
   const Checkout({
     super.key,
     required this.remaining,
+    required this.controller,
   });
 
   final int remaining;
+  final NumpadController controller;
 
   @override
   Widget build(BuildContext context) {
-    ControllerXXXCheckout controller =
-        Provider.of<ControllerXXXCheckout>(context);
     if (remaining > 0) {
       return SizedBox(
         child: Column(

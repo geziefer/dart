@@ -1,12 +1,13 @@
-import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/controller/controller_rtcdouble.dart';
+import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ViewXXXCheckout extends StatelessWidget {
-  const ViewXXXCheckout({
+class ViewRTCDouble extends StatelessWidget {
+  const ViewRTCDouble({
     super.key,
     required this.gameno,
   });
@@ -15,8 +16,7 @@ class ViewXXXCheckout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ControllerXXXCheckout controller =
-        Provider.of<ControllerXXXCheckout>(context);
+    ControllerRTCDouble controller = Provider.of<ControllerRTCDouble>(context);
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(
@@ -38,52 +38,26 @@ class ViewXXXCheckout extends StatelessWidget {
                 const Divider(color: Colors.white, thickness: 3),
                 Expanded(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // ########## Left column with game results
                       Expanded(
                         flex: 5,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          // ########## 5 x 4 items for all numbers
                           children: [
-                            // ########## Throw number
-                            ScoreColumn(
-                                label: 'A',
-                                content: controller.getCurrentRounds(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Thrown score in round
-                            ScoreColumn(
-                              label: 'W',
-                              content: controller.getCurrentScores(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Score left
-                            ScoreColumn(
-                              label: 'R',
-                              content: controller.getCurrentRemainings(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Darts thrown
-                            ScoreColumn(
-                                label: 'D',
-                                content: controller.getCurrentDarts(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
+                            for (int i = 1; i <= 3; i++)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  for (int j = 1; j <= 7; j++)
+                                    CheckNumber(
+                                      currentNumber:
+                                          controller.getCurrentNumber(),
+                                      number: (i - 1) * 4 + j,
+                                    )
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -94,7 +68,7 @@ class ViewXXXCheckout extends StatelessWidget {
                         flex: 5,
                         child: Numpad(
                           controller: controller,
-                          fullSelection: true,
+                          fullSelection: false,
                         ),
                       ),
                     ],

@@ -6,9 +6,11 @@ class Numpad extends StatelessWidget {
   const Numpad({
     super.key,
     required this.controller,
+    required this.fullSelection,
   });
 
   final NumpadController controller;
+  final bool fullSelection; // flag if only 1-3 buttons are shown
 
   @override
   Widget build(BuildContext context) {
@@ -30,54 +32,56 @@ class Numpad extends StatelessWidget {
             ],
           ),
         ),
-        Expanded(
-          flex: 1,
-          // ########## 1st row 7, 8, 9
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              NumpadButton(
-                label: '7',
-                value: 7,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '8',
-                value: 8,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '9',
-                value: 9,
-                controller: controller,
-              ),
-            ],
+        if (fullSelection)
+          Expanded(
+            flex: 1,
+            // ########## 1st row 7, 8, 9
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NumpadButton(
+                  label: '7',
+                  value: 7,
+                  controller: controller,
+                ),
+                NumpadButton(
+                  label: '8',
+                  value: 8,
+                  controller: controller,
+                ),
+                NumpadButton(
+                  label: '9',
+                  value: 9,
+                  controller: controller,
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          // ########## 2nd row 4, 5, 6
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              NumpadButton(
-                label: '4',
-                value: 4,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '5',
-                value: 5,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '6',
-                value: 6,
-                controller: controller,
-              ),
-            ],
+        if (fullSelection)
+          Expanded(
+            flex: 1,
+            // ########## 2nd row 4, 5, 6
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NumpadButton(
+                  label: '4',
+                  value: 4,
+                  controller: controller,
+                ),
+                NumpadButton(
+                  label: '5',
+                  value: 5,
+                  controller: controller,
+                ),
+                NumpadButton(
+                  label: '6',
+                  value: 6,
+                  controller: controller,
+                ),
+              ],
+            ),
           ),
-        ),
         Expanded(
           flex: 1,
           // ########## 3rd row 1, 2, 3

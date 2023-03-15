@@ -4,4 +4,5 @@ import 'package:flutter/material.dart';
 abstract class NumpadController {
   void pressNumpadButton(BuildContext context, int value);
   String getInput();
+  void correctDarts(int value);
 }
