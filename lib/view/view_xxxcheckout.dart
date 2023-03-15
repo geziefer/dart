@@ -124,7 +124,7 @@ class ViewXXXCheckout extends StatelessWidget {
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
                     const Text(
-                      "   Ø Punkte: ",
+                      "   ØPunkte: ",
                       style: TextStyle(
                           fontSize: 50,
                           color: Color.fromARGB(255, 215, 198, 132)),
@@ -134,7 +134,7 @@ class ViewXXXCheckout extends StatelessWidget {
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
                     const Text(
-                      "   Ø Darts: ",
+                      "   ØDarts: ",
                       style: TextStyle(
                           fontSize: 50,
                           color: Color.fromARGB(255, 215, 198, 132)),

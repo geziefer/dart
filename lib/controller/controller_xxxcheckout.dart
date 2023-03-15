@@ -1,7 +1,6 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
-import 'package:dart/widget/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -175,8 +174,65 @@ class ControllerXXXCheckout extends ChangeNotifier
                               (numberGames + 1))
                           .round());
 
-                  return const Dialog(
-                    child: Summary(),
+                  return Dialog(
+                    child: SizedBox(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            child: const Text(
+                              "Zusammenfassung",
+                              style:
+                                  TextStyle(fontSize: 50, color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            child: Text(
+                              createMultilineString(
+                                  results, 'Leg', 'Darts', finishes, 10, true),
+                              style: const TextStyle(
+                                fontSize: 40,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            child: Text(
+                              'ØPunkte: ${getCurrentStats()['avgScore']}\nØDarts: ${getCurrentStats()['avgDarts']}',
+                              style: const TextStyle(
+                                fontSize: 40,
+                                color: Colors.red,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                minimumSize: const Size(150, 80),
+                              ),
+                              child: const Text(
+                                'OK',
+                                style: TextStyle(
+                                    fontSize: 50, color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 });
           } else {
@@ -267,7 +323,6 @@ class ControllerXXXCheckout extends ChangeNotifier
     notifyListeners();
   }
 
-  @override
   String getStats() {
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(gameno.toString());
@@ -277,6 +332,6 @@ class ControllerXXXCheckout extends ChangeNotifier
     int recordDarts = storage.read('recordDarts') ?? 0;
     int longtermScore = storage.read('longtermScore') ?? 0;
     int longtermDarts = storage.read('longtermDarts') ?? 0;
-    return '#S: $numberGames ♛G: $recordFinishes  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
+    return '#S: $numberGames  ♛G: $recordFinishes  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
   }
 }

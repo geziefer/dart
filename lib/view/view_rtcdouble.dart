@@ -2,7 +2,6 @@ import 'package:dart/controller/controller_rtcdouble.dart';
 import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
-import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -54,7 +53,7 @@ class ViewRTCDouble extends StatelessWidget {
                                     CheckNumber(
                                       currentNumber:
                                           controller.getCurrentNumber(),
-                                      number: (i - 1) * 4 + j,
+                                      number: (i - 1) * 7 + j,
                                     )
                                 ],
                               ),
@@ -94,27 +93,17 @@ class ViewRTCDouble extends StatelessWidget {
                           color: Color.fromARGB(255, 215, 198, 132)),
                     ),
                     Text(
-                      "${currentStats['round']}",
+                      "${currentStats['throw']}",
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
                     const Text(
-                      "   Ø Punkte: ",
+                      "   ØDarts/Checkout: ",
                       style: TextStyle(
                           fontSize: 50,
                           color: Color.fromARGB(255, 215, 198, 132)),
                     ),
                     Text(
-                      "${currentStats['avgScore']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
-                    ),
-                    const Text(
-                      "   Ø Darts: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
-                    ),
-                    Text(
-                      "${currentStats['avgDarts']}",
+                      "${currentStats['avgChecks']}",
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
                   ],

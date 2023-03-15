@@ -1,7 +1,6 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
-import 'package:dart/widget/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -23,6 +22,7 @@ class ControllerRTCDouble extends ChangeNotifier
   int currentNumber = 1; // current number to throw at
   int round = 1; // round number in game
   int dart = 0; // darts played in game
+  bool finished = false; // flag if round the clock was finished
 
   @override
   void init(gameno, Map params) {
@@ -33,6 +33,7 @@ class ControllerRTCDouble extends ChangeNotifier
     currentNumber = 1;
     round = 1;
     dart = 0;
+    finished = false;
   }
 
   @override
@@ -45,87 +46,148 @@ class ControllerRTCDouble extends ChangeNotifier
       currentNumber -= lastThrow;
       // all other buttons pressed
     } else {
-      // return button pressed
-      if (value == -1) {
-        value = 0;
-      }
-      round++;
-      dart += 3;
-      throws.add(value);
-      currentNumber += value;
+      // ignore numbers greater left checks
+      if (currentNumber + value <= 21) {
+        // return button pressed
+        if (value == -1) {
+          value = 0;
+        }
+        round++;
+        dart += 3;
+        throws.add(value);
+        currentNumber += value;
 
-      // check for last number reached or limit of rounds
-      if (currentNumber > 20 || (max != -1 && round > max)) {
-        if (currentNumber > 20) {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return Dialog(
-                  // no remaining score here, so set last one
-                  child: Checkout(
-                    remaining: 20,
-                    controller: this,
-                  ),
-                );
-              }).then((value) {
-            finishGame();
-          });
-        } else {
-          finishGame();
+        // check for last number reached or limit of rounds
+        if (currentNumber > 20 || (max != -1 && round > max)) {
+          // remaining is dfferent here, 20 means finished game,
+          // so set to current number if not
+          int remaining = (currentNumber < 21) ? currentNumber : 0;
+          finished = currentNumber > 20 ? true : false;
+          if (finished) {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return Dialog(
+                    // no remaining score here, so set last one
+                    child: Checkout(
+                      remaining: remaining,
+                      controller: this,
+                    ),
+                  );
+                }).then((value) {
+              finishGame(context);
+            });
+          } else {
+            finishGame(context);
+          }
         }
       }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
-  void finishGame() {
-/*
-            // check for end of game
-            if (leg == 00) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    // save stats to device, use gameno as key
-                    GetStorage storage = GetStorage(gameno.toString());
-                    int numberGames = storage.read('numberGames') ?? 0;
-                    int recordFinishes = storage.read('recordFinishes') ?? 0;
-                    int recordScore = storage.read('recordScore') ?? 0;
-                    int recordDarts = storage.read('recordDarts') ?? 0;
-                    int longtermScore = storage.read('longtermScore') ?? 0;
-                    int longtermDarts = storage.read('longtermDarts') ?? 0;
-                    int avgScore = getAvgScore();
-                    int avgDarts = getAvgDarts();
-                    storage.write('numberGames', numberGames + 1);
-                    if (wins == 0 || wins > recordFinishes) {
-                      storage.write('recordFinishes', recordFinishes + 1);
-                    }
-                    if (recordScore == 0 || avgScore < recordScore) {
-                      storage.write('recordScore', avgScore);
-                    }
-                    if (recordDarts == 0 || avgDarts < recordDarts) {
-                      storage.write('recordDarts', avgDarts);
-                    }
-                    storage.write(
-                        'longtermScore',
-                        (((longtermScore * numberGames) + avgScore) /
-                                (numberGames + 1))
-                            .round());
-                    storage.write(
-                        'longtermDarts',
-                        (((longtermDarts * numberGames) + avgDarts) /
-                                (numberGames + 1))
-                            .round());
+  void finishGame(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          // save stats to device, use gameno as key
+          GetStorage storage = GetStorage(gameno.toString());
+          int numberGames = storage.read('numberGames') ?? 0;
+          int numberFinishes = storage.read('numberFinishes') ?? 0;
+          int recordDarts = storage.read('recordDarts') ?? 0;
+          int longtermChecks = storage.read('longtermChecks') ?? 0;
+          int avgChecks = getAvgChecks();
+          storage.write('numberGames', numberGames + 1);
+          if (finished) {
+            storage.write('numberFinishes', numberFinishes + 1);
+          }
+          if (recordDarts == 0 || dart < recordDarts) {
+            storage.write('recordDarts', dart);
+          }
+          storage.write(
+              'longtermChecks',
+              (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1))
+                  .round());
 
-                    return const Dialog(
-                      child: Summary(),
-                    );
-                  });
-  */
+          String checkSymbol = finished ? " ✅" : " ❌";
+          return Dialog(
+            child: SizedBox(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: const Text(
+                      "Zusammenfassung",
+                      style: TextStyle(fontSize: 50, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Text(
+                      'RTC geschafft: $checkSymbol',
+                      style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Text(
+                      'Anzahl Darts: $dart',
+                      style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Text(
+                      'Darts/Checkout: ${getCurrentStats()['avgChecks']}',
+                      style: const TextStyle(
+                        fontSize: 40,
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        minimumSize: const Size(150, 80),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   int getCurrentNumber() {
     return currentNumber;
+  }
+
+  int getAvgChecks() {
+    return currentNumber == 1 ? 0 : (dart / (currentNumber - 1)).round();
   }
 
   @override
@@ -142,19 +204,20 @@ class ControllerRTCDouble extends ChangeNotifier
   }
 
   Map getCurrentStats() {
-    return {}; //{'round': leg, 'avgScore': getAvgScore(), 'avgDarts': getAvgDarts()};
+    return {
+      'throw': round,
+      'darts': dart,
+      'avgChecks': getAvgChecks(),
+    };
   }
 
-  @override
   String getStats() {
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
-    int recordFinishes = storage.read('recordFinishes') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
+    int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
-    int longtermScore = storage.read('longtermScore') ?? 0;
-    int longtermDarts = storage.read('longtermDarts') ?? 0;
-    return '#S: $numberGames ♛G: $recordFinishes  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
+    int longtermChecks = storage.read('longtermChecks') ?? 0;
+    return '#S: $numberGames  #G: $numberFinishes  ♛D: $recordDarts  ØC: $longtermChecks';
   }
 }

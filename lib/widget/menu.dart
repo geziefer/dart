@@ -16,8 +16,8 @@ class Menu extends StatelessWidget {
     2: '501 x 5',
     3: '170 x 10\nmax 3',
     4: '501 x 5\nmax 7',
-    5: 'Round the clock D',
-    6: 'Round the clock D\nmax 20',
+    5: 'RTC Double',
+    6: 'RTC Double\nmax 20',
   };
 
   @override

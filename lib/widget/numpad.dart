@@ -83,7 +83,7 @@ class Numpad extends StatelessWidget {
             ),
           ),
         Expanded(
-          flex: 1,
+          flex: fullSelection ? 1 : 2,
           // ########## 3rd row 1, 2, 3
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,7 +107,7 @@ class Numpad extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 1,
+          flex: fullSelection ? 1 : 2,
           // ########## 4th row back, 0, enter
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
