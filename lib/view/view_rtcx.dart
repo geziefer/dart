@@ -1,12 +1,12 @@
-import 'package:dart/controller/controller_rtcdouble.dart';
+import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ViewRTCDouble extends StatelessWidget {
-  const ViewRTCDouble({
+class ViewRTCX extends StatelessWidget {
+  const ViewRTCX({
     super.key,
     required this.gameno,
   });
@@ -15,7 +15,7 @@ class ViewRTCDouble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ControllerRTCDouble controller = Provider.of<ControllerRTCDouble>(context);
+    ControllerRTCX controller = Provider.of<ControllerRTCX>(context);
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(

@@ -4,14 +4,14 @@ import 'package:dart/widget/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerRTCDouble extends ChangeNotifier
+class ControllerRTCX extends ChangeNotifier
     implements MenuitemController, NumpadController {
-  static final ControllerRTCDouble _instance = ControllerRTCDouble._private();
+  static final ControllerRTCX _instance = ControllerRTCX._private();
 
   // singleton
-  ControllerRTCDouble._private();
+  ControllerRTCX._private();
 
-  factory ControllerRTCDouble() {
+  factory ControllerRTCX() {
     return _instance;
   }
 

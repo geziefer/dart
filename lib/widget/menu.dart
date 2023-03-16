@@ -1,9 +1,9 @@
 import 'package:dart/controller/controller_halfit.dart';
-import 'package:dart/controller/controller_rtcdouble.dart';
+import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_halfit.dart';
-import 'package:dart/view/view_rtcdouble.dart';
+import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +21,11 @@ class Menu extends StatelessWidget {
     4: '501 x 5\nmax 7',
     5: 'RTC Double',
     6: 'RTC Double\nmax 20',
-    7: 'Half it'
+    7: 'Half it',
+    8: 'RTC Triple',
+    9: 'RTC Triple\nmax 20',
+    10: 'RTC Single',
+    11: 'RTC Single\nmax 10',
   };
 
   @override
@@ -53,6 +57,13 @@ class Menu extends StatelessWidget {
                     placeholder: false,
                   ),
                   MenuItem(
+                    gameno: 3,
+                    view: const ViewXXXCheckout(gameno: 3),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 170, 'max': 3, 'end': 10},
+                    placeholder: false,
+                  ),
+                  MenuItem(
                     gameno: 2,
                     view: const ViewXXXCheckout(gameno: 2),
                     controller: ControllerXXXCheckout(),
@@ -60,17 +71,10 @@ class Menu extends StatelessWidget {
                     placeholder: false,
                   ),
                   MenuItem(
-                    gameno: 5,
-                    view: const ViewRTCDouble(gameno: 5),
-                    controller: ControllerRTCDouble(),
-                    params: const {'max': -1},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 7,
-                    view: const ViewHalfit(gameno: 7),
-                    controller: ControllerHalfit(),
-                    params: const {'max': -1},
+                    gameno: 4,
+                    view: const ViewXXXCheckout(gameno: 4),
+                    controller: ControllerXXXCheckout(),
+                    params: const {'xxx': 501, 'max': 7, 'end': 5},
                     placeholder: false,
                   ),
                 ],
@@ -82,30 +86,66 @@ class Menu extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   MenuItem(
-                    gameno: 3,
-                    view: const ViewXXXCheckout(gameno: 3),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 170, 'max': 3, 'end': 10},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 4,
-                    view: const ViewXXXCheckout(gameno: 4),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 501, 'max': 7, 'end': 5},
+                    gameno: 5,
+                    view: const ViewRTCX(gameno: 5),
+                    controller: ControllerRTCX(),
+                    params: const {'max': -1},
                     placeholder: false,
                   ),
                   MenuItem(
                     gameno: 6,
-                    view: const ViewRTCDouble(gameno: 6),
-                    controller: ControllerRTCDouble(),
+                    view: const ViewRTCX(gameno: 6),
+                    controller: ControllerRTCX(),
                     params: const {'max': 20},
                     placeholder: false,
                   ),
                   MenuItem(
+                    gameno: 8,
+                    view: const ViewRTCX(gameno: 8),
+                    controller: ControllerRTCX(),
+                    params: const {'max': -1},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 9,
+                    view: const ViewRTCX(gameno: 9),
+                    controller: ControllerRTCX(),
+                    params: const {'max': 20},
+                    placeholder: false,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  MenuItem(
+                    gameno: 10,
+                    view: const ViewRTCX(gameno: 10),
+                    controller: ControllerRTCX(),
+                    params: const {'max': -1},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 11,
+                    view: const ViewRTCX(gameno: 11),
+                    controller: ControllerRTCX(),
+                    params: const {'max': 10},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 7,
+                    view: const ViewHalfit(gameno: 7),
+                    controller: ControllerHalfit(),
+                    params: const {'max': -1},
+                    placeholder: false,
+                  ),
+                  MenuItem(
                     gameno: 0,
-                    view: const ViewXXXCheckout(gameno: 0),
-                    controller: ControllerXXXCheckout(),
+                    view: const ViewHalfit(gameno: 0),
+                    controller: ControllerHalfit(),
                     params: const {'max': -1},
                     placeholder: true,
                   ),
