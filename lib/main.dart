@@ -1,3 +1,4 @@
+import 'package:dart/controller/controller_halfit.dart';
 import 'package:dart/controller/controller_rtcdouble.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/widget/menu.dart';
@@ -12,6 +13,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => ControllerXXXCheckout()),
         ChangeNotifierProvider(create: (context) => ControllerRTCDouble()),
+        ChangeNotifierProvider(create: (context) => ControllerHalfit()),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',
