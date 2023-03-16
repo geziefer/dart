@@ -7,7 +7,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  await GetStorage.init();
+  for (var box in Menu.games.keys) {
+    await GetStorage.init(box.toString());
+  }
   runApp(
     MultiProvider(
       providers: [

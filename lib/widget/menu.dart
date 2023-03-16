@@ -13,7 +13,7 @@ class Menu extends StatelessWidget {
     super.key,
   });
 
-  static final Map games = {
+  static final Map<int, String> games = {
     0: '<placeholder>',
     1: '170 x 10',
     2: '501 x 5',
@@ -160,7 +160,7 @@ class MenuItem extends StatelessWidget {
             children: [
               if (!placeholder)
                 Text(
-                  Menu.games[gameno],
+                  Menu.games[gameno]!,
                   style: const TextStyle(
                       fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                   textAlign: TextAlign.center,
