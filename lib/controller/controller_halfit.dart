@@ -218,7 +218,7 @@ class ControllerHalfit extends ChangeNotifier
   }
 
   int getAvgScore() {
-    return round == 0 ? 0 : (totalScore / round).round();
+    return round == 1 ? 0 : ((totalScore - 40) / (round - 1)).round();
   }
 
   Map getCurrentStats() {
