@@ -28,11 +28,11 @@ class Menu extends StatelessWidget {
     9: 'RTC Triple\nmax 20',
     10: 'RTC Single',
     11: 'RTC Single\nmax 10',
-    12: '',
+    12: '10 Bullseyes',
     13: 'Finishes\n61-100',
     14: 'Finishes\n101-129',
     15: 'Finishes\n130-170',
-    16: '',
+    16: 'Catch 40',
   };
 
   @override
@@ -235,19 +235,17 @@ class MenuItem extends StatelessWidget {
             }
           },
           style: OutlinedButton.styleFrom(
-            side: BorderSide(
-                width: 3.0, color: placeholder ? Colors.black : Colors.white),
+            side: const BorderSide(width: 3.0, color: Colors.white),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (!placeholder)
-                Text(
-                  Menu.games[gameno]!,
-                  style: const TextStyle(
-                      fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
-                  textAlign: TextAlign.center,
-                ),
+              Text(
+                Menu.games[gameno]!,
+                style: const TextStyle(
+                    fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
