@@ -21,7 +21,7 @@ class Header extends StatelessWidget {
         Expanded(
           flex: 75,
           child: Text(
-            Menu.games[gameno]!,
+            Menu.games[gameno]!.replaceAll("\n", " "),
             style: const TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.bold,

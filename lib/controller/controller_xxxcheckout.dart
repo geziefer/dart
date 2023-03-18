@@ -51,7 +51,7 @@ class ControllerXXXCheckout extends ChangeNotifier
     rounds = <int>[];
     scores = <int>[];
     finishes = <bool>[];
-    remainings = <int>[];
+    remainings = <int>[xxx];
     darts = <int>[];
     results = <int>[];
     leg = 1;
@@ -84,6 +84,9 @@ class ControllerXXXCheckout extends ChangeNotifier
         totalScore -= lastscore;
         remaining += lastscore;
         remainings.removeLast();
+        if (remainings.isEmpty) {
+          remainings.add(xxx);
+        }
       }
       input = "";
       // return button pressed
@@ -92,6 +95,9 @@ class ControllerXXXCheckout extends ChangeNotifier
         score = 0;
       } else {
         score = int.parse(input);
+      }
+      if (scores.isEmpty) {
+        remainings.removeLast();
       }
       rounds.add(round);
       round++;

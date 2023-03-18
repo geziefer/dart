@@ -1,7 +1,9 @@
+import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
 import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
@@ -26,6 +28,11 @@ class Menu extends StatelessWidget {
     9: 'RTC Triple\nmax 20',
     10: 'RTC Single',
     11: 'RTC Single\nmax 10',
+    12: '',
+    13: 'Finishes\n61-100',
+    14: 'Finishes\n101-129',
+    15: 'Finishes\n130-170',
+    16: '',
   };
 
   @override
@@ -143,8 +150,44 @@ class Menu extends StatelessWidget {
                     placeholder: false,
                   ),
                   MenuItem(
-                    gameno: 0,
-                    view: const ViewHalfit(gameno: 0),
+                    gameno: 12,
+                    view: const ViewHalfit(gameno: 12),
+                    controller: ControllerHalfit(),
+                    params: const {'max': -1},
+                    placeholder: true,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  MenuItem(
+                    gameno: 13,
+                    view: const ViewFinishes(gameno: 13),
+                    controller: ControllerFinishes(),
+                    params: const {'max': -1},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 14,
+                    view: const ViewFinishes(gameno: 14),
+                    controller: ControllerFinishes(),
+                    params: const {'max': 10},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 15,
+                    view: const ViewFinishes(gameno: 15),
+                    controller: ControllerFinishes(),
+                    params: const {'max': -1},
+                    placeholder: false,
+                  ),
+                  MenuItem(
+                    gameno: 16,
+                    view: const ViewHalfit(gameno: 16),
                     controller: ControllerHalfit(),
                     params: const {'max': -1},
                     placeholder: true,
