@@ -30,8 +30,8 @@ class Menu extends StatelessWidget {
     11: 'RTC Single\nmax 10',
     12: '10 Bullseyes',
     13: 'Finishes\n61-100',
-    14: 'Finishes\n101-129',
-    15: 'Finishes\n130-170',
+    14: 'Finishes\n101-135',
+    15: 'Finishes\n136-170',
     16: 'Catch 40',
   };
 
@@ -168,21 +168,21 @@ class Menu extends StatelessWidget {
                     gameno: 13,
                     view: const ViewFinishes(gameno: 13),
                     controller: ControllerFinishes(),
-                    params: const {'max': -1},
+                    params: const {'from': 61, 'to': 100},
                     placeholder: false,
                   ),
                   MenuItem(
                     gameno: 14,
                     view: const ViewFinishes(gameno: 14),
                     controller: ControllerFinishes(),
-                    params: const {'max': 10},
+                    params: const {'from': 101, 'to': 135},
                     placeholder: false,
                   ),
                   MenuItem(
                     gameno: 15,
                     view: const ViewFinishes(gameno: 15),
                     controller: ControllerFinishes(),
-                    params: const {'max': -1},
+                    params: const {'from': 136, 'to': 170},
                     placeholder: false,
                   ),
                   MenuItem(

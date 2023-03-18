@@ -1,10 +1,9 @@
-import 'package:dart/interfaces/menuitem_controller.dart';
-import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
+import 'dart:math';
 
-class ControllerFinishes extends ChangeNotifier
-    implements MenuitemController, NumpadController {
+import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:flutter/material.dart';
+
+class ControllerFinishes extends ChangeNotifier implements MenuitemController {
   static final ControllerFinishes _instance = ControllerFinishes._private();
 
   // singleton
@@ -14,256 +13,147 @@ class ControllerFinishes extends ChangeNotifier
     return _instance;
   }
 
-  static final labels = <String>[
-    '15',
-    '16',
-    'D',
-    '17',
-    '18',
-    'T',
-    '19',
-    '20',
-    'B',
-  ];
+  static final Map<int, List<String>> finishes = {
+    170: ["T20; T20; DB", "-"],
+    167: ["T20; T19; DB", "-"],
+    164: ["T19; T19; DB", "-"],
+    161: ["T20; T17; DB", "-"],
+    160: ["T20; T20; D20", "-"],
+    158: ["T20; T20; D19", "-"],
+    157: ["T20; T19; D20", "-"],
+    156: ["T20; T20; D18", "-"],
+    155: ["T20; T19; D19", "-"],
+    154: ["T19; T19; D20", "-"],
+    153: ["T20; T19; D18", "-"],
+    152: ["T20; T20; D16", "-"],
+    151: ["T20; T17; D20", "-"],
+    150: ["T19; T19; D18", "-"],
+    149: ["T20; T19; D16", "-"],
+    148: ["T18; T18; D20", "-"],
+    147: ["T20; T17; D18", "-"],
+    146: ["T19; T19; D16", "-"],
+    145: ["T20; T15; D20", "-"],
+    144: ["T20; T20; D12", "-"],
+    143: ["T20; T17; D16", "-"],
+    142: ["T17; T17; D20", "-"],
+    141: ["T20; T19; D12", "-"],
+    140: ["T18; T18; D16", "-"],
+    139: ["T19; T14; D20", "-"],
+    138: ["T19; T19; D12", "-"],
+    137: ["T20; T15; D16", "-"],
+    136: ["T20; T20; D8", "-"],
+    135: ["DB; T15; D20", "SB; T20; DB"],
+    134: ["T20; T14; D16", ""],
+    133: ["T20; T19; D8", ""],
+    132: ["DB; T14; D20", "SB; T19; DB"],
+    131: ["T20; T13; D16", ""],
+    130: ["T20; T20; D5", "S20; T20; DB"],
+    129: ["T19; T16; D12", "S19; T20; DB"],
+    128: ["T18; T18; D10", "S18; T20; DB"],
+    127: ["T20; T17; D8", "S20; T19; DB"],
+    126: ["T19; T19; D6", "S19; T19; DB"],
+    125: ["DB; T17; D12", "SB; T20; D20"],
+    124: ["T20; T16; D8", "S20; T18; DB"],
+    123: ["T19; T16; D9", "S19; T18; DB"],
+    122: ["T18; T18; D7", "S18; T18; DB"],
+    121: ["T20; T11; D14", "S20; T17; DB"],
+    120: ["T20; S20; D20", "S20; T20; D20"],
+    119: ["T19; T12; D13", "S19; T20; D20"],
+    118: ["T20; S18; D20", "S20; T20; D19"],
+    117: ["T20; S17; D20", "S20; T19; D20"],
+    116: ["T20; S16; D20", "S20; T20; D18"],
+    115: ["T20; S15; D20", "S20; T19; D19"],
+    114: ["T20; S14; D20", "S20; T18; D20"],
+    113: ["T19; S16; D20", "S19; T18; D20"],
+    112: ["T20; S12; D20", "S20; T20; D16"],
+    111: ["T20; S11; D20", "S20; T17; D20"],
+    110: ["T20; S10; D20", "S20; T18; D18"],
+    109: ["T19; S20; D16", "S19; T18; D18"],
+    108: ["T20; S16; D16", "S20; T20; D14"],
+    107: ["T19; S18; D16", "S19; T20; D19"],
+    106: ["T20; S14; D16", "S20; T18; D16"],
+    105: ["T20; S13; D16", "S20; T18; D16"],
+    104: ["T19; S15; D16", "S19; T15; D20"],
+    103: ["T19; S14; D16", "S19; T20; D12"],
+    102: ["T20; S10; D16", "S20; T14; D20"],
+    101: ["T20; S9; D16", "S20; T17; D15"],
+    100: ["T20; D20;-", "S20; D20; D20"],
+    99: ["T19; S10; D16", "S19; D20; D20"],
+    98: ["T20; D19;-", "S20; T18; D12"],
+    97: ["T19; D20;-", "S19; T18; D12"],
+    96: ["T20; D18;-", "S20; T20; D8"],
+    95: ["T19; D19;-", "S19; T20; D8"],
+    94: ["T18; D20;-", "S18; T20; D8"],
+    93: ["T19; D18;-", "S19; T14; D16"],
+    92: ["T20; D16;-", "S20; T16; D12"],
+    91: ["T17; D20;-", "S17; T14; D16"],
+    90: ["T20; D15;-", "S20; S20; DB"],
+    89: ["T19; D16;-", "S19; S20; DB"],
+    88: ["T20; D14;-", "S20; T20; D4"],
+    87: ["T17; D18;-", "S17; S20; DB"],
+    86: ["T18; D16;-", "S18; T20; D4"],
+    85: ["T15; D20;-", "S15; S20; DB"],
+    84: ["T20; D12;-", "S20; S14; DB"],
+    83: ["T17; D16;-", "S17; S17; DB"],
+    82: ["DB; D16;-", "SB; S17; D20"],
+    81: ["T15; D18;-", "S15; S16; DB"],
+    80: ["T20; D10;-", "S20; S20; D20"],
+    79: ["T19; D11;-", "S19; S20; D20"],
+    78: ["T18; D12;-", "S18; S20; D20"],
+    77: ["T19; D10;-", "S19; S18; D20"],
+    76: ["T20; D8;-", "S20; S16; D20"],
+    75: ["T17; D12;-", "S17; S18; D20"],
+    74: ["T14; D16;-", "S14; S20; D20"],
+    73: ["T19; D8;-", "S19; S14; D20"],
+    72: ["T16; D12;-", "S16; S20; D20"],
+    71: ["T13; D16;-", "S13; S18; D20"],
+    70: ["T18; D8;-", "S18; S20; D16"],
+    69: ["T15; D12;-", "S15; S14; D20"],
+    68: ["T20; D4;-", "S20; S16; D16"],
+    67: ["T17; D8;-", "S17; S18; D16"],
+    66: ["T10; D18;-", "S10; S16; D20"],
+    65: ["SB; D20;-", "DB; S7; D4"],
+    64: ["T16; D8;-", "S16; S16; D16"],
+    63: ["T13; D12;-", "S13; S18; D16"],
+    62: ["T10; D16;-", "S10; S20; D16"],
+    61: ["T15; D8;-", "S15; S14; D16"],
+  };
 
   late int gameno; // number of game in Menu map, used also for stat reference
-
-  List<String> rounds = <String>[]; // list of rounds in game
-  List<int> scores = <int>[]; // list of thrown scores in each round
-  List<int> totals = <int>[]; // list of total scores in each round
-  List<bool> hit = <bool>[]; // list of flags if current round's field was hit
-  int round = 1; // round number in leg
-  int score = 0; // current score thrown
-  int totalScore = 0; // current score in game
-  int avgScore = 0; // average of score in all legs
-  String input = ""; // current input from numbpad
+  late int from;
+  late int to;
+  int currentFinish = 0;
+  String currentSolution = "";
+  bool question = true;
 
   @override
   void init(gameno, Map params) {
     this.gameno = gameno;
-
-    rounds = <String>[labels.first];
-    scores = <int>[];
-    totals = <int>[];
-    hit = <bool>[];
-    round = 1;
-    score = 40;
-    totalScore = 40;
-    avgScore = 0;
-    input = "";
+    from = params['from'];
+    to = params['to'];
+    createRandomFinish();
   }
 
-  @override
-  void pressNumpadButton(BuildContext context, int value) {
-    // undo button pressed
-    if (value == -2) {
-      if (input.isEmpty && scores.isNotEmpty) {
-        rounds.removeLast();
-        int lastscore = scores.removeLast();
-        totals.removeLast();
-        hit.removeLast();
-        round--;
-        totalScore -= lastscore;
-        score = 0;
-      }
-      input = "";
-      // return button pressed
-    } else if (value == -1) {
-      if (input.isEmpty) {
-        score = 0;
-      } else {
-        score = int.parse(input);
-      }
-      // half it
-      if (score == 0) {
-        score = -(totalScore / 2).round();
-      }
-      scores.add(score);
-      totalScore += score;
-      totals.add(totalScore);
-      if (score > 0) {
-        hit.add(true);
-      } else {
-        hit.add(false);
-      }
-      if (round < 9) {
-        rounds.add(labels.elementAt(round));
-      }
-      round++;
-      input = "";
-      score = 0;
+  void createRandomFinish() {
+    var r = Random();
+    int finish = r.nextInt(to - from + 1) + from;
+    currentFinish = finish;
+    currentSolution = finishes[currentFinish]!.join("\n");
+  }
 
-      // check for end of game
-      if (round > 9) {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              // save stats to device, use gameno as key
-              GetStorage storage = GetStorage(gameno.toString());
-              int numberGames = storage.read('numberGames') ?? 0;
-              int recordScore = storage.read('recordScore') ?? 0;
-              int longtermScore = storage.read('longtermScore') ?? 0;
-              int avgScore = getAvgScore();
-              storage.write('numberGames', numberGames + 1);
-              if (recordScore == 0 || totalScore > recordScore) {
-                storage.write('recordScore', totalScore);
-              }
-              storage.write(
-                  'longtermScore',
-                  (((longtermScore * numberGames) + avgScore) /
-                          (numberGames + 1))
-                      .round());
+  String getQuestionText() {
+    return "Finish ${currentFinish.toString()}:";
+  }
 
-              return Dialog(
-                child: SizedBox(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(5),
-                        child: const Text(
-                          "Zusammenfassung",
-                          style: TextStyle(fontSize: 50, color: Colors.black),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(5),
-                        child: Text(
-                          'Punkte: $totalScore',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.fromLTRB(5, 5, 50, 5),
-                        child: Text(
-                          createMultilineString(
-                              labels, scores, '', '', hit, 10, false),
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(5),
-                        child: Text(
-                          'ØPunkte: ${getCurrentStats()['avgScore']}',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(5),
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            minimumSize: const Size(150, 80),
-                          ),
-                          child: const Text(
-                            'OK',
-                            style: TextStyle(fontSize: 50, color: Colors.white),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            });
-      }
+  String getSolutionText() {
+    return question ? "\n" : currentSolution.toString();
+  }
+
+  void toggle() {
+    question = !question;
+    if (question) {
+      createRandomFinish();
     }
-    // number button pressed
-    else {
-      // only accept 3 digits
-      String newInput = input + value.toString();
-      int parsedNewInput = int.tryParse(newInput) ?? 181;
-      if (parsedNewInput <= 180 && newInput.length <= 3) {
-        input = newInput;
-      }
-    }
-
     notifyListeners();
-  }
-
-  @override
-  String getInput() {
-    return input;
-  }
-
-  String getCurrentRounds() {
-    return createMultilineString(rounds, [], '', '', [], 6, false);
-  }
-
-  String getCurrentScores() {
-    return createMultilineString(scores, [], '', '', [], 6, false);
-  }
-
-  String getCurrentTotals() {
-    return createMultilineString(totals, [], '', '', [], 6, false);
-  }
-
-  int getAvgScore() {
-    return round == 1 ? 0 : ((totalScore - 40) / (round - 1)).round();
-  }
-
-  Map getCurrentStats() {
-    return {'round': round, 'avgScore': getAvgScore()};
-  }
-
-  String createMultilineString(List list1, List list2, String prefix,
-      String postfix, List optional, int limit, bool enumarate) {
-    String result = "";
-    String enhancedPrefix = "";
-    String enhancesPostfix = "";
-    String optionalStatus = "";
-    String listText = "";
-    // max limit entries
-    int to = list1.length;
-    int from = (to > limit) ? to - limit : 0;
-    for (int i = from; i < list1.length; i++) {
-      enhancedPrefix = enumarate
-          ? '$prefix ${i + 1}: '
-          : (prefix.isNotEmpty ? '$prefix: ' : '');
-      enhancesPostfix = postfix.isNotEmpty ? ' $postfix' : '';
-      if (optional.isNotEmpty) {
-        optionalStatus = optional[i] ? " ✅" : " ❌";
-      }
-      listText = list2.isEmpty ? '${list1[i]}' : '${list1[i]}: ${list2[i]}';
-      result += '$enhancedPrefix$listText$enhancesPostfix$optionalStatus\n';
-    }
-    // delete last line break if any
-    if (result.isNotEmpty) {
-      result = result.substring(0, result.length - 1);
-    }
-    return result;
-  }
-
-  @override
-  void correctDarts(int value) {
-    // not used here
-  }
-
-  String getStats() {
-    // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(gameno.toString());
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    int longtermScore = storage.read('longtermScore') ?? 0;
-    return '#S: $numberGames  ♛P: $recordScore  ØP: $longtermScore';
   }
 }
