@@ -282,7 +282,7 @@ class ControllerXXXCheckout extends ChangeNotifier
   }
 
   int getAvgDarts() {
-    return (leg > 1) ? (lastTotalDarts / (leg - 1)).round() : 0;
+    return (lastTotalDarts / (leg)).round();
   }
 
   Map getCurrentStats() {
