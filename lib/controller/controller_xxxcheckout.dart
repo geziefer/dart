@@ -139,6 +139,7 @@ class ControllerXXXCheckout extends ChangeNotifier
           rounds.clear();
           scores.clear();
           remainings.clear();
+          remainings.add(xxx);
           darts.clear();
 
           notifyListeners();
