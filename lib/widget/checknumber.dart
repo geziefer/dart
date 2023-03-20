@@ -20,7 +20,7 @@ class CheckNumber extends StatelessWidget {
       return Text(
         '$number:$checkSymbol  ',
         style: const TextStyle(
-          fontSize: 70,
+          fontSize: 65,
           color: Color.fromARGB(255, 215, 198, 132),
         ),
       );

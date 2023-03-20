@@ -41,23 +41,26 @@ class ViewRTCX extends StatelessWidget {
                       // ########## Left column with game results
                       Expanded(
                         flex: 5,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          // ########## 5 x 4 items for all numbers
-                          children: [
-                            for (int i = 1; i <= 3; i++)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  for (int j = 1; j <= 7; j++)
-                                    CheckNumber(
-                                      currentNumber:
-                                          controller.getCurrentNumber(),
-                                      number: (i - 1) * 7 + j,
-                                    )
-                                ],
-                              ),
-                          ],
+                        child: Container(
+                          margin: const EdgeInsets.all(3),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            // ########## 5 x 4 items for all numbers
+                            children: [
+                              for (int i = 1; i <= 3; i++)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    for (int j = 1; j <= 7; j++)
+                                      CheckNumber(
+                                        currentNumber:
+                                            controller.getCurrentNumber(),
+                                        number: (i - 1) * 7 + j,
+                                      )
+                                  ],
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                       const VerticalDivider(color: Colors.white, thickness: 3),
@@ -67,7 +70,8 @@ class ViewRTCX extends StatelessWidget {
                         flex: 5,
                         child: Numpad(
                           controller: controller,
-                          fullSelection: false,
+                          showUpper: false,
+                          showMiddle: false,
                         ),
                       ),
                     ],

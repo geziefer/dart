@@ -86,7 +86,8 @@ class ViewHalfit extends StatelessWidget {
                         flex: 5,
                         child: Numpad(
                           controller: controller,
-                          fullSelection: true,
+                          showUpper: true,
+                          showMiddle: true,
                         ),
                       ),
                     ],

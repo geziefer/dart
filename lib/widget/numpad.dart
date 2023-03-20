@@ -6,11 +6,13 @@ class Numpad extends StatelessWidget {
   const Numpad({
     super.key,
     required this.controller,
-    required this.fullSelection,
+    required this.showUpper,
+    required this.showMiddle,
   });
 
   final NumpadController controller;
-  final bool fullSelection; // flag if only 1-3 buttons are shown
+  final bool showUpper; // flag if upper row 7-9 should be shown
+  final bool showMiddle; // flag if middle row 4-6 should be shown
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class Numpad extends StatelessWidget {
             ],
           ),
         ),
-        if (fullSelection)
+        if (showUpper)
           Expanded(
             flex: 1,
             // ########## 1st row 7, 8, 9
@@ -57,7 +59,7 @@ class Numpad extends StatelessWidget {
               ],
             ),
           ),
-        if (fullSelection)
+        if (showMiddle)
           Expanded(
             flex: 1,
             // ########## 2nd row 4, 5, 6
@@ -83,7 +85,7 @@ class Numpad extends StatelessWidget {
             ),
           ),
         Expanded(
-          flex: fullSelection ? 1 : 2,
+          flex: 1,
           // ########## 3rd row 1, 2, 3
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,7 +109,7 @@ class Numpad extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: fullSelection ? 1 : 2,
+          flex: 1,
           // ########## 4th row back, 0, enter
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
