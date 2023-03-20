@@ -1,3 +1,4 @@
+import 'package:dart/controller/controller_bulls.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
 import 'package:dart/controller/controller_rtcx.dart';
@@ -18,6 +19,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerRTCX()),
         ChangeNotifierProvider(create: (context) => ControllerHalfit()),
         ChangeNotifierProvider(create: (context) => ControllerFinishes()),
+        ChangeNotifierProvider(create: (context) => ControllerBulls()),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',

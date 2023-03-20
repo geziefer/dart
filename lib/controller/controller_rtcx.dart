@@ -40,10 +40,12 @@ class ControllerRTCX extends ChangeNotifier
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
-      round--;
-      dart -= 3;
-      int lastThrow = throws.removeLast();
-      currentNumber -= lastThrow;
+      if (throws.isNotEmpty) {
+        round--;
+        dart -= 3;
+        int lastThrow = throws.removeLast();
+        currentNumber -= lastThrow;
+      }
       // all other buttons pressed
     } else {
       // ignore numbers greater left checks
@@ -83,8 +85,8 @@ class ControllerRTCX extends ChangeNotifier
           }
         }
       }
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   void finishGame(BuildContext context) {

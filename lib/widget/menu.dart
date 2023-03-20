@@ -1,8 +1,10 @@
+import 'package:dart/controller/controller_bulls.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/view/view_bulls.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
 import 'package:dart/view/view_rtcx.dart';
@@ -151,10 +153,10 @@ class Menu extends StatelessWidget {
                   ),
                   MenuItem(
                     gameno: 12,
-                    view: const ViewHalfit(gameno: 12),
-                    controller: ControllerHalfit(),
-                    params: const {'max': -1},
-                    placeholder: true,
+                    view: const ViewBulls(gameno: 12),
+                    controller: ControllerBulls(),
+                    params: const {},
+                    placeholder: false,
                   ),
                 ],
               ),
