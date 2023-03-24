@@ -54,13 +54,14 @@ class ControllerRTCX extends ChangeNotifier
         if (value == -1) {
           value = 0;
         }
-        round++;
         dart += 3;
         throws.add(value);
         currentNumber += value;
 
+        notifyListeners();
+
         // check for last number reached or limit of rounds
-        if (currentNumber > 20 || (max != -1 && round > max)) {
+        if (currentNumber > 20 || (max != -1 && round == max)) {
           // remaining is dfferent here, 20 means finished game,
           // so set to current number if not
           int remaining = (currentNumber < 21) ? currentNumber : 0;
@@ -83,6 +84,8 @@ class ControllerRTCX extends ChangeNotifier
           } else {
             finishGame(context);
           }
+        } else {
+          round++;
         }
       }
     }

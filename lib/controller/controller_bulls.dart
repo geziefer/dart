@@ -52,13 +52,14 @@ class ControllerBulls extends ChangeNotifier
         value = 0;
       }
       rounds.add(round);
-      round++;
       thrownBulls.add(value);
       bulls += value;
       totalBulls.add(bulls);
 
+      notifyListeners();
+
       // check for limit of rounds
-      if (round > 10) {
+      if (round == 10) {
         showDialog(
             context: context,
             builder: (context) {
@@ -136,6 +137,8 @@ class ControllerBulls extends ChangeNotifier
                 ),
               );
             });
+      } else {
+        round++;
       }
     }
     notifyListeners();

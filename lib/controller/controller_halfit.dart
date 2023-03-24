@@ -89,12 +89,13 @@ class ControllerHalfit extends ChangeNotifier
       if (round < 9) {
         rounds.add(labels.elementAt(round));
       }
-      round++;
       input = "";
       score = 0;
 
+      notifyListeners();
+
       // check for end of game
-      if (round > 9) {
+      if (round == 9) {
         showDialog(
             context: context,
             barrierDismissible: false,
@@ -185,6 +186,8 @@ class ControllerHalfit extends ChangeNotifier
                 ),
               );
             });
+      } else {
+        round++;
       }
     }
     // number button pressed
