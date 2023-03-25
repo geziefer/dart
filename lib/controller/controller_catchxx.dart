@@ -222,6 +222,6 @@ class ControllerCatchXX extends ChangeNotifier
     int numberGames = storage.read('numberGames') ?? 0;
     int recordPoints = storage.read('recordPoints') ?? 0;
     double longtermPoints = storage.read('longtermPoints') ?? 0;
-    return '#S: $numberGames  ♛B: ${recordPoints.toStringAsFixed(1)}  ØH: ${longtermPoints.toStringAsFixed(1)}';
+    return '#S: $numberGames  ♛P: ${recordPoints.toStringAsFixed(1)}  ØP: ${longtermPoints.toStringAsFixed(1)}';
   }
 }
