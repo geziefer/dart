@@ -17,6 +17,7 @@ class ControllerCatchXX extends ChangeNotifier
   late int gameno; // number of game in Menu map, used also for stat reference
 
   List<int> targets = <int>[]; // list of targets to check
+  List<int> thrownHits = <int>[]; // list of thrown hits per round
   List<int> thrownPoints = <int>[]; // list of thrown points per round
   List<int> totalPoints = <int>[]; // list of points in rounds summed up
   int hits = 0; // number of targets hit within 6 darts
@@ -30,6 +31,7 @@ class ControllerCatchXX extends ChangeNotifier
 
     targets = <int>[61];
     thrownPoints = <int>[];
+    thrownHits = <int>[];
     totalPoints = <int>[];
     hits = 0;
     points = 0;
@@ -45,6 +47,9 @@ class ControllerCatchXX extends ChangeNotifier
         round--;
         target--;
 
+        targets.removeLast();
+        int lastHits = thrownHits.removeLast();
+        hits -= lastHits;
         int lastPoints = thrownPoints.removeLast();
         points -= lastPoints;
         totalPoints.removeLast();
@@ -56,6 +61,7 @@ class ControllerCatchXX extends ChangeNotifier
         value = 0;
       }
       hits += value > 0 ? 1 : 0;
+      thrownHits.add(1);
       if (target < 100) {
         targets.add(target + 1);
       }
