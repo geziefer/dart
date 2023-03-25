@@ -1,49 +1,52 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerBulls extends ChangeNotifier
+class ControllerCatchXX extends ChangeNotifier
     implements MenuitemController, NumpadController {
-  static final ControllerBulls _instance = ControllerBulls._private();
+  static final ControllerCatchXX _instance = ControllerCatchXX._private();
 
   // singleton
-  ControllerBulls._private();
+  ControllerCatchXX._private();
 
-  factory ControllerBulls() {
+  factory ControllerCatchXX() {
     return _instance;
   }
 
   late int gameno; // number of game in Menu map, used also for stat reference
 
-  List<int> rounds = <int>[]; // list of round numbers (index - 1)
-  List<int> thrownBulls = <int>[]; // list of thrown bulls per round
-  List<int> totalBulls = <int>[]; // list of bulls in rounds summed up
-  int bulls = 0; // thrown bulls
+  List<int> targets = <int>[]; // list of targets to check
+  List<int> thrownPoints = <int>[]; // list of thrown points per round
+  List<int> totalPoints = <int>[]; // list of points in rounds summed up
+  int points = 0; // total points
   int round = 1; // round number in game
+  int target = 61; // current finish target
 
   @override
   void init(gameno, Map params) {
     this.gameno = gameno;
 
-    rounds = <int>[];
-    thrownBulls = <int>[];
-    totalBulls = <int>[];
-    bulls = 0;
+    targets = <int>[61];
+    thrownPoints = <int>[];
+    totalPoints = <int>[];
+    points = 0;
     round = 1;
+    target = 61;
   }
 
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
-      if (rounds.isNotEmpty) {
+      if (thrownPoints.isNotEmpty) {
         round--;
+        target--;
 
-        int lastBulls = thrownBulls.removeLast();
-        bulls -= lastBulls;
-        rounds.removeLast();
-        totalBulls.removeLast();
+        int lastPoints = thrownPoints.removeLast();
+        points -= lastPoints;
+        totalPoints.removeLast();
       }
       // all other buttons pressed
     } else {
@@ -51,31 +54,33 @@ class ControllerBulls extends ChangeNotifier
       if (value == -1) {
         value = 0;
       }
-      rounds.add(round);
-      thrownBulls.add(value);
-      bulls += value;
-      totalBulls.add(bulls);
+      if (target < 100) {
+        targets.add(target + 1);
+      }
+      thrownPoints.add(value);
+      points += value;
+      totalPoints.add(points);
 
       notifyListeners();
 
       // check for limit of rounds
-      if (round == 10) {
+      if (target == 100) {
         showDialog(
             context: context,
             builder: (context) {
               // save stats to device, use gameno as key
               GetStorage storage = GetStorage(gameno.toString());
               int numberGames = storage.read('numberGames') ?? 0;
-              int recordBulls = storage.read('recordBulls') ?? 0;
-              double longtermBulls = storage.read('longtermBulls') ?? 0;
-              double avgBulls = getAvgBulls();
+              int recordPoints = storage.read('recordPoints') ?? 0;
+              double longtermPoints = storage.read('longtermPoints') ?? 0;
+              double avgPoints = getAvgPoints();
               storage.write('numberGames', numberGames + 1);
-              if (recordBulls == 0 || bulls > recordBulls) {
-                storage.write('recordBulls', bulls);
+              if (recordPoints == 0 || points > recordPoints) {
+                storage.write('recordPoints', points);
               }
               storage.write(
-                  'longtermBulls',
-                  (((longtermBulls * numberGames) + avgBulls) /
+                  'longtermPoints',
+                  (((longtermPoints * numberGames) + avgPoints) /
                       (numberGames + 1)));
 
               return Dialog(
@@ -94,7 +99,7 @@ class ControllerBulls extends ChangeNotifier
                       Container(
                         margin: const EdgeInsets.all(5),
                         child: Text(
-                          'Anzahl Bulls: $bulls',
+                          'Anzahl Punkte: $points',
                           style: const TextStyle(
                             fontSize: 40,
                             color: Colors.black,
@@ -105,7 +110,7 @@ class ControllerBulls extends ChangeNotifier
                       Container(
                         margin: const EdgeInsets.all(5),
                         child: Text(
-                          'Bulls/Runde: ${getCurrentStats()['avgBulls']}',
+                          'Punkte/Runde: ${getCurrentStats()['avgPoints']}',
                           style: const TextStyle(
                             fontSize: 40,
                             color: Colors.red,
@@ -138,6 +143,7 @@ class ControllerBulls extends ChangeNotifier
             });
       } else {
         round++;
+        target++;
       }
     }
     notifyListeners();
@@ -171,20 +177,24 @@ class ControllerBulls extends ChangeNotifier
     return result;
   }
 
-  double getAvgBulls() {
-    return round == 1 ? 0 : (bulls / (round - 1));
+  double getAvgPoints() {
+    return round == 1 ? 0 : (points / (round - 1));
   }
 
-  String getCurrentRounds() {
-    return createMultilineString(rounds, [], '', '', [], 6, false);
+  String getCurrentTargets() {
+    return createMultilineString(targets, [], '', '', [], 6, false);
   }
 
-  String getCurrentThrownBulls() {
-    return createMultilineString(thrownBulls, [], '', '', [], 6, false);
+  String getCurrentThrownPoints() {
+    // roll 1 line earlier as targets in 1 longer, except last round
+    return createMultilineString(
+        thrownPoints, [], '', '', [], thrownPoints.length == 40 ? 6 : 5, false);
   }
 
-  String getCurrentTotalBulls() {
-    return createMultilineString(totalBulls, [], '', '', [], 6, false);
+  String getCurrentTotalPoints() {
+    // roll 1 line earlier as targets in 1 longer, except last round
+    return createMultilineString(
+        totalPoints, [], '', '', [], totalPoints.length == 40 ? 6 : 5, false);
   }
 
   @override
@@ -200,9 +210,9 @@ class ControllerBulls extends ChangeNotifier
 
   Map getCurrentStats() {
     return {
-      'round': round,
-      'bulls': bulls,
-      'avgBulls': getAvgBulls().toStringAsFixed(1),
+      'target': target,
+      'points': points,
+      'avgPoints': getAvgPoints().toStringAsFixed(1),
     };
   }
 
@@ -210,8 +220,8 @@ class ControllerBulls extends ChangeNotifier
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
-    int recordBulls = storage.read('recordBulls') ?? 0;
-    double longtermBulls = storage.read('longtermBulls') ?? 0;
-    return '#S: $numberGames  ♛B: ${recordBulls.toStringAsFixed(1)}  ØH: ${longtermBulls.toStringAsFixed(1)}';
+    int recordPoints = storage.read('recordPoints') ?? 0;
+    double longtermPoints = storage.read('longtermPoints') ?? 0;
+    return '#S: $numberGames  ♛B: ${recordPoints.toStringAsFixed(1)}  ØH: ${longtermPoints.toStringAsFixed(1)}';
   }
 }
