@@ -117,6 +117,16 @@ class ViewCatchXX extends StatelessWidget {
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
                     const Text(
+                      "  Checks: ",
+                      style: TextStyle(
+                          fontSize: 50,
+                          color: Color.fromARGB(255, 215, 198, 132)),
+                    ),
+                    Text(
+                      "${currentStats['hits']}",
+                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                    ),
+                    const Text(
                       "  Punkte: ",
                       style: TextStyle(
                           fontSize: 50,

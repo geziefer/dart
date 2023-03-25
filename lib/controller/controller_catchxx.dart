@@ -1,6 +1,5 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -20,6 +19,7 @@ class ControllerCatchXX extends ChangeNotifier
   List<int> targets = <int>[]; // list of targets to check
   List<int> thrownPoints = <int>[]; // list of thrown points per round
   List<int> totalPoints = <int>[]; // list of points in rounds summed up
+  int hits = 0; // number of targets hit within 6 darts
   int points = 0; // total points
   int round = 1; // round number in game
   int target = 61; // current finish target
@@ -31,6 +31,7 @@ class ControllerCatchXX extends ChangeNotifier
     targets = <int>[61];
     thrownPoints = <int>[];
     totalPoints = <int>[];
+    hits = 0;
     points = 0;
     round = 1;
     target = 61;
@@ -54,6 +55,7 @@ class ControllerCatchXX extends ChangeNotifier
       if (value == -1) {
         value = 0;
       }
+      hits += value > 0 ? 1 : 0;
       if (target < 100) {
         targets.add(target + 1);
       }
@@ -71,10 +73,14 @@ class ControllerCatchXX extends ChangeNotifier
               // save stats to device, use gameno as key
               GetStorage storage = GetStorage(gameno.toString());
               int numberGames = storage.read('numberGames') ?? 0;
+              int recordHits = storage.read('recordHits') ?? 0;
               int recordPoints = storage.read('recordPoints') ?? 0;
               double longtermPoints = storage.read('longtermPoints') ?? 0;
               double avgPoints = getAvgPoints();
               storage.write('numberGames', numberGames + 1);
+              if (recordHits == 0 || hits > recordHits) {
+                storage.write('recordHits', hits);
+              }
               if (recordPoints == 0 || points > recordPoints) {
                 storage.write('recordPoints', points);
               }
@@ -93,6 +99,17 @@ class ControllerCatchXX extends ChangeNotifier
                         child: const Text(
                           "Zusammenfassung",
                           style: TextStyle(fontSize: 50, color: Colors.black),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        child: Text(
+                          'Anzahl Checks: $hits',
+                          style: const TextStyle(
+                            fontSize: 40,
+                            color: Colors.black,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -211,6 +228,7 @@ class ControllerCatchXX extends ChangeNotifier
   Map getCurrentStats() {
     return {
       'target': target,
+      'hits': hits,
       'points': points,
       'avgPoints': getAvgPoints().toStringAsFixed(1),
     };
@@ -220,8 +238,9 @@ class ControllerCatchXX extends ChangeNotifier
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
+    int recordHits = storage.read('recordHits') ?? 0;
     int recordPoints = storage.read('recordPoints') ?? 0;
     double longtermPoints = storage.read('longtermPoints') ?? 0;
-    return '#S: $numberGames  ♛P: ${recordPoints.toStringAsFixed(1)}  ØP: ${longtermPoints.toStringAsFixed(1)}';
+    return '#S: $numberGames  ♛C: $recordHits  ♛P: $recordPoints  ØP: ${longtermPoints.toStringAsFixed(1)}';
   }
 }
