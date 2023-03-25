@@ -101,8 +101,8 @@ class ControllerRTCX extends ChangeNotifier
           int numberGames = storage.read('numberGames') ?? 0;
           int numberFinishes = storage.read('numberFinishes') ?? 0;
           int recordDarts = storage.read('recordDarts') ?? 0;
-          int longtermChecks = storage.read('longtermChecks') ?? 0;
-          int avgChecks = getAvgChecks();
+          double longtermChecks = storage.read('longtermChecks') ?? 0;
+          double avgChecks = getAvgChecks();
           storage.write('numberGames', numberGames + 1);
           if (finished) {
             storage.write('numberFinishes', numberFinishes + 1);
@@ -112,8 +112,8 @@ class ControllerRTCX extends ChangeNotifier
           }
           storage.write(
               'longtermChecks',
-              (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1))
-                  .round());
+              (((longtermChecks * numberGames) + avgChecks) /
+                  (numberGames + 1)));
 
           String checkSymbol = finished ? " ✅" : " ❌";
           return Dialog(
@@ -191,8 +191,8 @@ class ControllerRTCX extends ChangeNotifier
     return currentNumber;
   }
 
-  int getAvgChecks() {
-    return currentNumber == 1 ? 0 : (dart / (currentNumber - 1)).round();
+  double getAvgChecks() {
+    return currentNumber == 1 ? 0 : (dart / (currentNumber - 1));
   }
 
   @override
@@ -212,7 +212,7 @@ class ControllerRTCX extends ChangeNotifier
     return {
       'throw': round,
       'darts': dart,
-      'avgChecks': getAvgChecks(),
+      'avgChecks': getAvgChecks().toStringAsFixed(1),
     };
   }
 
@@ -222,7 +222,7 @@ class ControllerRTCX extends ChangeNotifier
     int numberGames = storage.read('numberGames') ?? 0;
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
-    int longtermChecks = storage.read('longtermChecks') ?? 0;
-    return '#S: $numberGames  #G: $numberFinishes  ♛D: $recordDarts  ØC: $longtermChecks';
+    double longtermChecks = storage.read('longtermChecks') ?? 0;
+    return '#S: $numberGames  #G: $numberFinishes  ♛D: $recordDarts  ØC: ${longtermChecks.toStringAsFixed(1)}';
   }
 }

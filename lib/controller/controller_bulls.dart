@@ -67,17 +67,16 @@ class ControllerBulls extends ChangeNotifier
               GetStorage storage = GetStorage(gameno.toString());
               int numberGames = storage.read('numberGames') ?? 0;
               int recordBulls = storage.read('recordBulls') ?? 0;
-              int longtermBulls = storage.read('longtermBulls') ?? 0;
-              int avgBulls = getAvgBulls();
+              double longtermBulls = storage.read('longtermBulls') ?? 0;
+              double avgBulls = getAvgBulls();
               storage.write('numberGames', numberGames + 1);
-              if (recordBulls == 0 || bulls < recordBulls) {
+              if (recordBulls == 0 || bulls > recordBulls) {
                 storage.write('recordBulls', bulls);
               }
               storage.write(
                   'longtermBulls',
                   (((longtermBulls * numberGames) + avgBulls) /
-                          (numberGames + 1))
-                      .round());
+                      (numberGames + 1)));
 
               return Dialog(
                 child: SizedBox(
@@ -172,8 +171,8 @@ class ControllerBulls extends ChangeNotifier
     return result;
   }
 
-  int getAvgBulls() {
-    return round == 1 ? 0 : (bulls / (round - 1)).round();
+  double getAvgBulls() {
+    return round == 1 ? 0 : (bulls / (round - 1));
   }
 
   String getCurrentRounds() {
@@ -203,7 +202,7 @@ class ControllerBulls extends ChangeNotifier
     return {
       'round': round,
       'bulls': bulls,
-      'avgBulls': getAvgBulls(),
+      'avgBulls': getAvgBulls().toStringAsFixed(1),
     };
   }
 
@@ -212,7 +211,7 @@ class ControllerBulls extends ChangeNotifier
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
     int recordBulls = storage.read('recordBulls') ?? 0;
-    int longtermBulls = storage.read('longtermBulls') ?? 0;
-    return '#S: $numberGames  ♛B: $recordBulls  ØH: $longtermBulls';
+    double longtermBulls = storage.read('longtermBulls') ?? 0;
+    return '#S: $numberGames  ♛B: ${recordBulls.toStringAsFixed(1)}  ØH: ${longtermBulls.toStringAsFixed(1)}';
   }
 }

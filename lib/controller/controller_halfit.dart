@@ -104,8 +104,8 @@ class ControllerHalfit extends ChangeNotifier
               GetStorage storage = GetStorage(gameno.toString());
               int numberGames = storage.read('numberGames') ?? 0;
               int recordScore = storage.read('recordScore') ?? 0;
-              int longtermScore = storage.read('longtermScore') ?? 0;
-              int avgScore = getAvgScore();
+              double longtermScore = storage.read('longtermScore') ?? 0;
+              double avgScore = getAvgScore();
               storage.write('numberGames', numberGames + 1);
               if (recordScore == 0 || totalScore > recordScore) {
                 storage.write('recordScore', totalScore);
@@ -113,8 +113,7 @@ class ControllerHalfit extends ChangeNotifier
               storage.write(
                   'longtermScore',
                   (((longtermScore * numberGames) + avgScore) /
-                          (numberGames + 1))
-                      .round());
+                      (numberGames + 1)));
 
               return Dialog(
                 child: SizedBox(
@@ -213,19 +212,23 @@ class ControllerHalfit extends ChangeNotifier
   }
 
   String getCurrentScores() {
-    return createMultilineString(scores, [], '', '', [], 6, false);
+    // roll 1 line earlier as rounds in 1 longer, except last round
+    return createMultilineString(
+        scores, [], '', '', [], scores.length == 9 ? 6 : 5, false);
   }
 
   String getCurrentTotals() {
-    return createMultilineString(totals, [], '', '', [], 6, false);
+    // roll 1 line earlier as rounds in 1 longer, except last round
+    return createMultilineString(
+        totals, [], '', '', [], totals.length == 9 ? 6 : 5, false);
   }
 
-  int getAvgScore() {
-    return round == 1 ? 0 : ((totalScore - 40) / (round - 1)).round();
+  double getAvgScore() {
+    return round == 1 ? 0 : ((totalScore - 40) / (round - 1));
   }
 
   Map getCurrentStats() {
-    return {'round': round, 'avgScore': getAvgScore()};
+    return {'round': round, 'avgScore': getAvgScore().toStringAsFixed(1)};
   }
 
   String createMultilineString(List list1, List list2, String prefix,
@@ -266,7 +269,7 @@ class ControllerHalfit extends ChangeNotifier
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
-    int longtermScore = storage.read('longtermScore') ?? 0;
-    return '#S: $numberGames  ♛P: $recordScore  ØP: $longtermScore';
+    double longtermScore = storage.read('longtermScore') ?? 0;
+    return '#S: $numberGames  ♛P: $recordScore  ØP: ${longtermScore.toStringAsFixed(1)}';
   }
 }

@@ -154,12 +154,12 @@ class ControllerXXXCheckout extends ChangeNotifier
                   GetStorage storage = GetStorage(gameno.toString());
                   int numberGames = storage.read('numberGames') ?? 0;
                   int recordFinishes = storage.read('recordFinishes') ?? 0;
-                  int recordScore = storage.read('recordScore') ?? 0;
-                  int recordDarts = storage.read('recordDarts') ?? 0;
-                  int longtermScore = storage.read('longtermScore') ?? 0;
-                  int longtermDarts = storage.read('longtermDarts') ?? 0;
-                  int avgScore = getAvgScore();
-                  int avgDarts = getAvgDarts();
+                  double recordScore = storage.read('recordScore') ?? 0;
+                  double recordDarts = storage.read('recordDarts') ?? 0;
+                  double longtermScore = storage.read('longtermScore') ?? 0;
+                  double longtermDarts = storage.read('longtermDarts') ?? 0;
+                  double avgScore = getAvgScore();
+                  double avgDarts = getAvgDarts();
                   storage.write('numberGames', numberGames + 1);
                   if (wins == 0 || wins > recordFinishes) {
                     storage.write('recordFinishes', recordFinishes + 1);
@@ -173,13 +173,11 @@ class ControllerXXXCheckout extends ChangeNotifier
                   storage.write(
                       'longtermScore',
                       (((longtermScore * numberGames) + avgScore) /
-                              (numberGames + 1))
-                          .round());
+                          (numberGames + 1)));
                   storage.write(
                       'longtermDarts',
                       (((longtermDarts * numberGames) + avgDarts) /
-                              (numberGames + 1))
-                          .round());
+                          (numberGames + 1)));
 
                   return Dialog(
                     child: SizedBox(
@@ -284,16 +282,20 @@ class ControllerXXXCheckout extends ChangeNotifier
     return createMultilineString(darts, '', '', [], 6, false);
   }
 
-  int getAvgScore() {
-    return totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3).round();
+  double getAvgScore() {
+    return totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3);
   }
 
-  int getAvgDarts() {
-    return (lastTotalDarts / (leg)).round();
+  double getAvgDarts() {
+    return leg == 1 ? 0 : (lastTotalDarts / (leg - 1));
   }
 
   Map getCurrentStats() {
-    return {'round': leg, 'avgScore': getAvgScore(), 'avgDarts': getAvgDarts()};
+    return {
+      'round': leg,
+      'avgScore': getAvgScore().toStringAsFixed(1),
+      'avgDarts': getAvgDarts().toStringAsFixed(1)
+    };
   }
 
   String createMultilineString(List list, String prefix, String postfix,
@@ -335,10 +337,10 @@ class ControllerXXXCheckout extends ChangeNotifier
     GetStorage storage = GetStorage(gameno.toString());
     int numberGames = storage.read('numberGames') ?? 0;
     int recordFinishes = storage.read('recordFinishes') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    int recordDarts = storage.read('recordDarts') ?? 0;
-    int longtermScore = storage.read('longtermScore') ?? 0;
-    int longtermDarts = storage.read('longtermDarts') ?? 0;
-    return '#S: $numberGames  ♛G: $recordFinishes  ♛P: $recordScore  ♛D: $recordDarts  ØP: $longtermScore  ØD: $longtermDarts';
+    double recordScore = storage.read('recordScore') ?? 0;
+    double recordDarts = storage.read('recordDarts') ?? 0;
+    double longtermScore = storage.read('longtermScore') ?? 0;
+    double longtermDarts = storage.read('longtermDarts') ?? 0;
+    return '#S: $numberGames  ♛G: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
   }
 }
