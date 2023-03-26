@@ -10,7 +10,7 @@ class Numpad extends StatelessWidget {
     required this.showMiddle,
   });
 
-  final NumpadController controller;
+  final NumpadController controller; // controller class which supports Numpad
   final bool showUpper; // flag if upper row 7-9 should be shown
   final bool showMiddle; // flag if middle row 4-6 should be shown
 
@@ -41,21 +41,8 @@ class Numpad extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NumpadButton(
-                  label: '7',
-                  value: 7,
-                  controller: controller,
-                ),
-                NumpadButton(
-                  label: '8',
-                  value: 8,
-                  controller: controller,
-                ),
-                NumpadButton(
-                  label: '9',
-                  value: 9,
-                  controller: controller,
-                ),
+                for (int i = 7; i <= 9; i++)
+                  _buildNumpadButton(context, controller, i.toString(), i),
               ],
             ),
           ),
@@ -66,21 +53,8 @@ class Numpad extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NumpadButton(
-                  label: '4',
-                  value: 4,
-                  controller: controller,
-                ),
-                NumpadButton(
-                  label: '5',
-                  value: 5,
-                  controller: controller,
-                ),
-                NumpadButton(
-                  label: '6',
-                  value: 6,
-                  controller: controller,
-                ),
+                for (int i = 4; i <= 6; i++)
+                  _buildNumpadButton(context, controller, i.toString(), i),
               ],
             ),
           ),
@@ -90,21 +64,8 @@ class Numpad extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              NumpadButton(
-                label: '1',
-                value: 1,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '2',
-                value: 2,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '3',
-                value: 3,
-                controller: controller,
-              ),
+              for (int i = 1; i <= 3; i++)
+                _buildNumpadButton(context, controller, i.toString(), i),
             ],
           ),
         ),
@@ -114,50 +75,26 @@ class Numpad extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              NumpadButton(
-                label: '↶',
-                value: -2,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '0',
-                value: 0,
-                controller: controller,
-              ),
-              NumpadButton(
-                label: '↵',
-                value: -1,
-                controller: controller,
-              ),
+              _buildNumpadButton(context, controller, '↶', -2),
+              _buildNumpadButton(context, controller, '0', 0),
+              _buildNumpadButton(context, controller, '↵', -1),
             ],
           ),
         ),
       ],
     );
   }
-}
 
-/// Builds 1 field of num pad to enter score
-class NumpadButton extends StatelessWidget {
-  const NumpadButton({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.controller,
-  });
-
-  final String label;
-  final int value; // numbers 0 - 9, -1: enter, -2: undo
-  final NumpadController controller;
-
-  @override
-  Widget build(BuildContext context) {
+  /// build 1 button which calls Numbad controller handler
+  Widget _buildNumpadButton(BuildContext context, NumpadController controller,
+      String label, int value) {
     return Expanded(
       flex: 1,
       child: Container(
         margin: const EdgeInsets.all(5),
         child: TextButton(
           onPressed: () {
+            // call interface method from controller
             controller.pressNumpadButton(context, value);
           },
           style: TextButton.styleFrom(
