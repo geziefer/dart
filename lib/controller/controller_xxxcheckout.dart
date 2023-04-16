@@ -240,9 +240,8 @@ class ControllerXXXCheckout extends ChangeNotifier
                     ),
                   );
                 });
-          } else {
-            leg++;
           }
+          leg++;
         });
       }
       // number button pressed
