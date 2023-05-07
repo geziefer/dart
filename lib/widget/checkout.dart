@@ -1,4 +1,5 @@
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:duration_button/duration_button.dart';
 import 'package:flutter/material.dart';
 
 class Checkout extends StatelessWidget {
@@ -28,14 +29,15 @@ class Checkout extends StatelessWidget {
             ),
             Container(
               margin: const EdgeInsets.all(5),
-              child: TextButton(
+              child: DurationButton(
+                duration: const Duration(seconds: 3),
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  minimumSize: const Size(150, 80),
-                ),
+                coverColor: Colors.black,
+                backgroundColor: Colors.grey,
+                width: 150,
+                height: 80,
                 child: const Text(
                   'OK',
                   style: TextStyle(fontSize: 50, color: Colors.white),
