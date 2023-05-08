@@ -35,7 +35,7 @@ class Checkout extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 coverColor: Colors.black,
-                backgroundColor: Colors.grey,
+                backgroundColor: Colors.grey[800],
                 width: 150,
                 height: 80,
                 child: const Text(
