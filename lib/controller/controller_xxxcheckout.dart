@@ -90,7 +90,21 @@ class ControllerXXXCheckout extends ChangeNotifier
       }
       input = "";
       // return button pressed
-    } else if (value == -1) {
+    } else if (value == -1 || value > 9) {
+      // convert pre-defined results before continueing with enter
+      if (value > 9) {
+        String newInput = input + value.toString();
+        int parsedNewInput = int.tryParse(newInput) ?? 181;
+        if (parsedNewInput <= 180 &&
+            parsedNewInput <= remaining &&
+            newInput.length <= 3 &&
+            remaining - parsedNewInput != 1) {
+          input = newInput;
+        } else {
+          return;
+        }
+      }
+
       if (input.isEmpty) {
         score = 0;
       } else {

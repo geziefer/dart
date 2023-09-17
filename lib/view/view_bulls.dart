@@ -88,6 +88,7 @@ class ViewBulls extends StatelessWidget {
                           controller: controller,
                           showUpper: false,
                           showMiddle: true,
+                          showExtraButtons: false,
                         ),
                       ),
                     ],

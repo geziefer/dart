@@ -88,6 +88,7 @@ class ViewHalfit extends StatelessWidget {
                           controller: controller,
                           showUpper: true,
                           showMiddle: true,
+                          showExtraButtons: false,
                         ),
                       ),
                     ],

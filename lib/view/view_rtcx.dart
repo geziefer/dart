@@ -72,6 +72,7 @@ class ViewRTCX extends StatelessWidget {
                           controller: controller,
                           showUpper: false,
                           showMiddle: false,
+                          showExtraButtons: false,
                         ),
                       ),
                     ],
