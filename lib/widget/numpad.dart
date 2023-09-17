@@ -21,6 +21,8 @@ class Numpad extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        if (showExtraButtons)
+          _buildExtraButtons(context, controller, showExtraButtons),
         Expanded(
           flex: 4,
           child: Column(
@@ -94,7 +96,6 @@ class Numpad extends StatelessWidget {
             ],
           ),
         ),
-        _buildExtraButtons(context, controller, showExtraButtons),
       ],
     );
   }
@@ -128,44 +129,39 @@ class Numpad extends StatelessWidget {
   /// build extra buttons with predefined results
   Widget _buildExtraButtons(BuildContext context, NumpadController controller,
       bool showExtraButtons) {
-    if (!showExtraButtons) {
-      return Column(
-        children: const [],
-      );
-    } else {
-      return Expanded(
-        flex: 2,
-        child: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildNumpadButton(context, controller, '26', 26, false),
-                  _buildNumpadButton(context, controller, '41', 41, false),
-                  _buildNumpadButton(context, controller, '45', 45, false),
-                  _buildNumpadButton(context, controller, '55', 55, false),
-                  _buildNumpadButton(context, controller, '60', 60, false),
-                ],
-              ),
+    return Expanded(
+      flex: 2,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildNumpadButton(context, controller, '26', 26, false),
+                _buildNumpadButton(context, controller, '41', 41, false),
+                _buildNumpadButton(context, controller, '45', 45, false),
+                _buildNumpadButton(context, controller, '55', 55, false),
+                _buildNumpadButton(context, controller, '60', 60, false),
+              ],
             ),
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildNumpadButton(context, controller, '81', 81, false),
-                  _buildNumpadButton(context, controller, '85', 85, false),
-                  _buildNumpadButton(context, controller, '100', 100, false),
-                  _buildNumpadButton(context, controller, '140', 140, false),
-                  _buildNumpadButton(context, controller, '180', 180, false),
-                ],
-              ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildNumpadButton(context, controller, '81', 81, false),
+                _buildNumpadButton(context, controller, '85', 85, false),
+                _buildNumpadButton(context, controller, '100', 100, false),
+                _buildNumpadButton(context, controller, '140', 140, false),
+                _buildNumpadButton(context, controller, '180', 180, false),
+              ],
             ),
-          ],
-        ),
-      );
-    }
+          ),
+          const VerticalDivider(color: Colors.white, thickness: 1),
+        ],
+      ),
+    );
   }
 }
