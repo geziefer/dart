@@ -113,6 +113,12 @@ class Numpad extends StatelessWidget {
             // call interface method from controller
             controller.pressNumpadButton(context, value);
           },
+          // for enter button accept long press as rest value, other ignore
+          onLongPress: () {
+            if (value == -1) {
+              controller.pressNumpadButton(context, -3);
+            }
+          },
           style: TextButton.styleFrom(
             backgroundColor: Colors.white24,
           ),
@@ -139,10 +145,10 @@ class Numpad extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildNumpadButton(context, controller, '26', 26, false),
-                _buildNumpadButton(context, controller, '41', 41, false),
                 _buildNumpadButton(context, controller, '45', 45, false),
-                _buildNumpadButton(context, controller, '55', 55, false),
                 _buildNumpadButton(context, controller, '60', 60, false),
+                _buildNumpadButton(context, controller, '85', 85, false),
+                _buildNumpadButton(context, controller, '140', 140, false),
               ],
             ),
           ),
@@ -151,10 +157,10 @@ class Numpad extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildNumpadButton(context, controller, '41', 41, false),
+                _buildNumpadButton(context, controller, '55', 55, false),
                 _buildNumpadButton(context, controller, '81', 81, false),
-                _buildNumpadButton(context, controller, '85', 85, false),
                 _buildNumpadButton(context, controller, '100', 100, false),
-                _buildNumpadButton(context, controller, '140', 140, false),
                 _buildNumpadButton(context, controller, '180', 180, false),
               ],
             ),

@@ -89,17 +89,27 @@ class ControllerXXXCheckout extends ChangeNotifier
         }
       }
       input = "";
-      // return button pressed
-    } else if (value == -1 || value > 9) {
+      // return button or pre defined value pressed or long press return
+    } else if (value == -3 || value == -1 || value > 9) {
       // convert pre-defined results before continueing with enter
       if (value > 9) {
         String newInput = input + value.toString();
         int parsedNewInput = int.tryParse(newInput) ?? 181;
         if (parsedNewInput <= 180 &&
             parsedNewInput <= remaining &&
-            newInput.length <= 3 &&
             remaining - parsedNewInput != 1) {
           input = newInput;
+        } else {
+          return;
+        }
+      }
+
+      // convert input to remaining in case of long pressed enter,
+      // this includes finishing
+      if (value == -3) {
+        int parsedInput = int.tryParse(input) ?? 0;
+        if (parsedInput != 1 && remaining - parsedInput <= 180) {
+          input = (remaining - parsedInput).toString();
         } else {
           return;
         }
