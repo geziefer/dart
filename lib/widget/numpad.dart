@@ -144,11 +144,11 @@ class Numpad extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildNumpadButton(context, controller, '26', 26, false),
+                _buildNumpadButton(context, controller, '41', 41, false),
                 _buildNumpadButton(context, controller, '45', 45, false),
                 _buildNumpadButton(context, controller, '60', 60, false),
-                _buildNumpadButton(context, controller, '85', 85, false),
-                _buildNumpadButton(context, controller, '140', 140, false),
+                _buildNumpadButton(context, controller, '83', 83, false),
+                _buildNumpadButton(context, controller, '95', 95, false),
               ],
             ),
           ),
@@ -157,11 +157,11 @@ class Numpad extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildNumpadButton(context, controller, '41', 41, false),
+                _buildNumpadButton(context, controller, '43', 43, false),
                 _buildNumpadButton(context, controller, '55', 55, false),
                 _buildNumpadButton(context, controller, '81', 81, false),
+                _buildNumpadButton(context, controller, '85', 85, false),
                 _buildNumpadButton(context, controller, '100', 100, false),
-                _buildNumpadButton(context, controller, '180', 180, false),
               ],
             ),
           ),
