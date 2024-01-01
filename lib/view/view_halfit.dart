@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 class ViewHalfit extends StatelessWidget {
   const ViewHalfit({
     super.key,
-    required this.gameno,
+    required this.title,
   });
 
-  final int gameno;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class ViewHalfit extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             flex: 10,
-            child: Header(gameno: gameno),
+            child: Header(gameName: title),
           ),
 
           // ########## Main part with game results and num pad

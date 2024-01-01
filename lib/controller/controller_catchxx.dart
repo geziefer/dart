@@ -1,5 +1,6 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -14,7 +15,7 @@ class ControllerCatchXX extends ChangeNotifier
     return _instance;
   }
 
-  late int gameno; // number of game in Menu map, used also for stat reference
+  late MenuItem item; // item which created the controller
 
   List<int> targets = <int>[]; // list of targets to check
   List<int> thrownHits = <int>[]; // list of thrown hits per round
@@ -26,8 +27,8 @@ class ControllerCatchXX extends ChangeNotifier
   int target = 61; // current finish target
 
   @override
-  void init(gameno, Map params) {
-    this.gameno = gameno;
+  void init(MenuItem item) {
+    this.item = item;
 
     targets = <int>[61];
     thrownPoints = <int>[];
@@ -77,7 +78,7 @@ class ControllerCatchXX extends ChangeNotifier
             context: context,
             builder: (context) {
               // save stats to device, use gameno as key
-              GetStorage storage = GetStorage(gameno.toString());
+              GetStorage storage = GetStorage(item.id);
               int numberGames = storage.read('numberGames') ?? 0;
               int recordHits = storage.read('recordHits') ?? 0;
               int recordPoints = storage.read('recordPoints') ?? 0;
@@ -242,7 +243,7 @@ class ControllerCatchXX extends ChangeNotifier
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(gameno.toString());
+    GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int recordHits = storage.read('recordHits') ?? 0;
     int recordPoints = storage.read('recordPoints') ?? 0;

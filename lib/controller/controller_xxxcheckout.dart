@@ -1,6 +1,7 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -16,7 +17,8 @@ class ControllerXXXCheckout extends ChangeNotifier
     return _instance;
   }
 
-  late int gameno; // number of game in Menu map, used also for stat reference
+  late MenuItem item; // item which created the controller
+
   late int xxx; // score to start with
   late int max; // limit of rounds per leg (-1 = unlimited)
   late int end; // number of rounds after game ends
@@ -42,11 +44,11 @@ class ControllerXXXCheckout extends ChangeNotifier
   String input = ""; // current input from numbpad
 
   @override
-  void init(gameno, Map params) {
-    this.gameno = gameno;
-    xxx = params['xxx'];
-    max = params['max'];
-    end = params['end'];
+  void init(MenuItem item) {
+    this.item = item;
+    xxx = item.params['xxx'];
+    max = item.params['max'];
+    end = item.params['end'];
 
     rounds = <int>[];
     scores = <int>[];
@@ -175,7 +177,7 @@ class ControllerXXXCheckout extends ChangeNotifier
                 barrierDismissible: false,
                 builder: (context) {
                   // save stats to device, use gameno as key
-                  GetStorage storage = GetStorage(gameno.toString());
+                  GetStorage storage = GetStorage(item.id);
                   int numberGames = storage.read('numberGames') ?? 0;
                   int recordFinishes = storage.read('recordFinishes') ?? 0;
                   double recordScore = storage.read('recordScore') ?? 0;
@@ -357,7 +359,7 @@ class ControllerXXXCheckout extends ChangeNotifier
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(gameno.toString());
+    GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int recordFinishes = storage.read('recordFinishes') ?? 0;
     double recordScore = storage.read('recordScore') ?? 0;

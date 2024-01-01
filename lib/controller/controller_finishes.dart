@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 
 class ControllerFinishes extends ChangeNotifier implements MenuitemController {
@@ -119,7 +120,7 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
     61: ["T15; D8;-", "S15; S14; D16"],
   };
 
-  late int gameno; // number of game in Menu map, used also for stat reference
+  late MenuItem item; // item which created the controller
   late int from;
   late int to;
   int currentFinish = 0;
@@ -127,10 +128,10 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
   bool question = true;
 
   @override
-  void init(gameno, Map params) {
-    this.gameno = gameno;
-    from = params['from'];
-    to = params['to'];
+  void init(MenuItem item) {
+    this.item = item;
+    from = item.params['from'];
+    to = item.params['to'];
     createRandomFinish();
   }
 

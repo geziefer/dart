@@ -10,8 +10,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  for (var box in Menu.games.keys) {
-    await GetStorage.init(box.toString());
+  // initialize all local data storages with id as key
+  for (var box in Menu.games) {
+    await GetStorage.init(box.id);
   }
   runApp(
     MultiProvider(

@@ -1,4 +1,6 @@
-/// Interface for Controller in menu
+import 'package:dart/widget/menu.dart';
+
+/// Interface for Controller in menu, receives its item
 abstract class MenuitemController {
-  void init(gameno, Map params);
+  void init(MenuItem item);
 }

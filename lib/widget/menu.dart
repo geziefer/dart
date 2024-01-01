@@ -19,25 +19,122 @@ class Menu extends StatelessWidget {
     super.key,
   });
 
-  static final Map<int, String> games = {
-    0: '<placeholder>',
-    1: '170 x 10',
-    2: '501 x 5',
-    3: '170 x 10\nmax 3',
-    4: '501 x 5\nmax 7',
-    5: 'RTC Double',
-    6: 'RTC Double\nmax 20',
-    7: 'Half it',
-    8: 'RTC Triple',
-    9: 'RTC Triple\nmax 20',
-    10: 'RTC Single',
-    11: 'RTC Single\nmax 10',
-    12: '10 Bullseyes',
-    13: 'Finishes\n61-100',
-    14: 'Finishes\n101-135',
-    15: 'Finishes\n136-170',
-    16: 'Catch 40',
-  };
+  static final List<MenuItem> games = [
+    MenuItem(
+      id: '170m3',
+      name: '170 x 10\nmax 3',
+      view: const ViewXXXCheckout(title: '170 x 10 in 3 Aufnahmen'),
+      controller: ControllerXXXCheckout(),
+      params: const {'xxx': 170, 'max': 3, 'end': 10},
+    ),
+    MenuItem(
+      id: '501x5',
+      name: '501 x 5',
+      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
+      controller: ControllerXXXCheckout(),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ),
+    MenuItem(
+      id: '501m7',
+      name: '501 x 5\nmax 7',
+      view: const ViewXXXCheckout(title: '501 x 5 in 7 Aufnahmen'),
+      controller: ControllerXXXCheckout(),
+      params: const {'xxx': 501, 'max': 7, 'end': 5},
+    ),
+    MenuItem(
+      id: '300x20',
+      name: '300 x 20',
+      //TODO: implement controller and view
+      view: const ViewXXXCheckout(title: '300 x auf 20 scoren'),
+      controller: ControllerXXXCheckout(),
+      params: const {'xxx': 501, 'max': 7, 'end': 5},
+    ),
+    MenuItem(
+      id: 'RTCS',
+      name: 'RTC Single\nmax 10',
+      view: const ViewRTCX(title: 'Round the Clock Single in 10 Aufnahmen'),
+      controller: ControllerRTCX(),
+      params: const {'max': 10},
+    ),
+    MenuItem(
+      id: 'RTCD',
+      name: 'RTC Double\nmax 20',
+      view: const ViewRTCX(title: 'Round the Clock Double in 20 Aufnahmen'),
+      controller: ControllerRTCX(),
+      params: const {'max': 20},
+    ),
+    MenuItem(
+      id: 'RTCT',
+      name: 'RTC Triple\nmax 20',
+      view: const ViewRTCX(title: 'Round the Clock Triple in 20 Aufnahmen'),
+      controller: ControllerRTCX(),
+      params: const {'max': 20},
+    ),
+    MenuItem(
+      id: 'HI',
+      name: 'Half it',
+      view: const ViewHalfit(title: 'Half it'),
+      // TODO: show 40 at start
+      controller: ControllerHalfit(),
+      params: const {'max': -1},
+    ),
+    MenuItem(
+      id: 'C40',
+      name: 'Catch 40',
+      view: const ViewCatchXX(title: 'Catch 40 - Finish 61-100'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'F41',
+      name: 'Finish 41',
+      view: const ViewCatchXX(title: 'Finish 41 in 1 Aufnahme'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'C121',
+      name: 'Check 121',
+      view: const ViewCatchXX(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: '2D',
+      name: '2 Darts',
+      view: const ViewCatchXX(title: '2 Darts Finishes'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'B27',
+      name: 'Bob\'s 27',
+      view: const ViewCatchXX(title: 'Bob\'s 27 - Double Round the Clock'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'D132',
+      name: 'Double 132',
+      view: const ViewCatchXX(title: 'Double 132 - Scoring mit Doubles'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'KB',
+      name: 'Kill Bull',
+      view: const ViewBulls(title: 'Kill Bull - Bull ohne Unterbrechung'),
+      controller: ControllerBulls(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'FQ',
+      name: 'Finish\nQuest',
+      view: const ViewFinishes(title: 'Finishes wissen'),
+      controller: ControllerFinishes(),
+      params: const {'from': 61, 'to': 170},
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -57,147 +154,35 @@ class Menu extends StatelessWidget {
             Expanded(
               flex: 1,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MenuItem(
-                    gameno: 1,
-                    view: const ViewXXXCheckout(gameno: 1),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 170, 'max': -1, 'end': 10},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 3,
-                    view: const ViewXXXCheckout(gameno: 3),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 170, 'max': 3, 'end': 10},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 2,
-                    view: const ViewXXXCheckout(gameno: 2),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 501, 'max': -1, 'end': 5},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 4,
-                    view: const ViewXXXCheckout(gameno: 4),
-                    controller: ControllerXXXCheckout(),
-                    params: const {'xxx': 501, 'max': 7, 'end': 5},
-                    placeholder: false,
-                  ),
-                ],
-              ),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (int i = 0; i <= 3; i++) games.elementAt(i),
+                  ]),
             ),
             Expanded(
               flex: 1,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  MenuItem(
-                    gameno: 5,
-                    view: const ViewRTCX(gameno: 5),
-                    controller: ControllerRTCX(),
-                    params: const {'max': -1},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 6,
-                    view: const ViewRTCX(gameno: 6),
-                    controller: ControllerRTCX(),
-                    params: const {'max': 20},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 8,
-                    view: const ViewRTCX(gameno: 8),
-                    controller: ControllerRTCX(),
-                    params: const {'max': -1},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 9,
-                    view: const ViewRTCX(gameno: 9),
-                    controller: ControllerRTCX(),
-                    params: const {'max': 20},
-                    placeholder: false,
-                  ),
-                ],
-              ),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 4; i <= 7; i++) games.elementAt(i),
+                  ]),
             ),
             Expanded(
               flex: 1,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  MenuItem(
-                    gameno: 10,
-                    view: const ViewRTCX(gameno: 10),
-                    controller: ControllerRTCX(),
-                    params: const {'max': -1},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 11,
-                    view: const ViewRTCX(gameno: 11),
-                    controller: ControllerRTCX(),
-                    params: const {'max': 10},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 7,
-                    view: const ViewHalfit(gameno: 7),
-                    controller: ControllerHalfit(),
-                    params: const {'max': -1},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 12,
-                    view: const ViewBulls(gameno: 12),
-                    controller: ControllerBulls(),
-                    params: const {},
-                    placeholder: false,
-                  ),
-                ],
-              ),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 8; i <= 11; i++) games.elementAt(i),
+                  ]),
             ),
             Expanded(
               flex: 1,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  MenuItem(
-                    gameno: 13,
-                    view: const ViewFinishes(gameno: 13),
-                    controller: ControllerFinishes(),
-                    params: const {'from': 61, 'to': 100},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 14,
-                    view: const ViewFinishes(gameno: 14),
-                    controller: ControllerFinishes(),
-                    params: const {'from': 101, 'to': 135},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 15,
-                    view: const ViewFinishes(gameno: 15),
-                    controller: ControllerFinishes(),
-                    params: const {'from': 136, 'to': 170},
-                    placeholder: false,
-                  ),
-                  MenuItem(
-                    gameno: 16,
-                    view: const ViewCatchXX(gameno: 16),
-                    controller: ControllerCatchXX(),
-                    params: const {},
-                    placeholder: false,
-                  ),
-                ],
-              ),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 12; i <= 15; i++) games.elementAt(i),
+                  ]),
             ),
           ],
         ),
@@ -209,18 +194,18 @@ class Menu extends StatelessWidget {
 class MenuItem extends StatelessWidget {
   const MenuItem({
     super.key,
-    required this.gameno,
+    required this.id,
+    required this.name,
     required this.view,
     required this.controller,
     required this.params,
-    required this.placeholder,
   });
 
-  final int gameno;
+  final String id;
+  final String name;
   final Widget view;
   final MenuitemController controller;
   final Map params;
-  final bool placeholder;
 
   @override
   Widget build(BuildContext context) {
@@ -230,13 +215,11 @@ class MenuItem extends StatelessWidget {
         margin: const EdgeInsets.all(5),
         child: OutlinedButton(
           onPressed: () {
-            if (!placeholder) {
-              controller.init(gameno, params);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => view),
-              );
-            }
+            controller.init(this);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => view),
+            );
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(width: 3.0, color: Colors.white),
@@ -245,7 +228,7 @@ class MenuItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                Menu.games[gameno]!,
+                name,
                 style: const TextStyle(
                     fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
                 textAlign: TextAlign.center,

@@ -1,13 +1,12 @@
-import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
   const Header({
     super.key,
-    required this.gameno,
+    required this.gameName,
   });
 
-  final int gameno;
+  final String gameName;
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +20,9 @@ class Header extends StatelessWidget {
         Expanded(
           flex: 75,
           child: Text(
-            Menu.games[gameno]!.replaceAll("\n", " "),
+            gameName,
             style: const TextStyle(
-              fontSize: 60,
+              fontSize: 50,
               fontWeight: FontWeight.bold,
               color: Color.fromARGB(255, 215, 198, 132),
             ),

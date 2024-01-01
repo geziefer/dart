@@ -1,6 +1,7 @@
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -15,7 +16,7 @@ class ControllerRTCX extends ChangeNotifier
     return _instance;
   }
 
-  late int gameno; // number of game in Menu map, used also for stat reference
+  late MenuItem item; // item which created the controller
   late int max; // limit of rounds per leg (-1 = unlimited)
 
   List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
@@ -25,9 +26,9 @@ class ControllerRTCX extends ChangeNotifier
   bool finished = false; // flag if round the clock was finished
 
   @override
-  void init(gameno, Map params) {
-    this.gameno = gameno;
-    max = params['max'];
+  void init(MenuItem item) {
+    this.item = item;
+    max = item.params['max'];
 
     throws = <int>[];
     currentNumber = 1;
@@ -97,7 +98,7 @@ class ControllerRTCX extends ChangeNotifier
         context: context,
         builder: (context) {
           // save stats to device, use gameno as key
-          GetStorage storage = GetStorage(gameno.toString());
+          GetStorage storage = GetStorage(item.id);
           int numberGames = storage.read('numberGames') ?? 0;
           int numberFinishes = storage.read('numberFinishes') ?? 0;
           int recordDarts = storage.read('recordDarts') ?? 0;
@@ -218,7 +219,7 @@ class ControllerRTCX extends ChangeNotifier
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(gameno.toString());
+    GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
