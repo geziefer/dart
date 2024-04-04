@@ -1,15 +1,15 @@
-import 'package:dart/controller/controller_bulls.dart';
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
-import 'package:dart/view/view_bulls.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
 import 'package:dart/view/view_rtcx.dart';
+import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,10 +44,9 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: '300x20',
       name: '300 x 20',
-      //TODO: implement controller and view
-      view: const ViewXXXCheckout(title: '300 x auf 20 scoren'),
-      controller: ControllerXXXCheckout(),
-      params: const {'xxx': 501, 'max': 7, 'end': 5},
+      view: const ViewShootx(title: '300 x auf 20 scoren'),
+      controller: ControllerShootx(),
+      params: const {'x': 20, 'max': 100},
     ),
     MenuItem(
       id: 'RTCS',
@@ -123,8 +122,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'KB',
       name: 'Kill Bull',
-      view: const ViewBulls(title: 'Kill Bull - Bull ohne Unterbrechung'),
-      controller: ControllerBulls(),
+      view: const ViewShootx(title: 'Kill Bull - Bull ohne Unterbrechung'),
+      controller: ControllerShootx(),
       params: const {},
     ),
     MenuItem(

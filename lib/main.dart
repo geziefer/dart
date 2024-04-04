@@ -1,4 +1,4 @@
-import 'package:dart/controller/controller_bulls.dart';
+import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
@@ -21,7 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerRTCX()),
         ChangeNotifierProvider(create: (context) => ControllerHalfit()),
         ChangeNotifierProvider(create: (context) => ControllerFinishes()),
-        ChangeNotifierProvider(create: (context) => ControllerBulls()),
+        ChangeNotifierProvider(create: (context) => ControllerShootx()),
         ChangeNotifierProvider(create: (context) => ControllerCatchXX()),
       ],
       child: const MaterialApp(

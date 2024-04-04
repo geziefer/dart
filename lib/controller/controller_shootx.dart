@@ -4,33 +4,38 @@ import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerBulls extends ChangeNotifier
+class ControllerShootx extends ChangeNotifier
     implements MenuitemController, NumpadController {
-  static final ControllerBulls _instance = ControllerBulls._private();
+  static final ControllerShootx _instance = ControllerShootx._private();
 
   // singleton
-  ControllerBulls._private();
+  ControllerShootx._private();
 
-  factory ControllerBulls() {
+  factory ControllerShootx() {
     return _instance;
   }
 
   late MenuItem item; // item which created the controller
 
+  late int x; // number to throw at
+  late int max; // limit of rounds per leg
+
   List<int> rounds = <int>[]; // list of round numbers (index - 1)
-  List<int> thrownBulls = <int>[]; // list of thrown bulls per round
-  List<int> totalBulls = <int>[]; // list of bulls in rounds summed up
-  int bulls = 0; // thrown bulls
+  List<int> thrownNumbers = <int>[]; // list of thrown number per round
+  List<int> totalNumbers = <int>[]; // list of number in rounds summed up
+  int number = 0; // thrown number
   int round = 1; // round number in game
 
   @override
   void init(MenuItem item) {
     this.item = item;
+    x = item.params['x'];
+    max = item.params['max'];
 
     rounds = <int>[];
-    thrownBulls = <int>[];
-    totalBulls = <int>[];
-    bulls = 0;
+    thrownNumbers = <int>[];
+    totalNumbers = <int>[];
+    number = 0;
     round = 1;
   }
 
@@ -41,10 +46,10 @@ class ControllerBulls extends ChangeNotifier
       if (rounds.isNotEmpty) {
         round--;
 
-        int lastBulls = thrownBulls.removeLast();
-        bulls -= lastBulls;
+        int lastBulls = thrownNumbers.removeLast();
+        number -= lastBulls;
         rounds.removeLast();
-        totalBulls.removeLast();
+        totalNumbers.removeLast();
       }
       // all other buttons pressed
     } else {
@@ -53,30 +58,30 @@ class ControllerBulls extends ChangeNotifier
         value = 0;
       }
       rounds.add(round);
-      thrownBulls.add(value);
-      bulls += value;
-      totalBulls.add(bulls);
+      thrownNumbers.add(value);
+      number += value;
+      totalNumbers.add(number);
 
       notifyListeners();
 
       // check for limit of rounds
-      if (round == 10) {
+      if (round == max) {
         showDialog(
             context: context,
             builder: (context) {
               // save stats to device, use gameno as key
               GetStorage storage = GetStorage(item.id);
               int numberGames = storage.read('numberGames') ?? 0;
-              int recordBulls = storage.read('recordBulls') ?? 0;
-              double longtermBulls = storage.read('longtermBulls') ?? 0;
-              double avgBulls = getAvgBulls();
+              int recordNumbers = storage.read('recordNumbers') ?? 0;
+              double longtermNumbers = storage.read('longtermNumbers') ?? 0;
+              double avgNumbers = getAvgNumbers();
               storage.write('numberGames', numberGames + 1);
-              if (recordBulls == 0 || bulls > recordBulls) {
-                storage.write('recordBulls', bulls);
+              if (recordNumbers == 0 || number > recordNumbers) {
+                storage.write('recordNumbers', number);
               }
               storage.write(
-                  'longtermBulls',
-                  (((longtermBulls * numberGames) + avgBulls) /
+                  'longtermNumbers',
+                  (((longtermNumbers * numberGames) + avgNumbers) /
                       (numberGames + 1)));
 
               return Dialog(
@@ -95,7 +100,7 @@ class ControllerBulls extends ChangeNotifier
                       Container(
                         margin: const EdgeInsets.all(5),
                         child: Text(
-                          'Anzahl Bulls: $bulls',
+                          'Anzahl $x: $number',
                           style: const TextStyle(
                             fontSize: 40,
                             color: Colors.black,
@@ -106,7 +111,7 @@ class ControllerBulls extends ChangeNotifier
                       Container(
                         margin: const EdgeInsets.all(5),
                         child: Text(
-                          'Bulls/Runde: ${getCurrentStats()['avgBulls']}',
+                          '$x/Runde: ${getCurrentStats()['avgBulls']}',
                           style: const TextStyle(
                             fontSize: 40,
                             color: Colors.red,
@@ -172,20 +177,20 @@ class ControllerBulls extends ChangeNotifier
     return result;
   }
 
-  double getAvgBulls() {
-    return round == 1 ? 0 : (bulls / (round - 1));
+  double getAvgNumbers() {
+    return round == 1 ? 0 : (number / (round - 1));
   }
 
   String getCurrentRounds() {
     return createMultilineString(rounds, [], '', '', [], 6, false);
   }
 
-  String getCurrentThrownBulls() {
-    return createMultilineString(thrownBulls, [], '', '', [], 6, false);
+  String getCurrentThrownNumbers() {
+    return createMultilineString(thrownNumbers, [], '', '', [], 6, false);
   }
 
-  String getCurrentTotalBulls() {
-    return createMultilineString(totalBulls, [], '', '', [], 6, false);
+  String getCurrentTotalNumbers() {
+    return createMultilineString(totalNumbers, [], '', '', [], 6, false);
   }
 
   @override
@@ -202,8 +207,8 @@ class ControllerBulls extends ChangeNotifier
   Map getCurrentStats() {
     return {
       'round': round,
-      'bulls': bulls,
-      'avgBulls': getAvgBulls().toStringAsFixed(1),
+      'bulls': number,
+      'avgBulls': getAvgNumbers().toStringAsFixed(1),
     };
   }
 
@@ -211,8 +216,8 @@ class ControllerBulls extends ChangeNotifier
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
-    int recordBulls = storage.read('recordBulls') ?? 0;
-    double longtermBulls = storage.read('longtermBulls') ?? 0;
-    return '#S: $numberGames  ♛B: ${recordBulls.toStringAsFixed(1)}  ØH: ${longtermBulls.toStringAsFixed(1)}';
+    int recordNumbers = storage.read('recordNumbers') ?? 0;
+    double longtermNumbers = storage.read('longtermNumbers') ?? 0;
+    return '#S: $numberGames  ♛N: ${recordNumbers.toStringAsFixed(1)}  ØH: ${longtermNumbers.toStringAsFixed(1)}';
   }
 }

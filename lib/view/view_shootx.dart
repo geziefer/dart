@@ -1,12 +1,12 @@
-import 'package:dart/controller/controller_bulls.dart';
+import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ViewBulls extends StatelessWidget {
-  const ViewBulls({
+class ViewShootx extends StatelessWidget {
+  const ViewShootx({
     super.key,
     required this.title,
   });
@@ -15,7 +15,8 @@ class ViewBulls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ControllerBulls controller = Provider.of<ControllerBulls>(context);
+    ControllerShootx controller = Provider.of<ControllerShootx>(context);
+    int x = controller.x;
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(
@@ -55,10 +56,10 @@ class ViewBulls extends StatelessWidget {
                                 color: Colors.white, thickness: 1),
                             const SizedBox(width: 10),
 
-                            // ########## Thrown bulls in round
+                            // ########## Thrown numbers in round
                             ScoreColumn(
-                              label: 'B',
-                              content: controller.getCurrentThrownBulls(),
+                              label: 'N',
+                              content: controller.getCurrentThrownNumbers(),
                               color: Colors.white,
                             ),
                             const SizedBox(width: 10),
@@ -69,7 +70,7 @@ class ViewBulls extends StatelessWidget {
                             // ########## Score total
                             ScoreColumn(
                               label: 'T',
-                              content: controller.getCurrentTotalBulls(),
+                              content: controller.getCurrentTotalNumbers(),
                               color: Colors.white,
                             ),
                             const SizedBox(width: 10),
@@ -86,7 +87,7 @@ class ViewBulls extends StatelessWidget {
                         flex: 5,
                         child: Numpad(
                           controller: controller,
-                          showUpper: false,
+                          showUpper: true,
                           showMiddle: true,
                           showExtraButtons: false,
                         ),
@@ -117,9 +118,9 @@ class ViewBulls extends StatelessWidget {
                       "${currentStats['round']}",
                       style: const TextStyle(fontSize: 50, color: Colors.white),
                     ),
-                    const Text(
-                      "   ØBulls: ",
-                      style: TextStyle(
+                    Text(
+                      "   Ø$x: ",
+                      style: const TextStyle(
                           fontSize: 50,
                           color: Color.fromARGB(255, 215, 198, 132)),
                     ),
