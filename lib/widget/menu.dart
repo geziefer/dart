@@ -42,11 +42,11 @@ class Menu extends StatelessWidget {
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
-      id: '300x20',
-      name: '300 x 20',
-      view: const ViewShootx(title: '300 x auf 20 scoren'),
+      id: '99x20',
+      name: '99 x 20',
+      view: const ViewShootx(title: '99 x auf 20 scoren'),
       controller: ControllerShootx(),
-      params: const {'x': 20, 'max': 100},
+      params: const {'x': 20, 'max': 33},
     ),
     MenuItem(
       id: 'RTCS',
