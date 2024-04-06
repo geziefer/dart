@@ -89,6 +89,7 @@ class ViewHalfit extends StatelessWidget {
                           showUpper: true,
                           showMiddle: true,
                           showExtraButtons: false,
+                          showYesNo: false,
                         ),
                       ),
                     ],

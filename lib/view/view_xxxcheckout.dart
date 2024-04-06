@@ -97,6 +97,7 @@ class ViewXXXCheckout extends StatelessWidget {
                           showUpper: true,
                           showMiddle: true,
                           showExtraButtons: true,
+                          showYesNo: false,
                         ),
                       ),
                     ],

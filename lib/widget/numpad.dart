@@ -1,7 +1,7 @@
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
 
-/// Build 4x3 numpad 0-9, undo, return, possibly extra buttons
+/// Build 4x3 numpad 0-9, undo, return, possibly extra buttons or yes/no
 class Numpad extends StatelessWidget {
   const Numpad({
     super.key,
@@ -9,6 +9,7 @@ class Numpad extends StatelessWidget {
     required this.showUpper,
     required this.showMiddle,
     required this.showExtraButtons,
+    required this.showYesNo,
   });
 
   final NumpadController controller; // controller class which supports Numpad
@@ -16,6 +17,7 @@ class Numpad extends StatelessWidget {
   final bool showMiddle; // flag if middle row 4-6 should be shown
   final bool
       showExtraButtons; // flag if extra buttons for predefined results should be shown
+  final bool showYesNo; // flag if only yes and no should be shown in lower row
 
   @override
   Widget build(BuildContext context) {
@@ -81,18 +83,31 @@ class Numpad extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(
-                flex: 1,
-                // ########## 4th row back, 0, enter
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildNumpadButton(context, controller, '↶', -2, true),
-                    _buildNumpadButton(context, controller, '0', 0, true),
-                    _buildNumpadButton(context, controller, '↵', -1, true),
-                  ],
+              // ########## 4th row back, 0, enter or back, yes, no
+              if (showYesNo)
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildNumpadButton(context, controller, '↶', -2, true),
+                      _buildNumpadButton(context, controller, '❌', 0, true),
+                      _buildNumpadButton(context, controller, '✅', 1, true),
+                    ],
+                  ),
+                )
+              else
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildNumpadButton(context, controller, '↶', -2, true),
+                      _buildNumpadButton(context, controller, '0', 0, true),
+                      _buildNumpadButton(context, controller, '↵', -1, true),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
