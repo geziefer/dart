@@ -1,4 +1,4 @@
-import 'package:dart/widget/dartboard/arcsection.dart';
+import 'package:dart/widget/arcsection.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
