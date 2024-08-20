@@ -90,10 +90,10 @@ class ViewFinishes extends StatelessWidget {
           ),
 
           // ########## Bottom row with stats
-          const Expanded(
+          Expanded(
             flex: 18,
             child: Column(
-              children: [],
+              children: const [],
             ),
           ),
         ],
