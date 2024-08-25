@@ -1,4 +1,6 @@
 import 'package:dart/controller/controller_finishes.dart';
+import 'package:dart/widget/arcsection.dart';
+import 'package:dart/widget/fullcircle.dart';
 import 'package:dart/widget/header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,10 +78,18 @@ class ViewFinishes extends StatelessWidget {
                       ),
                       const VerticalDivider(color: Colors.white, thickness: 3),
 
-                      // ########## Right column with num pad
-                      const Expanded(
+                      // ########## Right column with dart board
+                      Expanded(
                         flex: 5,
-                        child: Text(''),
+                        child: FullCircle(
+                          radius: 200,
+                          arcSections: [
+                            ArcSection(startPercent: 0.2),
+                            ArcSection(startPercent: 0.4),
+                            ArcSection(startPercent: 0.6),
+                            ArcSection(startPercent: 0.8),
+                          ],
+                        ),
                       ),
                     ],
                   ),

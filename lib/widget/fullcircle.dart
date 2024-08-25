@@ -168,17 +168,17 @@ class FullCirclePainter extends CustomPainter {
       final double startAngle = (sliceIndex * (2 * pi / 20) - pi / 2) + pi / 20;
       const double sweepAngle = (2 * pi / 20);
 
-      final center = Offset(radius, radius);
+      final center = Offset(size.width / 2, size.height / 2);
       const textStyle = TextStyle(
-        color: Colors.black,
+        color: Colors.white,
         fontWeight: FontWeight.bold,
-        fontSize: 30,
+        fontSize: 25,
       );
 
       // Calculate the position for the text
       final double labelAngle = startAngle + sweepAngle / 2;
-      final double labelRadius =
-          radius + 25; // Adjust this value to position the text above the arc
+      // Adjust this value to position the text above the arc
+      final double labelRadius = radius + 16;
       final double labelX = center.dx + labelRadius * cos(labelAngle);
       final double labelY = center.dy + labelRadius * sin(labelAngle);
 
