@@ -23,13 +23,13 @@ class ViewFinishes extends StatelessWidget {
           // ########## Top row with logo, game title, stats and back button
           const SizedBox(height: 20),
           Expanded(
-            flex: 10,
+            flex: 1,
             child: Header(gameName: title),
           ),
 
           // ########## Main part with game results and num pad
           Expanded(
-            flex: 72,
+            flex: 9,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -38,7 +38,7 @@ class ViewFinishes extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        flex: 5,
+                        flex: 4,
                         child: Container(
                           margin: const EdgeInsets.fromLTRB(100, 5, 5, 5),
                           child: Column(
@@ -80,9 +80,9 @@ class ViewFinishes extends StatelessWidget {
 
                       // ########## Right column with dart board
                       Expanded(
-                        flex: 5,
+                        flex: 6,
                         child: FullCircle(
-                          radius: 250,
+                          radius: 300,
                           arcSections: [
                             ArcSection(startPercent: 0.2),
                             ArcSection(startPercent: 0.4),
@@ -94,16 +94,7 @@ class ViewFinishes extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Divider(color: Colors.white, thickness: 3),
               ],
-            ),
-          ),
-
-          // ########## Bottom row with stats
-          const Expanded(
-            flex: 18,
-            child: Column(
-              children: [],
             ),
           ),
         ],
