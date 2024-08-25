@@ -19,6 +19,7 @@ class Menu extends StatelessWidget {
     super.key,
   });
 
+  // MenuItems appear as plain list here, but will be displayed 4x5
   static final List<MenuItem> games = [
     MenuItem(
       id: '170m3',
@@ -42,11 +43,11 @@ class Menu extends StatelessWidget {
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
-      id: '99x20',
-      name: '99 x 20',
-      view: const ViewShootx(title: '99 x auf 20 scoren'),
-      controller: ControllerShootx(),
-      params: const {'x': 20, 'max': 33},
+      id: 'FQ1',
+      name: 'FinishQuest\n61-82',
+      view: const ViewFinishes(title: 'Finishes wissen 61-82'),
+      controller: ControllerFinishes(),
+      params: const {'from': 61, 'to': 82},
     ),
     MenuItem(
       id: 'RTCS',
@@ -70,12 +71,11 @@ class Menu extends StatelessWidget {
       params: const {'max': 20},
     ),
     MenuItem(
-      id: 'HI',
-      name: 'Half it',
-      view: const ViewHalfit(title: 'Half it'),
-      // TODO: show 40 at start
-      controller: ControllerHalfit(),
-      params: const {'max': -1},
+      id: 'FQ2',
+      name: 'FinishQuest\n83-104',
+      view: const ViewFinishes(title: 'Finishes wissen 63-104'),
+      controller: ControllerFinishes(),
+      params: const {'from': 83, 'to': 104},
     ),
     MenuItem(
       id: 'C40',
@@ -99,11 +99,11 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: '2D',
-      name: '2 Darts',
-      view: const ViewCatchXX(title: '2 Darts Finishes'),
-      controller: ControllerCatchXX(),
-      params: const {},
+      id: 'FQ3',
+      name: 'FinishQuest\n105-126',
+      view: const ViewFinishes(title: 'Finishes wissen 105-126'),
+      controller: ControllerFinishes(),
+      params: const {'from': 105, 'to': 126},
     ),
     MenuItem(
       id: 'B27',
@@ -127,9 +127,37 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'FQ',
-      name: 'Finish\nQuest',
-      view: const ViewFinishes(title: 'Finishes wissen'),
+      id: 'FQ4',
+      name: 'FinishQuest\n127-170',
+      view: const ViewFinishes(title: 'Finishes wissen 127-170'),
+      controller: ControllerFinishes(),
+      params: const {'from': 127, 'to': 170},
+    ),
+    MenuItem(
+      id: 'HI',
+      name: 'Half it',
+      view: const ViewHalfit(title: 'Half it'),
+      controller: ControllerHalfit(),
+      params: const {'max': -1},
+    ),
+    MenuItem(
+      id: '99x20',
+      name: '99 x 20',
+      view: const ViewShootx(title: '99 x auf 20 scoren'),
+      controller: ControllerShootx(),
+      params: const {'x': 20, 'max': 33},
+    ),
+    MenuItem(
+      id: '2D',
+      name: '2 Darts',
+      view: const ViewCatchXX(title: '2 Darts Finishes'),
+      controller: ControllerCatchXX(),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'FQF',
+      name: 'FinishQuest\nFull',
+      view: const ViewFinishes(title: 'Finishes wissen komplett'),
       controller: ControllerFinishes(),
       params: const {'from': 61, 'to': 170},
     ),
@@ -183,6 +211,14 @@ class Menu extends StatelessWidget {
                     for (int i = 12; i <= 15; i++) games.elementAt(i),
                   ]),
             ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (int i = 16; i <= 19; i++) games.elementAt(i),
+                  ]),
+            ),
           ],
         ),
       ),
@@ -229,7 +265,7 @@ class MenuItem extends StatelessWidget {
               Text(
                 name,
                 style: const TextStyle(
-                    fontSize: 50, color: Color.fromARGB(255, 215, 198, 132)),
+                    fontSize: 42, color: Color.fromARGB(255, 215, 198, 132)),
                 textAlign: TextAlign.center,
               ),
             ],
