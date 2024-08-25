@@ -55,7 +55,7 @@ class FullCircle extends StatelessWidget {
                 sliceIndex: 0,
                 rotationAngle: rotationAngle)
             .isPointInsideCenterCircle(position, size, centerCircleRadius)) {
-          print('DB');
+          showScore('DB', context);
           return;
         }
 
@@ -70,7 +70,7 @@ class FullCircle extends StatelessWidget {
                 rotationAngle: rotationAngle)
             .isPointInsideCenterArc(
                 position, size, innerArcRadius, outerArcRadius)) {
-          print('SB');
+          showScore('SB', context);
           return;
         }
 
@@ -107,7 +107,7 @@ class FullCircle extends StatelessWidget {
                 3 => "D",
                 _ => ""
               };
-              print('$arcField$arcNo');
+              showScore('$arcField$arcNo', context);
               break;
             }
           }
@@ -122,6 +122,15 @@ class FullCircle extends StatelessWidget {
           rotationAngle: rotationAngle,
           sliceIDs: sliceIDs,
         ),
+      ),
+    );
+  }
+
+  void showScore(String text, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

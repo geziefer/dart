@@ -82,7 +82,7 @@ class ViewFinishes extends StatelessWidget {
                       Expanded(
                         flex: 5,
                         child: FullCircle(
-                          radius: 200,
+                          radius: 250,
                           arcSections: [
                             ArcSection(startPercent: 0.2),
                             ArcSection(startPercent: 0.4),
