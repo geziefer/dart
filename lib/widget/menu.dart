@@ -155,9 +155,9 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'FQF',
-      name: 'FinishQuest\nFull',
-      view: const ViewFinishes(title: 'Finishes wissen komplett'),
+      id: 'NB',
+      name: 'No Bogeys',
+      view: const ViewFinishes(title: 'Bogey-Zahlen vermeiden'),
       controller: ControllerFinishes(),
       params: const {'from': 61, 'to': 170},
     ),

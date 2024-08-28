@@ -1,8 +1,10 @@
+import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class FullCircle extends StatelessWidget {
+  final DartboardController controller;
   final double radius;
   final List<ArcSection> arcSections;
   static const List<String> sliceIDs = [
@@ -30,6 +32,7 @@ class FullCircle extends StatelessWidget {
 
   const FullCircle({
     super.key,
+    required this.controller,
     required this.radius,
     required this.arcSections,
   });
@@ -55,7 +58,7 @@ class FullCircle extends StatelessWidget {
                 sliceIndex: 0,
                 rotationAngle: rotationAngle)
             .isPointInsideCenterCircle(position, size, centerCircleRadius)) {
-          showScore('DB', context);
+          controller.pressDartboard(context, 'DB');
           return;
         }
 
@@ -70,7 +73,7 @@ class FullCircle extends StatelessWidget {
                 rotationAngle: rotationAngle)
             .isPointInsideCenterArc(
                 position, size, innerArcRadius, outerArcRadius)) {
-          showScore('SB', context);
+          controller.pressDartboard(context, 'SB');
           return;
         }
 
@@ -107,7 +110,7 @@ class FullCircle extends StatelessWidget {
                 3 => "D",
                 _ => ""
               };
-              showScore('$arcField$arcNo', context);
+              controller.pressDartboard(context, '$arcField$arcNo');
               break;
             }
           }
@@ -122,15 +125,6 @@ class FullCircle extends StatelessWidget {
           rotationAngle: rotationAngle,
           sliceIDs: sliceIDs,
         ),
-      ),
-    );
-  }
-
-  void showScore(String text, BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

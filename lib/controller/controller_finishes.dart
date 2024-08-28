@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
+import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 
-class ControllerFinishes extends ChangeNotifier implements MenuitemController {
+class ControllerFinishes extends ChangeNotifier
+    implements MenuitemController, DartboardController {
   static final ControllerFinishes _instance = ControllerFinishes._private();
 
   // singleton
@@ -17,115 +20,115 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
   static final Map<int, List<List<String>>> finishes = {
     170: [
       ["T20", "T20", "DB"],
-      ["", "", ""]
+      []
     ],
     167: [
       ["T20", "T19", "DB"],
-      ["", "", ""]
+      []
     ],
     164: [
       ["T19", "T19", "DB"],
-      ["", "", ""]
+      []
     ],
     161: [
       ["T20", "T17", "DB"],
-      ["", "", ""]
+      []
     ],
     160: [
       ["T20", "T20", "D20"],
-      ["", "", ""]
+      []
     ],
     158: [
       ["T20", "T20", "D19"],
-      ["", "", ""]
+      []
     ],
     157: [
       ["T20", "T19", "D20"],
-      ["", "", ""]
+      []
     ],
     156: [
       ["T20", "T20", "D18"],
-      ["", "", ""]
+      []
     ],
     155: [
       ["T20", "T19", "D19"],
-      ["", "", ""]
+      []
     ],
     154: [
       ["T19", "T19", "D20"],
-      ["", "", ""]
+      []
     ],
     153: [
       ["T20", "T19", "D18"],
-      ["", "", ""]
+      []
     ],
     152: [
       ["T20", "T20", "D16"],
-      ["", "", ""]
+      []
     ],
     151: [
       ["T20", "T17", "D20"],
-      ["", "", ""]
+      []
     ],
     150: [
       ["T19", "T19", "D18"],
-      ["", "", ""]
+      []
     ],
     149: [
       ["T20", "T19", "D16"],
-      ["", "", ""]
+      []
     ],
     148: [
       ["T18", "T18", "D20"],
-      ["", "", ""]
+      []
     ],
     147: [
       ["T20", "T17", "D18"],
-      ["", "", ""]
+      []
     ],
     146: [
       ["T19", "T19", "D16"],
-      ["", "", ""]
+      []
     ],
     145: [
       ["T20", "T15", "D20"],
-      ["", "", ""]
+      []
     ],
     144: [
       ["T20", "T20", "D12"],
-      ["", "", ""]
+      []
     ],
     143: [
       ["T20", "T17", "D16"],
-      ["", "", ""]
+      []
     ],
     142: [
       ["T17", "T17", "D20"],
-      ["", "", ""]
+      []
     ],
     141: [
       ["T20", "T19", "D12"],
-      ["", "", ""]
+      []
     ],
     140: [
       ["T18", "T18", "D16"],
-      ["", "", ""]
+      []
     ],
     139: [
       ["T19", "T14", "D20"],
-      ["", "", ""]
+      []
     ],
     138: [
       ["T19", "T19", "D12"],
-      ["", "", ""]
+      []
     ],
     137: [
       ["T20", "T15", "D16"],
-      ["", "", ""]
+      []
     ],
     136: [
       ["T20", "T20", "D8"],
-      ["", "", ""]
+      []
     ],
     135: [
       ["DB", "T15", "D20"],
@@ -133,11 +136,11 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
     ],
     134: [
       ["T20", "T14", "D16"],
-      ["", "", ""]
+      []
     ],
     133: [
       ["T20", "T19", "D8"],
-      ["", "", ""]
+      []
     ],
     132: [
       ["DB", "T14", "D20"],
@@ -145,7 +148,7 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
     ],
     131: [
       ["T20", "T13", "D16"],
-      ["", "", ""]
+      []
     ],
     130: [
       ["T20", "T20", "D5"],
@@ -268,7 +271,7 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
       ["S20", "T17", "D15"]
     ],
     100: [
-      ["T20", "D20", ""],
+      ["T20", "D20"],
       ["S20", "D20", "D20"]
     ],
     99: [
@@ -276,155 +279,155 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
       ["S19", "D20", "D20"]
     ],
     98: [
-      ["T20", "D19", ""],
+      ["T20", "D19"],
       ["S20", "T18", "D12"]
     ],
     97: [
-      ["T19", "D20", ""],
+      ["T19", "D20"],
       ["S19", "T18", "D12"]
     ],
     96: [
-      ["T20", "D18", ""],
+      ["T20", "D18"],
       ["S20", "T20", "D8"]
     ],
     95: [
-      ["T19", "D19", ""],
+      ["T19", "D19"],
       ["S19", "T20", "D8"]
     ],
     94: [
-      ["T18", "D20", ""],
+      ["T18", "D20"],
       ["S18", "T20", "D8"]
     ],
     93: [
-      ["T19", "D18", ""],
+      ["T19", "D18"],
       ["S19", "T14", "D16"]
     ],
     92: [
-      ["T20", "D16", ""],
+      ["T20", "D16"],
       ["S20", "T16", "D12"]
     ],
     91: [
-      ["T17", "D20", ""],
+      ["T17", "D20"],
       ["S17", "T14", "D16"]
     ],
     90: [
-      ["T20", "D15", ""],
+      ["T20", "D15"],
       ["S20", "S20", "DB"]
     ],
     89: [
-      ["T19", "D16", ""],
+      ["T19", "D16"],
       ["S19", "S20", "DB"]
     ],
     88: [
-      ["T20", "D14", ""],
+      ["T20", "D14"],
       ["S20", "T20", "D4"]
     ],
     87: [
-      ["T17", "D18", ""],
+      ["T17", "D18"],
       ["S17", "S20", "DB"]
     ],
     86: [
-      ["T18", "D16", ""],
+      ["T18", "D16"],
       ["S18", "T20", "D4"]
     ],
     85: [
-      ["T15", "D20", ""],
+      ["T15", "D20"],
       ["S15", "S20", "DB"]
     ],
     84: [
-      ["T20", "D12", ""],
+      ["T20", "D12"],
       ["S20", "S14", "DB"]
     ],
     83: [
-      ["T17", "D16", ""],
+      ["T17", "D16"],
       ["S17", "S16", "DB"]
     ],
     82: [
-      ["DB", "D16", ""],
+      ["DB", "D16"],
       ["SB", "S17", "D20"]
     ],
     81: [
-      ["T15", "D18", ""],
+      ["T15", "D18"],
       ["S15", "S16", "DB"]
     ],
     80: [
-      ["T20", "D10", ""],
+      ["T20", "D10"],
       ["S20", "S20", "D20"]
     ],
     79: [
-      ["T19", "D11", ""],
+      ["T19", "D11"],
       ["S19", "S20", "D20"]
     ],
     78: [
-      ["T18", "D12", ""],
+      ["T18", "D12"],
       ["S18", "S20", "D20"]
     ],
     77: [
-      ["T19", "D10", ""],
+      ["T19", "D10"],
       ["S19", "S18", "D20"]
     ],
     76: [
-      ["T20", "D8", ""],
+      ["T20", "D8"],
       ["S20", "S16", "D20"]
     ],
     75: [
-      ["T17", "D12", ""],
+      ["T17", "D12"],
       ["S17", "S18", "D20"]
     ],
     74: [
-      ["T14", "D16", ""],
+      ["T14", "D16"],
       ["S14", "S20", "D20"]
     ],
     73: [
-      ["T19", "D8", ""],
+      ["T19", "D8"],
       ["S19", "S14", "D20"]
     ],
     72: [
-      ["T16", "D12", ""],
+      ["T16", "D12"],
       ["S16", "S16", "D20"]
     ],
     71: [
-      ["T13", "D16", ""],
+      ["T13", "D16"],
       ["S13", "S18", "D20"]
     ],
     70: [
-      ["T18", "D8", ""],
+      ["T18", "D8"],
       ["S18", "S20", "D16"]
     ],
     69: [
-      ["T15", "D12", ""],
+      ["T15", "D12"],
       ["S15", "S14", "D20"]
     ],
     68: [
-      ["T20", "D4", ""],
+      ["T20", "D4"],
       ["S20", "S16", "D16"]
     ],
     67: [
-      ["T17", "D8", ""],
+      ["T17", "D8"],
       ["S17", "S18", "D16"]
     ],
     66: [
-      ["T10", "D18", ""],
+      ["T10", "D18"],
       ["S10", "S16", "D20"]
     ],
     65: [
-      ["SB", "D20", ""],
+      ["SB", "D20"],
       ["DB", "S7", "D4"]
     ],
     64: [
-      ["T16", "D8", ""],
+      ["T16", "D8"],
       ["S16", "S16", "D16"]
     ],
     63: [
-      ["T13", "D12", ""],
+      ["T13", "D12"],
       ["S13", "S18", "D16"]
     ],
     62: [
-      ["T10", "D16", ""],
+      ["T10", "D16"],
       ["S10", "S20", "D16"]
     ],
     61: [
-      ["T15", "D8", ""],
+      ["T15", "D8"],
       ["S15", "S14", "D16"]
     ],
   };
@@ -433,9 +436,13 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
   late int from;
   late int to;
   int currentFinish = 0;
-  List<String> preferred = List.empty();
-  List<String> alternative = List.empty();
-  bool question = true;
+  // lists and correct string will be initialized in createRandomFinish()
+  late List<String> preferred;
+  late List<String> alternative;
+  late List<String> preferredInput;
+  late List<String> altervativeInput;
+  String correct = "";
+  FinishesState currentState = FinishesState.inputPreferred;
 
   @override
   void init(MenuItem item) {
@@ -451,21 +458,65 @@ class ControllerFinishes extends ChangeNotifier implements MenuitemController {
     currentFinish = finish;
     preferred = finishes[currentFinish]![0];
     alternative = finishes[currentFinish]![1];
+    preferredInput = List.empty(growable: true);
+    altervativeInput = List.empty(growable: true);
+    correct = "";
   }
 
-  String getQuestionText() {
-    return "Finish ${currentFinish.toString()}:";
+  String getPreferredText() {
+    return "Finish für ${currentFinish.toString()}:";
+  }
+
+  String getPreferredInput() {
+    return preferredInput.toString();
+  }
+
+  String getAlternativeText() {
+    return "Alternative für ${currentFinish.toString()}:";
+  }
+
+  String getAlternativeInput() {
+    return altervativeInput.toString();
+  }
+
+  String getResultText() {
+    return correct;
   }
 
   String getSolutionText() {
-    return question ? "\n" : "${preferred}\n${alternative}";
+    return currentState == FinishesState.solution && correct == "❌"
+        ? "$preferred\n$alternative"
+        : "";
   }
 
-  void toggle() {
-    question = !question;
-    if (question) {
-      createRandomFinish();
+  @override
+  void pressDartboard(BuildContext context, String value) {
+    print(currentState);
+    switch (currentState) {
+      case FinishesState.inputPreferred:
+        preferredInput.add(value);
+        if (preferredInput.length == preferred.length) {
+          currentState = alternative.isEmpty
+              ? FinishesState.solution
+              : FinishesState.inputAlternative;
+        }
+        break;
+      case FinishesState.inputAlternative:
+        altervativeInput.add(value);
+        if (altervativeInput.length == alternative.length) {
+          const listEquality = ListEquality();
+          correct = listEquality.equals(preferred, preferredInput) &&
+                  listEquality.equals(alternative, altervativeInput)
+              ? "✅"
+              : "❌";
+          currentState = FinishesState.solution;
+        }
+      case FinishesState.solution:
+        createRandomFinish();
+        currentState = FinishesState.inputPreferred;
     }
     notifyListeners();
   }
 }
+
+enum FinishesState { inputPreferred, inputAlternative, solution }

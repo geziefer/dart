@@ -45,32 +45,48 @@ class ViewFinishes extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  controller.getQuestionText(),
+                                  controller.getPreferredText(),
                                   style: const TextStyle(
-                                    fontSize: 70,
+                                    fontSize: 50,
+                                    color: Color.fromARGB(255, 215, 198, 132),
+                                  ),
+                                ),
+                                Text(
+                                  controller.getPreferredInput(),
+                                  style: const TextStyle(
+                                    fontSize: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  controller.getAlternativeText(),
+                                  style: const TextStyle(
+                                    fontSize: 50,
+                                    color: Color.fromARGB(255, 215, 198, 132),
+                                  ),
+                                ),
+                                Text(
+                                  controller.getAlternativeInput(),
+                                  style: const TextStyle(
+                                    fontSize: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  controller.getResultText(),
+                                  style: const TextStyle(
+                                    fontSize: 50,
                                     color: Color.fromARGB(255, 215, 198, 132),
                                   ),
                                 ),
                                 Text(
                                   controller.getSolutionText(),
                                   style: const TextStyle(
-                                    fontSize: 70,
-                                    color: Color.fromARGB(255, 215, 198, 132),
-                                  ),
-                                ),
-                                OutlinedButton(
-                                  onPressed: () {
-                                    controller.toggle();
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                        width: 3.0, color: Colors.white),
-                                  ),
-                                  child: const Text(
-                                    'OK',
-                                    style: TextStyle(
-                                        fontSize: 50, color: Colors.white),
-                                    textAlign: TextAlign.center,
+                                    fontSize: 50,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ]),
@@ -82,6 +98,7 @@ class ViewFinishes extends StatelessWidget {
                       Expanded(
                         flex: 6,
                         child: FullCircle(
+                          controller: controller,
                           radius: 300,
                           arcSections: [
                             ArcSection(startPercent: 0.2),
