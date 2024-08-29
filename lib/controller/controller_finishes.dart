@@ -468,15 +468,17 @@ class ControllerFinishes extends ChangeNotifier
   }
 
   String getPreferredInput() {
-    return preferredInput.toString();
+    return preferredInput.join(' ');
   }
 
   String getAlternativeText() {
-    return "Alternative für ${currentFinish.toString()}:";
+    return currentState == FinishesState.inputAlternative
+        ? "Alternative für ${currentFinish.toString()}:"
+        : "";
   }
 
   String getAlternativeInput() {
-    return altervativeInput.toString();
+    return altervativeInput.join(' ');
   }
 
   String getResultText() {
@@ -485,7 +487,7 @@ class ControllerFinishes extends ChangeNotifier
 
   String getSolutionText() {
     return currentState == FinishesState.solution && correct == "❌"
-        ? "$preferred\n$alternative"
+        ? "${preferred.join(' ')}\n${alternative.join(' ')}"
         : "";
   }
 
