@@ -433,16 +433,16 @@ class ControllerFinishes extends ChangeNotifier
   };
 
   late MenuItem item; // item which created the controller
+  // will be initialized in init or indirectly in createRandomFiish()
   late int from;
   late int to;
-  int currentFinish = 0;
-  // lists and correct string will be initialized in createRandomFinish()
+  late int currentFinish;
   late List<String> preferred;
   late List<String> alternative;
   late List<String> preferredInput;
   late List<String> altervativeInput;
-  String correct = "";
-  FinishesState currentState = FinishesState.inputPreferred;
+  late String correct;
+  late FinishesState currentState;
 
   @override
   void init(MenuItem item) {
@@ -461,6 +461,7 @@ class ControllerFinishes extends ChangeNotifier
     preferredInput = List.empty(growable: true);
     altervativeInput = List.empty(growable: true);
     correct = "";
+    currentState = FinishesState.inputPreferred;
   }
 
   String getPreferredText() {
@@ -493,24 +494,21 @@ class ControllerFinishes extends ChangeNotifier
 
   @override
   void pressDartboard(BuildContext context, String value) {
-    print(currentState);
     switch (currentState) {
       case FinishesState.inputPreferred:
         preferredInput.add(value);
         if (preferredInput.length == preferred.length) {
-          currentState = alternative.isEmpty
-              ? FinishesState.solution
-              : FinishesState.inputAlternative;
+          currentState = FinishesState.inputAlternative;
+          if (alternative.isEmpty) {
+            currentState = FinishesState.solution;
+            checkCorrect();
+          }
         }
         break;
       case FinishesState.inputAlternative:
         altervativeInput.add(value);
         if (altervativeInput.length == alternative.length) {
-          const listEquality = ListEquality();
-          correct = listEquality.equals(preferred, preferredInput) &&
-                  listEquality.equals(alternative, altervativeInput)
-              ? "✅"
-              : "❌";
+          checkCorrect();
           currentState = FinishesState.solution;
         }
       case FinishesState.solution:
@@ -518,6 +516,14 @@ class ControllerFinishes extends ChangeNotifier
         currentState = FinishesState.inputPreferred;
     }
     notifyListeners();
+  }
+
+  void checkCorrect() {
+    const listEquality = ListEquality();
+    correct = listEquality.equals(preferred, preferredInput) &&
+            listEquality.equals(alternative, altervativeInput)
+        ? "✅"
+        : "❌";
   }
 }
 
