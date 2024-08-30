@@ -443,6 +443,7 @@ class ControllerFinishes extends ChangeNotifier
   late List<String> altervativeInput;
   late String correct;
   late FinishesState currentState;
+  Stopwatch stopwatch = Stopwatch();
 
   @override
   void init(MenuItem item) {
@@ -462,6 +463,8 @@ class ControllerFinishes extends ChangeNotifier
     altervativeInput = List.empty(growable: true);
     correct = "";
     currentState = FinishesState.inputPreferred;
+    stopwatch.reset();
+    stopwatch.start();
   }
 
   String getPreferredText() {
@@ -486,6 +489,10 @@ class ControllerFinishes extends ChangeNotifier
     return correct;
   }
 
+  String getStoppedTime() {
+    return stopwatch.isRunning ? "" : "${stopwatch.elapsed.inSeconds}s";
+  }
+
   String getSolutionText() {
     return currentState == FinishesState.solution && correct == "❌"
         ? "${preferred.join(' ')}\n${alternative.join(' ')}"
@@ -508,6 +515,7 @@ class ControllerFinishes extends ChangeNotifier
       case FinishesState.inputAlternative:
         altervativeInput.add(value);
         if (altervativeInput.length == alternative.length) {
+          stopwatch.stop();
           checkCorrect();
           currentState = FinishesState.solution;
         }
@@ -522,7 +530,7 @@ class ControllerFinishes extends ChangeNotifier
     const listEquality = ListEquality();
     correct = listEquality.equals(preferred, preferredInput) &&
             listEquality.equals(alternative, altervativeInput)
-        ? "✅"
+        ? "✅ ${getStoppedTime()}"
         : "❌";
   }
 }
