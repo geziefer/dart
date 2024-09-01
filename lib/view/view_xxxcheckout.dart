@@ -37,11 +37,12 @@ class ViewXXXCheckout extends StatelessWidget {
               children: [
                 const Divider(color: Colors.white, thickness: 3),
                 Expanded(
+                  flex: 1,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
-                        flex: 5,
+                        flex: 45,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -91,7 +92,7 @@ class ViewXXXCheckout extends StatelessWidget {
 
                       // ########## Right column with num pad
                       Expanded(
-                        flex: 5,
+                        flex: 55,
                         child: Numpad(
                           controller: controller,
                           showUpper: true,

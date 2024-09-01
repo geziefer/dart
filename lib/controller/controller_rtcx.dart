@@ -1,3 +1,4 @@
+import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
@@ -5,7 +6,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerRTCX extends ChangeNotifier
+class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
   static final ControllerRTCX _instance = ControllerRTCX._private();
 

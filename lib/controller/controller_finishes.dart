@@ -1,12 +1,13 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 
-class ControllerFinishes extends ChangeNotifier
+class ControllerFinishes extends ControllerBase
     implements MenuitemController, DartboardController {
   static final ControllerFinishes _instance = ControllerFinishes._private();
 

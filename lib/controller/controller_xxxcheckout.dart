@@ -1,3 +1,4 @@
+import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/checkout.dart';
@@ -5,7 +6,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerXXXCheckout extends ChangeNotifier
+class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
   static final ControllerXXXCheckout _instance =
       ControllerXXXCheckout._private();
@@ -222,8 +223,8 @@ class ControllerXXXCheckout extends ChangeNotifier
                           Container(
                             margin: const EdgeInsets.all(5),
                             child: Text(
-                              createMultilineString(
-                                  results, 'Leg', 'Darts', finishes, 10, true),
+                              createMultilineString(results, [], 'Leg', 'Darts',
+                                  finishes, 10, true),
                               style: const TextStyle(
                                 fontSize: 40,
                                 color: Colors.black,
@@ -292,19 +293,19 @@ class ControllerXXXCheckout extends ChangeNotifier
   }
 
   String getCurrentRounds() {
-    return createMultilineString(rounds, '', '', [], 6, false);
+    return createMultilineString(rounds, [], '', '', [], 5, false);
   }
 
   String getCurrentScores() {
-    return createMultilineString(scores, '', '', [], 6, false);
+    return createMultilineString(scores, [], '', '', [], 5, false);
   }
 
   String getCurrentRemainings() {
-    return createMultilineString(remainings, '', '', [], 6, false);
+    return createMultilineString(remainings, [], '', '', [], 5, false);
   }
 
   String getCurrentDarts() {
-    return createMultilineString(darts, '', '', [], 6, false);
+    return createMultilineString(darts, [], '', '', [], 5, false);
   }
 
   double getAvgScore() {
@@ -321,32 +322,6 @@ class ControllerXXXCheckout extends ChangeNotifier
       'avgScore': getAvgScore().toStringAsFixed(1),
       'avgDarts': getAvgDarts().toStringAsFixed(1)
     };
-  }
-
-  String createMultilineString(List list, String prefix, String postfix,
-      List optional, int limit, bool enumarate) {
-    String result = "";
-    String enhancedPrefix = "";
-    String enhancesPostfix = "";
-    String optionalStatus = "";
-    // max limit entries
-    int to = list.length;
-    int from = (to > limit) ? to - limit : 0;
-    for (int i = from; i < list.length; i++) {
-      enhancedPrefix = enumarate
-          ? '$prefix ${i + 1}: '
-          : (prefix.isNotEmpty ? '$prefix: ' : '');
-      enhancesPostfix = postfix.isNotEmpty ? ' $postfix' : '';
-      if (optional.isNotEmpty) {
-        optionalStatus = optional[i] ? " ✅" : " ❌";
-      }
-      result += '$enhancedPrefix${list[i]}$enhancesPostfix$optionalStatus\n';
-    }
-    // delete last line break if any
-    if (result.isNotEmpty) {
-      result = result.substring(0, result.length - 1);
-    }
-    return result;
   }
 
   @override

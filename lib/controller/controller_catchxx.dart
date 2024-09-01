@@ -1,10 +1,11 @@
+import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class ControllerCatchXX extends ChangeNotifier
+class ControllerCatchXX extends ControllerBase
     implements MenuitemController, NumpadController {
   static final ControllerCatchXX _instance = ControllerCatchXX._private();
 
@@ -173,52 +174,24 @@ class ControllerCatchXX extends ChangeNotifier
     notifyListeners();
   }
 
-  String createMultilineString(List list1, List list2, String prefix,
-      String postfix, List optional, int limit, bool enumarate) {
-    String result = "";
-    String enhancedPrefix = "";
-    String enhancesPostfix = "";
-    String optionalStatus = "";
-    String listText = "";
-    // max limit entries
-    int to = list1.length;
-    int from = (to > limit) ? to - limit : 0;
-    for (int i = from; i < list1.length; i++) {
-      enhancedPrefix = enumarate
-          ? '$prefix ${i + 1}: '
-          : (prefix.isNotEmpty ? '$prefix: ' : '');
-      enhancesPostfix = postfix.isNotEmpty ? ' $postfix' : '';
-      if (optional.isNotEmpty) {
-        optionalStatus = optional[i] ? " ✅" : " ❌";
-      }
-      listText = list2.isEmpty ? '${list1[i]}' : '${list1[i]}: ${list2[i]}';
-      result += '$enhancedPrefix$listText$enhancesPostfix$optionalStatus\n';
-    }
-    // delete last line break if any
-    if (result.isNotEmpty) {
-      result = result.substring(0, result.length - 1);
-    }
-    return result;
-  }
-
   double getAvgPoints() {
     return round == 1 ? 0 : (points / (round - 1));
   }
 
   String getCurrentTargets() {
-    return createMultilineString(targets, [], '', '', [], 6, false);
+    return createMultilineString(targets, [], '', '', [], 5, false);
   }
 
   String getCurrentThrownPoints() {
-    // roll 1 line earlier as targets in 1 longer, except last round
+    // roll 1 line earlier as targets is 1 longer, except last round
     return createMultilineString(
-        thrownPoints, [], '', '', [], thrownPoints.length == 40 ? 6 : 5, false);
+        thrownPoints, [], '', '', [], thrownPoints.length == 40 ? 5 : 4, false);
   }
 
   String getCurrentTotalPoints() {
-    // roll 1 line earlier as targets in 1 longer, except last round
+    // roll 1 line earlier as targets is 1 longer, except last round
     return createMultilineString(
-        totalPoints, [], '', '', [], totalPoints.length == 40 ? 6 : 5, false);
+        totalPoints, [], '', '', [], totalPoints.length == 40 ? 5 : 4, false);
   }
 
   @override

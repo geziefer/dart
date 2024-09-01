@@ -31,7 +31,7 @@ class ViewCatchXX extends StatelessWidget {
 
           // ########## Main part with game results and num pad
           Expanded(
-            flex: 72,
+            flex: 75,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -102,7 +102,7 @@ class ViewCatchXX extends StatelessWidget {
 
           // ########## Bottom row with stats
           Expanded(
-            flex: 18,
+            flex: 15,
             child: Column(
               children: [
                 Row(
