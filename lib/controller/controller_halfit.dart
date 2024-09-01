@@ -135,7 +135,7 @@ class ControllerHalfit extends ControllerBase
                         child: Text(
                           'Punkte: $totalScore',
                           style: const TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             color: Colors.black,
                           ),
                           textAlign: TextAlign.center,
@@ -147,7 +147,7 @@ class ControllerHalfit extends ControllerBase
                           createMultilineString(
                               labels, scores, '', '', hit, 10, false),
                           style: const TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             color: Colors.black,
                           ),
                           textAlign: TextAlign.right,
@@ -158,7 +158,7 @@ class ControllerHalfit extends ControllerBase
                         child: Text(
                           'ØPunkte: ${getCurrentStats()['avgScore']}',
                           style: const TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             color: Colors.red,
                           ),
                           textAlign: TextAlign.center,
