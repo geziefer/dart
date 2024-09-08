@@ -136,6 +136,7 @@ class Numpad extends StatelessWidget {
           },
           style: TextButton.styleFrom(
             backgroundColor: Colors.white24,
+            shape: const BeveledRectangleBorder(),
           ),
           child: Text(
             label,

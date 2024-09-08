@@ -37,7 +37,8 @@ class Header extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
                 side: const BorderSide(width: 3.0, color: Colors.white),
-                minimumSize: const Size(40, 70)),
+                minimumSize: const Size(40, 70),
+                shape: const CircleBorder()),
             child: const Icon(
               Icons.arrow_back,
               color: Color.fromARGB(255, 215, 198, 132),

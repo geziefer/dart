@@ -77,6 +77,7 @@ class Checkout extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.black,
+                        shape: const BeveledRectangleBorder(),
                       ),
                       child: const Text(
                         "1",
@@ -98,6 +99,7 @@ class Checkout extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.black,
+                        shape: const BeveledRectangleBorder(),
                       ),
                       child: const Text(
                         "2",
@@ -119,6 +121,7 @@ class Checkout extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.black,
+                        shape: const BeveledRectangleBorder(),
                       ),
                       child: const Text(
                         "3",
