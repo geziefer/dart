@@ -25,16 +25,16 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.dart"
 
-    compileSdkVersion 34
-    ndkVersion "25.2.9519653"
+    compileSdkVersion 35
+    ndkVersion "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '21'
     }
 
     sourceSets {
@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "com.example.dart"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }

@@ -16,10 +16,6 @@ dependencies:
   collection: ^1.18.0
   path_provider: ^2.1.2
 
-dependency_overrides:
-  path_provider_android: ^2.0.33
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
