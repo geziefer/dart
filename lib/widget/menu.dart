@@ -258,7 +258,8 @@ class MenuItem extends StatelessWidget {
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(width: 1.0, color: Colors.white),
-            shape: const BeveledRectangleBorder(),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
