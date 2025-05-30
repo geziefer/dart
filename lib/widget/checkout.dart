@@ -20,7 +20,7 @@ class Checkout extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              margin: const EdgeInsets.all(5),
+              margin: const EdgeInsets.all(10),
               child: const Text(
                 "Maximale Dart-Anzahl erreicht",
                 style: TextStyle(fontSize: 40, color: Colors.black),
@@ -28,7 +28,7 @@ class Checkout extends StatelessWidget {
               ),
             ),
             Container(
-              margin: const EdgeInsets.all(5),
+              margin: const EdgeInsets.all(10),
               child: DurationButton(
                 duration: const Duration(seconds: 3),
                 onPressed: () {
@@ -68,7 +68,7 @@ class Checkout extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: TextButton(
                       onPressed: () {
                         // correct previously counted 3 darts to 1
@@ -90,7 +90,7 @@ class Checkout extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: TextButton(
                       onPressed: () {
                         // correct previously counted 3 darts to 2
@@ -112,7 +112,7 @@ class Checkout extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: TextButton(
                       onPressed: () {
                         // nothing to correct, but call for update

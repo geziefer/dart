@@ -122,7 +122,7 @@ class Numpad extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: Container(
-        margin: const EdgeInsets.all(5),
+        margin: const EdgeInsets.all(10),
         child: TextButton(
           onPressed: () {
             // call interface method from controller

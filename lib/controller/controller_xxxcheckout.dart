@@ -146,6 +146,8 @@ class ControllerXXXCheckout extends ControllerBase
             barrierDismissible: false,
             builder: (context) {
               return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
                 child: Checkout(
                   remaining: remaining,
                   controller: this,
@@ -207,37 +209,39 @@ class ControllerXXXCheckout extends ControllerBase
                           (numberGames + 1)));
 
                   return Dialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(2))),
                     child: SizedBox(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            margin: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.all(10),
                             child: const Text(
                               "Zusammenfassung",
                               style:
-                                  TextStyle(fontSize: 50, color: Colors.black),
+                                  TextStyle(fontSize: 40, color: Colors.black),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.all(10),
                             child: Text(
                               createMultilineString(results, [], 'Leg', 'Darts',
                                   finishes, 10, true),
                               style: const TextStyle(
-                                fontSize: 40,
+                                fontSize: 35,
                                 color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.all(10),
                             child: Text(
                               'ØPunkte: ${getCurrentStats()['avgScore']}\nØDarts: ${getCurrentStats()['avgDarts']}',
                               style: const TextStyle(
-                                fontSize: 40,
+                                fontSize: 30,
                                 color: Colors.red,
                               ),
                               textAlign: TextAlign.center,
@@ -253,6 +257,9 @@ class ControllerXXXCheckout extends ControllerBase
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 minimumSize: const Size(150, 80),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(2))),
                               ),
                               child: const Text(
                                 'OK',

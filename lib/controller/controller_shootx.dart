@@ -86,6 +86,8 @@ class ControllerShootx extends ControllerBase
                       (numberGames + 1)));
 
               return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
                 child: SizedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -130,6 +132,9 @@ class ControllerShootx extends ControllerBase
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.black,
                             minimumSize: const Size(150, 80),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(2))),
                           ),
                           child: const Text(
                             'OK',

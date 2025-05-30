@@ -118,12 +118,14 @@ class ControllerHalfit extends ControllerBase
                       (numberGames + 1)));
 
               return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(2))),
                 child: SizedBox(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
                         child: const Text(
                           "Zusammenfassung",
                           style: TextStyle(fontSize: 50, color: Colors.black),
@@ -131,7 +133,7 @@ class ControllerHalfit extends ControllerBase
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
                         child: Text(
                           'Punkte: $totalScore',
                           style: const TextStyle(
@@ -154,7 +156,7 @@ class ControllerHalfit extends ControllerBase
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
                         child: Text(
                           'ØPunkte: ${getCurrentStats()['avgScore']}',
                           style: const TextStyle(
@@ -165,7 +167,7 @@ class ControllerHalfit extends ControllerBase
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(10),
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -174,6 +176,9 @@ class ControllerHalfit extends ControllerBase
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.black,
                             minimumSize: const Size(150, 80),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(2))),
                           ),
                           child: const Text(
                             'OK',

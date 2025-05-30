@@ -74,6 +74,9 @@ class ControllerRTCX extends ControllerBase
                 barrierDismissible: false,
                 builder: (context) {
                   return Dialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(2))),
+
                     // no remaining score here, so set last one
                     child: Checkout(
                       remaining: remaining,
@@ -119,12 +122,14 @@ class ControllerRTCX extends ControllerBase
 
           String checkSymbol = finished ? " ✅" : " ❌";
           return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(2))),
             child: SizedBox(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: const Text(
                       "Zusammenfassung",
                       style: TextStyle(fontSize: 50, color: Colors.black),
@@ -132,7 +137,7 @@ class ControllerRTCX extends ControllerBase
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: Text(
                       'RTC geschafft: $checkSymbol',
                       style: const TextStyle(
@@ -143,7 +148,7 @@ class ControllerRTCX extends ControllerBase
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: Text(
                       'Anzahl Darts: $dart',
                       style: const TextStyle(
@@ -154,7 +159,7 @@ class ControllerRTCX extends ControllerBase
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: Text(
                       'Darts/Checkout: ${getCurrentStats()['avgChecks']}',
                       style: const TextStyle(
@@ -165,7 +170,7 @@ class ControllerRTCX extends ControllerBase
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(10),
                     child: TextButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -174,6 +179,8 @@ class ControllerRTCX extends ControllerBase
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.black,
                         minimumSize: const Size(150, 80),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(2))),
                       ),
                       child: const Text(
                         'OK',
