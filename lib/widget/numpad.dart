@@ -118,7 +118,7 @@ class Numpad extends StatelessWidget {
   /// build 1 button which calls Numbad controller handler
   Widget _buildNumpadButton(BuildContext context, NumpadController controller,
       String label, int value, bool large) {
-    double fontSize = large ? 50 : 40;
+    double fontSize = large ? 50 : 36;
     return Expanded(
       flex: 1,
       child: Container(

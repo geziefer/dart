@@ -230,7 +230,7 @@ class ControllerXXXCheckout extends ControllerBase
                               createMultilineString(results, [], 'Leg', 'Darts',
                                   finishes, 10, true),
                               style: const TextStyle(
-                                fontSize: 35,
+                                fontSize: 32,
                                 color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
