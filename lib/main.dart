@@ -6,14 +6,22 @@ import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   // initialize all local data storages with id as key
   for (var box in Menu.games) {
     await GetStorage.init(box.id);
   }
+
   runApp(
     MultiProvider(
       providers: [

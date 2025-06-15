@@ -11,8 +11,8 @@ import 'package:dart/view/view_halfit.dart';
 import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
+import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class Menu extends StatelessWidget {
   const Menu({
@@ -167,10 +167,6 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     Image image =
         Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Center(
@@ -179,45 +175,12 @@ class Menu extends StatelessWidget {
             image,
             const SizedBox(height: 10),
             Expanded(
-              flex: 1,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    for (int i = 0; i <= 3; i++) games.elementAt(i),
-                  ]),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (int i = 4; i <= 7; i++) games.elementAt(i),
-                  ]),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (int i = 8; i <= 11; i++) games.elementAt(i),
-                  ]),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (int i = 12; i <= 15; i++) games.elementAt(i),
-                  ]),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (int i = 16; i <= 19; i++) games.elementAt(i),
-                  ]),
+              child: GridView.count(
+                crossAxisCount: 4,
+                childAspectRatio: 2.2,
+                padding: const EdgeInsets.all(8),
+                children: games,
+              ),
             ),
           ],
         ),
@@ -240,7 +203,7 @@ class MenuItem extends StatelessWidget {
   final String name;
   final Widget view;
   final MenuitemController controller;
-  final Map params;
+  final Map<String, dynamic> params;
 
   @override
   Widget build(BuildContext context) {
@@ -256,18 +219,13 @@ class MenuItem extends StatelessWidget {
               MaterialPageRoute(builder: (context) => view),
             );
           },
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(width: 1.0, color: Colors.white),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-          ),
+          style: menuButtonStyle,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 name,
-                style: const TextStyle(
-                    fontSize: 42, color: Color.fromARGB(255, 215, 198, 132)),
+                style: menuButtonTextStyle,
                 textAlign: TextAlign.center,
               ),
             ],
