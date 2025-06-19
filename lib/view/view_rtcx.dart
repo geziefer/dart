@@ -1,4 +1,5 @@
 import 'package:dart/controller/controller_rtcx.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
@@ -94,23 +95,19 @@ class ViewRTCX extends StatelessWidget {
                   children: [
                     const Text(
                       "Runde: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['throw']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "   ØDarts/Checkout: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['avgChecks']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                   ],
                 ),
@@ -119,7 +116,7 @@ class ViewRTCX extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                      style: statsSummaryTextStyle,
                     ),
                   ],
                 )

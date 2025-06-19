@@ -1,4 +1,5 @@
 import 'package:dart/interfaces/dartboard_controller.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -172,11 +173,6 @@ class FullCirclePainter extends CustomPainter {
       const double sweepAngle = (2 * pi / 20);
 
       final center = Offset(size.width / 2, size.height / 2);
-      const textStyle = TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        fontSize: 30,
-      );
 
       // Calculate the position for the text
       final double labelAngle = startAngle + sweepAngle / 2;
@@ -188,7 +184,7 @@ class FullCirclePainter extends CustomPainter {
       // Draw the text
       final textSpan = TextSpan(
         text: sliceIDs[sliceIndex],
-        style: textStyle,
+        style: boardTextStyle,
       );
       final textPainter = TextPainter(
         text: textSpan,

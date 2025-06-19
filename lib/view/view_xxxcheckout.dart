@@ -1,4 +1,5 @@
 import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
@@ -119,33 +120,27 @@ class ViewXXXCheckout extends StatelessWidget {
                   children: [
                     const Text(
                       "Runde: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['round']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "   ØPunkte: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['avgScore']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "   ØDarts: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['avgDarts']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                   ],
                 ),
@@ -154,7 +149,7 @@ class ViewXXXCheckout extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                      style: statsSummaryTextStyle,
                     ),
                   ],
                 )

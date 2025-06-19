@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -108,7 +109,7 @@ class ControllerCatchXX extends ControllerBase
                         margin: const EdgeInsets.all(10),
                         child: const Text(
                           "Zusammenfassung",
-                          style: TextStyle(fontSize: 50, color: Colors.black),
+                          style: endSummaryHeaderTextStyle,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -116,10 +117,7 @@ class ControllerCatchXX extends ControllerBase
                         margin: const EdgeInsets.all(10),
                         child: Text(
                           'Anzahl Checks: $hits',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black,
-                          ),
+                          style: endSummaryTextStyle,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -127,10 +125,7 @@ class ControllerCatchXX extends ControllerBase
                         margin: const EdgeInsets.all(10),
                         child: Text(
                           'Anzahl Punkte: $points',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black,
-                          ),
+                          style: endSummaryTextStyle,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -138,10 +133,7 @@ class ControllerCatchXX extends ControllerBase
                         margin: const EdgeInsets.all(10),
                         child: Text(
                           'Punkte/Runde: ${getCurrentStats()['avgPoints']}',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.red,
-                          ),
+                          style: endSummaryEmphasizedTextStyle,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -152,16 +144,10 @@ class ControllerCatchXX extends ControllerBase
                             Navigator.pop(context);
                             Navigator.pop(context);
                           },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            minimumSize: const Size(150, 80),
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(2))),
-                          ),
+                          style: okButtonStyle,
                           child: const Text(
                             'OK',
-                            style: TextStyle(fontSize: 50, color: Colors.white),
+                            style: okButtonTextStyle,
                             textAlign: TextAlign.center,
                           ),
                         ),

@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
@@ -219,8 +220,7 @@ class ControllerXXXCheckout extends ControllerBase
                             margin: const EdgeInsets.all(10),
                             child: const Text(
                               "Zusammenfassung",
-                              style:
-                                  TextStyle(fontSize: 40, color: Colors.black),
+                              style: endSummaryHeaderTextStyle,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -229,10 +229,7 @@ class ControllerXXXCheckout extends ControllerBase
                             child: Text(
                               createMultilineString(results, [], 'Leg', 'Darts',
                                   finishes, 10, true),
-                              style: const TextStyle(
-                                fontSize: 32,
-                                color: Colors.black,
-                              ),
+                              style: endSummaryTextStyle,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -240,10 +237,7 @@ class ControllerXXXCheckout extends ControllerBase
                             margin: const EdgeInsets.all(10),
                             child: Text(
                               'ØPunkte: ${getCurrentStats()['avgScore']}\nØDarts: ${getCurrentStats()['avgDarts']}',
-                              style: const TextStyle(
-                                fontSize: 30,
-                                color: Colors.red,
-                              ),
+                              style: endSummaryEmphasizedTextStyle,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -254,17 +248,10 @@ class ControllerXXXCheckout extends ControllerBase
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               },
-                              style: TextButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                minimumSize: const Size(150, 80),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(2))),
-                              ),
+                              style: okButtonStyle,
                               child: const Text(
                                 'OK',
-                                style: TextStyle(
-                                    fontSize: 50, color: Colors.white),
+                                style: okButtonTextStyle,
                                 textAlign: TextAlign.center,
                               ),
                             ),

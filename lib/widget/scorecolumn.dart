@@ -1,4 +1,4 @@
-
+import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
 class ScoreColumn extends StatelessWidget {
@@ -19,10 +19,7 @@ class ScoreColumn extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 68,
-            color: Color.fromARGB(255, 215, 198, 132),
-          ),
+          style: scoreLabelTextStyle,
         ),
         Text(
           content,

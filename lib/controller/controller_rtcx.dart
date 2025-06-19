@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +133,7 @@ class ControllerRTCX extends ControllerBase
                     margin: const EdgeInsets.all(10),
                     child: const Text(
                       "Zusammenfassung",
-                      style: TextStyle(fontSize: 50, color: Colors.black),
+                      style: endSummaryHeaderTextStyle,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -140,10 +141,7 @@ class ControllerRTCX extends ControllerBase
                     margin: const EdgeInsets.all(10),
                     child: Text(
                       'RTC geschafft: $checkSymbol',
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.black,
-                      ),
+                      style: endSummaryTextStyle,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -151,10 +149,7 @@ class ControllerRTCX extends ControllerBase
                     margin: const EdgeInsets.all(10),
                     child: Text(
                       'Anzahl Darts: $dart',
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.black,
-                      ),
+                      style: endSummaryTextStyle,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -162,10 +157,7 @@ class ControllerRTCX extends ControllerBase
                     margin: const EdgeInsets.all(10),
                     child: Text(
                       'Darts/Checkout: ${getCurrentStats()['avgChecks']}',
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.red,
-                      ),
+                      style: endSummaryEmphasizedTextStyle,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -176,15 +168,10 @@ class ControllerRTCX extends ControllerBase
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        minimumSize: const Size(150, 80),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(2))),
-                      ),
+                      style: okButtonStyle,
                       child: const Text(
                         'OK',
-                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        style: okButtonTextStyle,
                         textAlign: TextAlign.center,
                       ),
                     ),

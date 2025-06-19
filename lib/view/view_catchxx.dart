@@ -1,4 +1,5 @@
 import 'package:dart/controller/controller_catchxx.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
@@ -110,43 +111,35 @@ class ViewCatchXX extends StatelessWidget {
                   children: [
                     const Text(
                       "Ziel: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['target']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "  Checks: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['hits']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "  Punkte: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['points']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     const Text(
                       "   ØPunkte: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['avgPoints']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                   ],
                 ),
@@ -155,7 +148,7 @@ class ViewCatchXX extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                      style: statsSummaryTextStyle,
                     ),
                   ],
                 )

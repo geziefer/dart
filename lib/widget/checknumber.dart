@@ -1,3 +1,4 @@
+import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
 class CheckNumber extends StatelessWidget {
@@ -23,10 +24,7 @@ class CheckNumber extends StatelessWidget {
             width: 100,
             child: Text(
               '$number:',
-              style: const TextStyle(
-                fontSize: 55,
-                color: Color.fromARGB(255, 215, 198, 132),
-              ),
+              style: checkNumberStyle,
               textAlign: TextAlign.right,
             ),
           ),
@@ -34,10 +32,7 @@ class CheckNumber extends StatelessWidget {
             width: 100,
             child: Text(
               '$checkSymbol  ',
-              style: const TextStyle(
-                fontSize: 55,
-                color: Color.fromARGB(255, 215, 198, 132),
-              ),
+              style: checkNumberStyle,
             ),
           ),
         ],

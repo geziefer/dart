@@ -1,4 +1,5 @@
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/styles.dart';
 import 'package:duration_button/duration_button.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ class Checkout extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: const Text(
                 "Maximale Dart-Anzahl erreicht",
-                style: TextStyle(fontSize: 40, color: Colors.black),
+                style: endSummaryHeaderTextStyle,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -40,7 +41,7 @@ class Checkout extends StatelessWidget {
                 height: 80,
                 child: const Text(
                   'OK',
-                  style: TextStyle(fontSize: 50, color: Colors.white),
+                  style: okButtonTextStyle,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -56,7 +57,7 @@ class Checkout extends StatelessWidget {
         children: [
           const Text(
             "Wie viele Darts zum Checkout?",
-            style: TextStyle(fontSize: 40, color: Colors.black),
+            style: endSummaryHeaderTextStyle,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
@@ -75,13 +76,10 @@ class Checkout extends StatelessWidget {
                         controller.correctDarts(2);
                         Navigator.pop(context);
                       },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: const BeveledRectangleBorder(),
-                      ),
+                      style: finishButtonStyle,
                       child: const Text(
                         "1",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        style: finishButtonTextStyle,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -97,13 +95,10 @@ class Checkout extends StatelessWidget {
                         controller.correctDarts(1);
                         Navigator.pop(context);
                       },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: const BeveledRectangleBorder(),
-                      ),
+                      style: finishButtonStyle,
                       child: const Text(
                         "2",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        style: finishButtonTextStyle,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -119,13 +114,10 @@ class Checkout extends StatelessWidget {
                         controller.correctDarts(0);
                         Navigator.pop(context);
                       },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: const BeveledRectangleBorder(),
-                      ),
+                      style: finishButtonStyle,
                       child: const Text(
                         "3",
-                        style: TextStyle(fontSize: 50, color: Colors.white),
+                        style: finishButtonTextStyle,
                         textAlign: TextAlign.center,
                       ),
                     ),

@@ -1,4 +1,5 @@
 import 'package:dart/controller/controller_shootx.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
@@ -111,23 +112,19 @@ class ViewShootx extends StatelessWidget {
                   children: [
                     const Text(
                       "Runde: ",
-                      style: TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['round']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                     Text(
                       "   Ø$x: ",
-                      style: const TextStyle(
-                          fontSize: 50,
-                          color: Color.fromARGB(255, 215, 198, 132)),
+                      style: statsTextStyle,
                     ),
                     Text(
                       "${currentStats['avgBulls']}",
-                      style: const TextStyle(fontSize: 50, color: Colors.white),
+                      style: statsNumberTextStyle,
                     ),
                   ],
                 ),
@@ -136,7 +133,7 @@ class ViewShootx extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: const TextStyle(fontSize: 40, color: Colors.white),
+                      style: statsSummaryTextStyle,
                     ),
                   ],
                 )

@@ -1,3 +1,4 @@
+import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
@@ -35,10 +36,7 @@ class Header extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            style: OutlinedButton.styleFrom(
-                side: const BorderSide(width: 3.0, color: Colors.white),
-                minimumSize: const Size(40, 70),
-                shape: const CircleBorder()),
+            style: headerButtonStyle,
             child: const Icon(
               Icons.arrow_back,
               color: Color.fromARGB(255, 215, 198, 132),

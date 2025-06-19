@@ -1,3 +1,4 @@
+import 'package:dart/styles.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -36,10 +37,7 @@ class Numpad extends StatelessWidget {
                   children: [
                     Text(
                       controller.getInput(),
-                      style: const TextStyle(
-                        fontSize: 70,
-                        color: Colors.white,
-                      ),
+                      style: numpadInputTextStyle,
                     ),
                     const Divider(color: Colors.white, thickness: 3),
                   ],
@@ -134,10 +132,7 @@ class Numpad extends StatelessWidget {
               controller.pressNumpadButton(context, -3);
             }
           },
-          style: TextButton.styleFrom(
-            backgroundColor: Colors.white24,
-            shape: const BeveledRectangleBorder(),
-          ),
+          style: numpadTextStyle,
           child: Text(
             label,
             style: TextStyle(fontSize: fontSize, color: Colors.white),
