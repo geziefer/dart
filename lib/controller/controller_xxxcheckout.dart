@@ -1,9 +1,9 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/styles.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -176,89 +176,56 @@ class ControllerXXXCheckout extends ControllerBase
 
           // check for end of game
           if (leg == end) {
+            GetStorage storage = GetStorage(item.id);
+            int numberGames = storage.read('numberGames') ?? 0;
+            int recordFinishes = storage.read('recordFinishes') ?? 0;
+            double recordScore = storage.read('recordScore') ?? 0;
+            double recordDarts = storage.read('recordDarts') ?? 0;
+            double longtermScore = storage.read('longtermScore') ?? 0;
+            double longtermDarts = storage.read('longtermDarts') ?? 0;
+            double avgScore = getAvgScore();
+            double avgDarts = getAvgDarts();
+            storage.write('numberGames', numberGames + 1);
+            if (wins == 0 || wins > recordFinishes) {
+              storage.write('recordFinishes', recordFinishes + 1);
+            }
+            if (recordScore == 0 || avgScore < recordScore) {
+              storage.write('recordScore', avgScore);
+            }
+            if (recordDarts == 0 || avgDarts < recordDarts) {
+              storage.write('recordDarts', avgDarts);
+            }
+            storage.write(
+                'longtermScore',
+                (((longtermScore * numberGames) + avgScore) /
+                    (numberGames + 1)));
+            storage.write(
+                'longtermDarts',
+                (((longtermDarts * numberGames) + avgDarts) /
+                    (numberGames + 1)));
+
             showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) {
-                  // save stats to device, use gameno as key
-                  GetStorage storage = GetStorage(item.id);
-                  int numberGames = storage.read('numberGames') ?? 0;
-                  int recordFinishes = storage.read('recordFinishes') ?? 0;
-                  double recordScore = storage.read('recordScore') ?? 0;
-                  double recordDarts = storage.read('recordDarts') ?? 0;
-                  double longtermScore = storage.read('longtermScore') ?? 0;
-                  double longtermDarts = storage.read('longtermDarts') ?? 0;
-                  double avgScore = getAvgScore();
-                  double avgDarts = getAvgDarts();
-                  storage.write('numberGames', numberGames + 1);
-                  if (wins == 0 || wins > recordFinishes) {
-                    storage.write('recordFinishes', recordFinishes + 1);
-                  }
-                  if (recordScore == 0 || avgScore < recordScore) {
-                    storage.write('recordScore', avgScore);
-                  }
-                  if (recordDarts == 0 || avgDarts < recordDarts) {
-                    storage.write('recordDarts', avgDarts);
-                  }
-                  storage.write(
-                      'longtermScore',
-                      (((longtermScore * numberGames) + avgScore) /
-                          (numberGames + 1)));
-                  storage.write(
-                      'longtermDarts',
-                      (((longtermDarts * numberGames) + avgDarts) /
-                          (numberGames + 1)));
-
-                  return Dialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(2))),
-                    child: SizedBox(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(10),
-                            child: const Text(
-                              "Zusammenfassung",
-                              style: endSummaryHeaderTextStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(10),
-                            child: Text(
-                              createMultilineString(results, [], 'Leg', 'Darts',
-                                  finishes, 10, true),
-                              style: endSummaryTextStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(10),
-                            child: Text(
-                              'ØPunkte: ${getCurrentStats()['avgScore']}\nØDarts: ${getCurrentStats()['avgDarts']}',
-                              style: endSummaryEmphasizedTextStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(5),
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
-                              style: okButtonStyle,
-                              child: const Text(
-                                'OK',
-                                style: okButtonTextStyle,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
+                  return SummaryDialog(
+                    lines: [
+                      SummaryLine(
+                        '',
+                        createMultilineString(
+                            results, [], 'Leg', 'Darts', finishes, 10, true),
                       ),
-                    ),
+                      SummaryLine(
+                        'ØPunkte',
+                        getCurrentStats()['avgScore'],
+                        emphasized: true,
+                      ),
+                      SummaryLine(
+                        'ØDarts',
+                        getCurrentStats()['avgDarts'],
+                        emphasized: true,
+                      ),
+                    ],
                   );
                 });
           }

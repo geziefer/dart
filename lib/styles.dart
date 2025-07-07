@@ -67,7 +67,7 @@ const endSummaryEmphasizedTextStyle = TextStyle(
   color: Colors.red,
 );
 
-const checkNumberStyle = const TextStyle(
+const checkNumberStyle = TextStyle(
   fontSize: 50,
   color: Color.fromARGB(255, 215, 198, 132),
 );

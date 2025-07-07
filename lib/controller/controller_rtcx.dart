@@ -1,9 +1,9 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/styles.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -99,86 +99,34 @@ class ControllerRTCX extends ControllerBase
   }
 
   void finishGame(BuildContext context) {
+    // save stats to device, use gameno as key
+    GetStorage storage = GetStorage(item.id);
+    int numberGames = storage.read('numberGames') ?? 0;
+    int numberFinishes = storage.read('numberFinishes') ?? 0;
+    int recordDarts = storage.read('recordDarts') ?? 0;
+    double longtermChecks = storage.read('longtermChecks') ?? 0;
+    double avgChecks = getAvgChecks();
+    storage.write('numberGames', numberGames + 1);
+    if (finished) {
+      storage.write('numberFinishes', numberFinishes + 1);
+    }
+    if (recordDarts == 0 || dart < recordDarts) {
+      storage.write('recordDarts', dart);
+    }
+    storage.write('longtermChecks',
+        (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1)));
+
     showDialog(
         context: context,
         builder: (context) {
-          // save stats to device, use gameno as key
-          GetStorage storage = GetStorage(item.id);
-          int numberGames = storage.read('numberGames') ?? 0;
-          int numberFinishes = storage.read('numberFinishes') ?? 0;
-          int recordDarts = storage.read('recordDarts') ?? 0;
-          double longtermChecks = storage.read('longtermChecks') ?? 0;
-          double avgChecks = getAvgChecks();
-          storage.write('numberGames', numberGames + 1);
-          if (finished) {
-            storage.write('numberFinishes', numberFinishes + 1);
-          }
-          if (recordDarts == 0 || dart < recordDarts) {
-            storage.write('recordDarts', dart);
-          }
-          storage.write(
-              'longtermChecks',
-              (((longtermChecks * numberGames) + avgChecks) /
-                  (numberGames + 1)));
-
-          String checkSymbol = finished ? " ✅" : " ❌";
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(2))),
-            child: SizedBox(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: const Text(
-                      "Zusammenfassung",
-                      style: endSummaryHeaderTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Text(
-                      'RTC geschafft: $checkSymbol',
-                      style: endSummaryTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Text(
-                      'Anzahl Darts: $dart',
-                      style: endSummaryTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Text(
-                      'Darts/Checkout: ${getCurrentStats()['avgChecks']}',
-                      style: endSummaryEmphasizedTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      style: okButtonStyle,
-                      child: const Text(
-                        'OK',
-                        style: okButtonTextStyle,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          String checkSymbol = finished ? "✅" : "❌";
+          return SummaryDialog(
+            lines: [
+              SummaryLine('RTC geschafft', checkSymbol),
+              SummaryLine('Anzahl Darts', '$dart'),
+              SummaryLine('Darts/Checkout', getCurrentStats()['avgChecks'],
+                  emphasized: true),
+            ],
           );
         });
   }
