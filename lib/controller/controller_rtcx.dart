@@ -5,6 +5,7 @@ import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ControllerRTCX extends ControllerBase
@@ -70,25 +71,9 @@ class ControllerRTCX extends ControllerBase
           int remaining = (currentNumber < 21) ? currentNumber : 0;
           finished = currentNumber > 20 ? true : false;
           if (finished) {
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return Dialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(2))),
-
-                    // no remaining score here, so set last one
-                    child: Checkout(
-                      remaining: remaining,
-                      controller: this,
-                    ),
-                  );
-                }).then((value) {
-              finishGame(context);
-            });
+            _showCheckoutDialog(context, remaining);
           } else {
-            finishGame(context);
+            _showSummaryDialog(context);
           }
         } else {
           round++;
@@ -98,14 +83,60 @@ class ControllerRTCX extends ControllerBase
     notifyListeners();
   }
 
-  void finishGame(BuildContext context) {
-    // save stats to device, use gameno as key
+  // Show checkout dialog using a callback-based approach
+  void _showCheckoutDialog(BuildContext context, int remaining) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(2))),
+          // no remaining score here, so set last one
+          child: Checkout(
+            remaining: remaining,
+            controller: this,
+          ),
+        );
+      },
+    ).then((_) {
+      // Use post-frame callback to avoid context across async gaps
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showSummaryDialog(context);
+      });
+    });
+  }
+  
+  // Update game statistics and show summary dialog
+  void _showSummaryDialog(BuildContext context) {
+    // Save stats to device, use gameno as key
+    _updateGameStats();
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        String checkSymbol = finished ? "✅" : "❌";
+        return SummaryDialog(
+          lines: [
+            SummaryLine('RTC geschafft', checkSymbol),
+            SummaryLine('Anzahl Darts', '$dart'),
+            SummaryLine('Darts/Checkout', getCurrentStats()['avgChecks'],
+                emphasized: true),
+          ],
+        );
+      },
+    );
+  }
+  
+  // Update game statistics
+  void _updateGameStats() {
     GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
     double longtermChecks = storage.read('longtermChecks') ?? 0;
     double avgChecks = getAvgChecks();
+    
     storage.write('numberGames', numberGames + 1);
     if (finished) {
       storage.write('numberFinishes', numberFinishes + 1);
@@ -115,20 +146,6 @@ class ControllerRTCX extends ControllerBase
     }
     storage.write('longtermChecks',
         (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1)));
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          String checkSymbol = finished ? "✅" : "❌";
-          return SummaryDialog(
-            lines: [
-              SummaryLine('RTC geschafft', checkSymbol),
-              SummaryLine('Anzahl Darts', '$dart'),
-              SummaryLine('Darts/Checkout', getCurrentStats()['avgChecks'],
-                  emphasized: true),
-            ],
-          );
-        });
   }
 
   int getCurrentNumber() {

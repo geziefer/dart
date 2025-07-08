@@ -142,95 +142,9 @@ class ControllerXXXCheckout extends ControllerBase
 
       // check for checkout or limit of rounds
       if (remaining == 0 || (max != -1 && round > max)) {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(2))),
-                child: Checkout(
-                  remaining: remaining,
-                  controller: this,
-                ),
-              );
-            }).then((value) {
-          results.add(dart);
-          if (remaining == 0) {
-            wins += 1;
-            finishes.add(true);
-          } else {
-            finishes.add(false);
-          }
-          round = 1;
-          remaining = xxx;
-          lastTotalDarts = totalDarts;
-          dart = 0;
-          rounds.clear();
-          scores.clear();
-          remainings.clear();
-          remainings.add(xxx);
-          darts.clear();
-
-          notifyListeners();
-
-          // check for end of game
-          if (leg == end) {
-            GetStorage storage = GetStorage(item.id);
-            int numberGames = storage.read('numberGames') ?? 0;
-            int recordFinishes = storage.read('recordFinishes') ?? 0;
-            double recordScore = storage.read('recordScore') ?? 0;
-            double recordDarts = storage.read('recordDarts') ?? 0;
-            double longtermScore = storage.read('longtermScore') ?? 0;
-            double longtermDarts = storage.read('longtermDarts') ?? 0;
-            double avgScore = getAvgScore();
-            double avgDarts = getAvgDarts();
-            storage.write('numberGames', numberGames + 1);
-            if (wins == 0 || wins > recordFinishes) {
-              storage.write('recordFinishes', recordFinishes + 1);
-            }
-            if (recordScore == 0 || avgScore < recordScore) {
-              storage.write('recordScore', avgScore);
-            }
-            if (recordDarts == 0 || avgDarts < recordDarts) {
-              storage.write('recordDarts', avgDarts);
-            }
-            storage.write(
-                'longtermScore',
-                (((longtermScore * numberGames) + avgScore) /
-                    (numberGames + 1)));
-            storage.write(
-                'longtermDarts',
-                (((longtermDarts * numberGames) + avgDarts) /
-                    (numberGames + 1)));
-
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return SummaryDialog(
-                    lines: [
-                      SummaryLine(
-                        '',
-                        createMultilineString(
-                            results, [], 'Leg', 'Darts', finishes, 10, true),
-                      ),
-                      SummaryLine(
-                        'ØPunkte',
-                        getCurrentStats()['avgScore'],
-                        emphasized: true,
-                      ),
-                      SummaryLine(
-                        'ØDarts',
-                        getCurrentStats()['avgDarts'],
-                        emphasized: true,
-                      ),
-                    ],
-                  );
-                });
-          }
-          leg++;
-        });
+        // Use a callback-based approach to avoid context across async gaps
+        _showCheckoutDialog(context);
+        return; // Return early to prevent further processing
       }
       // number button pressed
     } else {
@@ -246,6 +160,119 @@ class ControllerXXXCheckout extends ControllerBase
     }
 
     notifyListeners();
+  }
+
+  // Show checkout dialog using a callback-based approach
+  void _showCheckoutDialog(BuildContext context) {
+    // Use a synchronous method to show the dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(2))),
+          child: Checkout(
+            remaining: remaining,
+            controller: this,
+          ),
+        );
+      },
+    ).then((_) {
+      // Process results after dialog is closed
+      results.add(dart);
+      if (remaining == 0) {
+        wins += 1;
+        finishes.add(true);
+      } else {
+        finishes.add(false);
+      }
+      round = 1;
+      remaining = xxx;
+      lastTotalDarts = totalDarts;
+      dart = 0;
+      rounds.clear();
+      scores.clear();
+      remainings.clear();
+      remainings.add(xxx);
+      darts.clear();
+
+      notifyListeners();
+
+      // Check if we need to show the summary dialog
+      if (leg == end) {
+        // Update game stats
+        _updateGameStats();
+
+        // Use a separate method to show the summary dialog
+        // This avoids using the original context across async gaps
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showSummaryDialog(context);
+        });
+      }
+
+      leg++;
+    });
+  }
+
+  // Show summary dialog
+  void _showSummaryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return SummaryDialog(
+          lines: [
+            SummaryLine(
+              '',
+              createMultilineString(
+                  results, [], 'Leg', 'Darts', finishes, 10, true),
+            ),
+            SummaryLine(
+              'ØPunkte',
+              getCurrentStats()['avgScore'],
+              emphasized: true,
+            ),
+            SummaryLine(
+              'ØDarts',
+              getCurrentStats()['avgDarts'],
+              emphasized: true,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // This method is no longer needed as the logic is now in _showCheckoutDialog
+
+  // Update game statistics
+  void _updateGameStats() {
+    GetStorage storage = GetStorage(item.id);
+    int numberGames = storage.read('numberGames') ?? 0;
+    int recordFinishes = storage.read('recordFinishes') ?? 0;
+    double recordScore = storage.read('recordScore') ?? 0;
+    double recordDarts = storage.read('recordDarts') ?? 0;
+    double longtermScore = storage.read('longtermScore') ?? 0;
+    double longtermDarts = storage.read('longtermDarts') ?? 0;
+    double avgScore = getAvgScore();
+    double avgDarts = getAvgDarts();
+
+    // Update storage
+    storage.write('numberGames', numberGames + 1);
+    if (wins == 0 || wins > recordFinishes) {
+      storage.write('recordFinishes', recordFinishes + 1);
+    }
+    if (recordScore == 0 || avgScore < recordScore) {
+      storage.write('recordScore', avgScore);
+    }
+    if (recordDarts == 0 || avgDarts < recordDarts) {
+      storage.write('recordDarts', avgDarts);
+    }
+    storage.write('longtermScore',
+        (((longtermScore * numberGames) + avgScore) / (numberGames + 1)));
+    storage.write('longtermDarts',
+        (((longtermDarts * numberGames) + avgDarts) / (numberGames + 1)));
   }
 
   @override
