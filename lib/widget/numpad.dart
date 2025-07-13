@@ -116,7 +116,6 @@ class Numpad extends StatelessWidget {
   /// build 1 button which calls Numbad controller handler
   Widget _buildNumpadButton(BuildContext context, NumpadController controller,
       String label, int value, bool large) {
-    double fontSize = large ? 50 : 36;
     return Expanded(
       flex: 1,
       child: Container(
@@ -135,7 +134,9 @@ class Numpad extends StatelessWidget {
           style: numpadTextStyle,
           child: Text(
             label,
-            style: TextStyle(fontSize: fontSize, color: Colors.white),
+            style: large
+                ? numpadScoreButtonLargeTextStyle
+                : numpadScoreButtonSmallTextStyle,
             textAlign: TextAlign.center,
           ),
         ),

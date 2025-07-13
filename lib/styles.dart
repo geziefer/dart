@@ -77,6 +77,16 @@ const numpadInputTextStyle = TextStyle(
   color: Colors.white,
 );
 
+const numpadScoreButtonLargeTextStyle = TextStyle(
+  fontSize: 50,
+  color: Colors.white,
+);
+
+const numpadScoreButtonSmallTextStyle = TextStyle(
+  fontSize: 32,
+  color: Colors.white,
+);
+
 final numpadTextStyle = TextButton.styleFrom(
   backgroundColor: Colors.white24,
   shape: const BeveledRectangleBorder(),

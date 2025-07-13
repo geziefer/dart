@@ -5,7 +5,6 @@ import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ControllerRTCX extends ControllerBase
@@ -106,12 +105,12 @@ class ControllerRTCX extends ControllerBase
       });
     });
   }
-  
+
   // Update game statistics and show summary dialog
   void _showSummaryDialog(BuildContext context) {
     // Save stats to device, use gameno as key
     _updateGameStats();
-    
+
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -127,7 +126,7 @@ class ControllerRTCX extends ControllerBase
       },
     );
   }
-  
+
   // Update game statistics
   void _updateGameStats() {
     GetStorage storage = GetStorage(item.id);
@@ -136,7 +135,7 @@ class ControllerRTCX extends ControllerBase
     int recordDarts = storage.read('recordDarts') ?? 0;
     double longtermChecks = storage.read('longtermChecks') ?? 0;
     double avgChecks = getAvgChecks();
-    
+
     storage.write('numberGames', numberGames + 1);
     if (finished) {
       storage.write('numberFinishes', numberFinishes + 1);
