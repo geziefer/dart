@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
+import 'package:dart/controller/controller_killbull.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/controller/controller_shootx.dart';
@@ -8,6 +9,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
+import 'package:dart/view/view_killbull.dart';
 import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
@@ -122,8 +124,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'KB',
       name: 'Kill Bull',
-      view: const ViewShootx(title: 'Kill Bull - Bull ohne Unterbrechung'),
-      controller: ControllerShootx(),
+      view: const ViewKillBull(title: 'Kill Bull - Bull ohne Unterbrechung'),
+      controller: ControllerKillBull(),
       params: const {},
     ),
     MenuItem(

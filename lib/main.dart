@@ -2,6 +2,7 @@ import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/controller/controller_halfit.dart';
+import 'package:dart/controller/controller_killbull.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/widget/menu.dart';
@@ -31,6 +32,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerFinishes()),
         ChangeNotifierProvider(create: (context) => ControllerShootx()),
         ChangeNotifierProvider(create: (context) => ControllerCatchXX()),
+        ChangeNotifierProvider(create: (context) => ControllerKillBull()),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',
