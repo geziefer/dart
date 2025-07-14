@@ -320,6 +320,11 @@ class ControllerXXXCheckout extends ControllerBase
     notifyListeners();
   }
 
+  @override
+  bool isButtonDisabled(int value) {
+    return false; // no buttons disabled in xxxcheckout
+  }
+
   String getStats() {
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(item.id);

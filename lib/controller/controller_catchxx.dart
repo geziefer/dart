@@ -59,17 +59,27 @@ class ControllerCatchXX extends ControllerBase
       }
       // all other buttons pressed
     } else {
-      // return button pressed
-      if (value == -1) {
-        value = 0;
+      // ignore button 1 as it's not possible to finish in 1 dart
+      if (value == 1) {
+        return;
       }
-      hits += value > 0 ? 1 : 0;
-      thrownHits.add(1);
+      
+      int dartsUsed = value;
+      // return button pressed or 0 means no score (more than 6 darts)
+      if (value == -1 || value == 0) {
+        dartsUsed = 0;
+      }
+      
+      // calculate points based on darts used
+      int calculatedPoints = _calculatePoints(dartsUsed);
+      
+      hits += calculatedPoints > 0 ? 1 : 0;
+      thrownHits.add(calculatedPoints > 0 ? 1 : 0);
       if (target < 100) {
         targets.add(target + 1);
       }
-      thrownPoints.add(value);
-      points += value;
+      thrownPoints.add(calculatedPoints);
+      points += calculatedPoints;
       totalPoints.add(points);
 
       notifyListeners();
@@ -165,6 +175,39 @@ class ControllerCatchXX extends ControllerBase
     notifyListeners();
   }
 
+  /// Calculate points based on number of darts used
+  /// Special case for target 99: 3 darts = 3 points (impossible to finish in 2 darts)
+  /// Normal case: 2 darts = 3 points, 3 darts = 2 points, 4-6 darts = 1 point, 0 or >6 darts = 0 points
+  int _calculatePoints(int dartsUsed) {
+    // Special case for target 99 - impossible to finish in 2 darts
+    if (target == 99) {
+      switch (dartsUsed) {
+        case 3:
+          return 3; // 3 points for 3 darts on target 99
+        case 4:
+        case 5:
+        case 6:
+          return 1;
+        default:
+          return 0; // 0 or more than 6 darts
+      }
+    }
+    
+    // Normal scoring for all other targets
+    switch (dartsUsed) {
+      case 2:
+        return 3;
+      case 3:
+        return 2;
+      case 4:
+      case 5:
+      case 6:
+        return 1;
+      default:
+        return 0; // 0 or more than 6 darts
+    }
+  }
+
   double getAvgPoints() {
     return round == 1 ? 0 : (points / (round - 1));
   }
@@ -183,6 +226,19 @@ class ControllerCatchXX extends ControllerBase
     // roll 1 line earlier as targets is 1 longer, except last round
     return createMultilineString(
         totalPoints, [], '', '', [], totalPoints.length == 40 ? 5 : 4, false);
+  }
+
+  @override
+  bool isButtonDisabled(int value) {
+    // Button 1 is always disabled as it's not possible to finish any target in 1 dart
+    if (value == 1) {
+      return true;
+    }
+    // Button 2 is disabled for target 99 as it's impossible to finish 99 in 2 darts
+    if (value == 2 && target == 99) {
+      return true;
+    }
+    return false;
   }
 
   @override

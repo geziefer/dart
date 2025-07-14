@@ -116,27 +116,28 @@ class Numpad extends StatelessWidget {
   /// build 1 button which calls Numbad controller handler
   Widget _buildNumpadButton(BuildContext context, NumpadController controller,
       String label, int value, bool large) {
+    bool isDisabled = controller.isButtonDisabled(value);
     return Expanded(
       flex: 1,
       child: Container(
         margin: const EdgeInsets.all(10),
         child: TextButton(
-          onPressed: () {
+          onPressed: isDisabled ? null : () {
             // call interface method from controller
             controller.pressNumpadButton(context, value);
           },
           // for enter button accept long press as rest value, other ignore
-          onLongPress: () {
+          onLongPress: isDisabled ? null : () {
             if (value == -1) {
               controller.pressNumpadButton(context, -3);
             }
           },
-          style: numpadTextStyle,
+          style: isDisabled ? numpadDisabledTextStyle : numpadTextStyle,
           child: Text(
             label,
-            style: large
-                ? numpadScoreButtonLargeTextStyle
-                : numpadScoreButtonSmallTextStyle,
+            style: isDisabled 
+                ? (large ? numpadScoreButtonLargeDisabledTextStyle : numpadScoreButtonSmallDisabledTextStyle)
+                : (large ? numpadScoreButtonLargeTextStyle : numpadScoreButtonSmallTextStyle),
             textAlign: TextAlign.center,
           ),
         ),

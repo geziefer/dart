@@ -166,6 +166,11 @@ class ControllerShootx extends ControllerBase
   }
 
   @override
+  bool isButtonDisabled(int value) {
+    return false; // no buttons disabled in shootx
+  }
+
+  @override
   String getInput() {
     // not used here
     return "";

@@ -88,7 +88,7 @@ class ViewCatchXX extends StatelessWidget {
                         child: Numpad(
                           controller: controller,
                           showUpper: false,
-                          showMiddle: false,
+                          showMiddle: true,
                           showExtraButtons: false,
                           showYesNo: false,
                         ),

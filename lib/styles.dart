@@ -92,6 +92,21 @@ final numpadTextStyle = TextButton.styleFrom(
   shape: const BeveledRectangleBorder(),
 );
 
+final numpadDisabledTextStyle = TextButton.styleFrom(
+  backgroundColor: Colors.grey.withValues(alpha: 0.3),
+  shape: const BeveledRectangleBorder(),
+);
+
+const numpadScoreButtonLargeDisabledTextStyle = TextStyle(
+  fontSize: 50,
+  color: Colors.grey,
+);
+
+const numpadScoreButtonSmallDisabledTextStyle = TextStyle(
+  fontSize: 32,
+  color: Colors.grey,
+);
+
 const scoreLabelTextStyle = TextStyle(
   fontSize: 68,
   color: Color.fromARGB(255, 215, 198, 132),

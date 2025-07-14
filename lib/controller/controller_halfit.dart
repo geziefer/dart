@@ -229,6 +229,11 @@ class ControllerHalfit extends ControllerBase
     // not used here
   }
 
+  @override
+  bool isButtonDisabled(int value) {
+    return false; // no buttons disabled in halfit
+  }
+
   String getStats() {
     // read stats from device, use gameno as key
     GetStorage storage = GetStorage(item.id);

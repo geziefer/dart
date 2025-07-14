@@ -168,6 +168,11 @@ class ControllerRTCX extends ControllerBase
     notifyListeners();
   }
 
+  @override
+  bool isButtonDisabled(int value) {
+    return false; // no buttons disabled in rtcx
+  }
+
   Map getCurrentStats() {
     return {
       'throw': round,

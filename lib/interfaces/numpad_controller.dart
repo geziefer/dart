@@ -5,4 +5,5 @@ abstract class NumpadController {
   void pressNumpadButton(BuildContext context, int value);
   String getInput();
   void correctDarts(int value);
+  bool isButtonDisabled(int value) => false; // default implementation
 }
