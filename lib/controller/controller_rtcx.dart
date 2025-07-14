@@ -134,7 +134,7 @@ class ControllerRTCX extends ControllerBase
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
     double longtermChecks = storage.read('longtermChecks') ?? 0;
-    double avgChecks = getAvgChecks();
+    double avgChecks = _getAvgChecks();
 
     storage.write('numberGames', numberGames + 1);
     if (finished) {
@@ -151,7 +151,7 @@ class ControllerRTCX extends ControllerBase
     return currentNumber;
   }
 
-  double getAvgChecks() {
+  double _getAvgChecks() {
     return currentNumber == 1 ? 0 : (dart / (currentNumber - 1));
   }
 
@@ -177,7 +177,7 @@ class ControllerRTCX extends ControllerBase
     return {
       'throw': round,
       'darts': dart,
-      'avgChecks': getAvgChecks().toStringAsFixed(1),
+      'avgChecks': _getAvgChecks().toStringAsFixed(1),
     };
   }
 

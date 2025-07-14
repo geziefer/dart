@@ -108,7 +108,7 @@ class ControllerHalfit extends ControllerBase
               int numberGames = storage.read('numberGames') ?? 0;
               int recordScore = storage.read('recordScore') ?? 0;
               double longtermScore = storage.read('longtermScore') ?? 0;
-              double avgScore = getAvgScore();
+              double avgScore = _getAvgScore();
               storage.write('numberGames', numberGames + 1);
               if (recordScore == 0 || totalScore > recordScore) {
                 storage.write('recordScore', totalScore);
@@ -216,12 +216,12 @@ class ControllerHalfit extends ControllerBase
         totals, [], '', '', [], totals.length == 9 ? 5 : 4, false);
   }
 
-  double getAvgScore() {
+  double _getAvgScore() {
     return round == 1 ? 0 : ((totalScore - 40) / (round - 1));
   }
 
   Map getCurrentStats() {
-    return {'round': round, 'avgScore': getAvgScore().toStringAsFixed(1)};
+    return {'round': round, 'avgScore': _getAvgScore().toStringAsFixed(1)};
   }
 
   @override

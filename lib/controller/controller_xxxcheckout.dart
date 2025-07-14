@@ -255,8 +255,8 @@ class ControllerXXXCheckout extends ControllerBase
     double recordDarts = storage.read('recordDarts') ?? 0;
     double longtermScore = storage.read('longtermScore') ?? 0;
     double longtermDarts = storage.read('longtermDarts') ?? 0;
-    double avgScore = getAvgScore();
-    double avgDarts = getAvgDarts();
+    double avgScore = _getAvgScore();
+    double avgDarts = _getAvgDarts();
 
     // Update storage
     storage.write('numberGames', numberGames + 1);
@@ -296,19 +296,19 @@ class ControllerXXXCheckout extends ControllerBase
     return createMultilineString(darts, [], '', '', [], 5, false);
   }
 
-  double getAvgScore() {
+  double _getAvgScore() {
     return totalRounds == 0 ? 0 : ((totalScore / totalDarts) * 3);
   }
 
-  double getAvgDarts() {
+  double _getAvgDarts() {
     return leg == 1 ? 0 : (lastTotalDarts / (leg - 1));
   }
 
   Map getCurrentStats() {
     return {
       'round': leg,
-      'avgScore': getAvgScore().toStringAsFixed(1),
-      'avgDarts': getAvgDarts().toStringAsFixed(1)
+      'avgScore': _getAvgScore().toStringAsFixed(1),
+      'avgDarts': _getAvgDarts().toStringAsFixed(1)
     };
   }
 

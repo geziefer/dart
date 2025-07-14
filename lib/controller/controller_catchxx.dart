@@ -95,7 +95,7 @@ class ControllerCatchXX extends ControllerBase
               int recordHits = storage.read('recordHits') ?? 0;
               int recordPoints = storage.read('recordPoints') ?? 0;
               double longtermPoints = storage.read('longtermPoints') ?? 0;
-              double avgPoints = getAvgPoints();
+              double avgPoints = _getAvgPoints();
               storage.write('numberGames', numberGames + 1);
               if (recordHits == 0 || hits > recordHits) {
                 storage.write('recordHits', hits);
@@ -208,7 +208,7 @@ class ControllerCatchXX extends ControllerBase
     }
   }
 
-  double getAvgPoints() {
+  double _getAvgPoints() {
     return round == 1 ? 0 : (points / (round - 1));
   }
 
@@ -257,7 +257,7 @@ class ControllerCatchXX extends ControllerBase
       'target': target,
       'hits': hits,
       'points': points,
-      'avgPoints': getAvgPoints().toStringAsFixed(1),
+      'avgPoints': _getAvgPoints().toStringAsFixed(1),
     };
   }
 

@@ -125,7 +125,7 @@ class ControllerKillBull extends ControllerBase
                       Container(
                         margin: const EdgeInsets.all(10),
                         child: Text(
-                          'Punkte/Runde: ${getAvgScore()}',
+                          'Punkte/Runde: ${_getAvgScore()}',
                           style: endSummaryEmphasizedTextStyle,
                           textAlign: TextAlign.center,
                         ),
@@ -158,7 +158,7 @@ class ControllerKillBull extends ControllerBase
     notifyListeners();
   }
 
-  double getAvgScore() {
+  double _getAvgScore() {
     return round == 1 ? 0 : (totalScore / (round - 1));
   }
 
@@ -194,7 +194,7 @@ class ControllerKillBull extends ControllerBase
     return {
       'round': round,
       'totalScore': totalScore,
-      'avgScore': getAvgScore().toStringAsFixed(1),
+      'avgScore': _getAvgScore().toStringAsFixed(1),
     };
   }
 
