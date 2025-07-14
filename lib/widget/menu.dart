@@ -175,17 +175,27 @@ class Menu extends StatelessWidget {
             image,
             const SizedBox(height: 10),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: 2.2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                padding: const EdgeInsets.all(8),
-                itemCount: games.length,
-                itemBuilder: (context, index) {
-                  return MenuItemButton(menuItem: games[index]);
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Calculate the available height for the grid
+                  final availableHeight = constraints.maxHeight - 16; // subtract padding
+                  final availableWidth = constraints.maxWidth - 16; // subtract padding
+                  
+                  // Calculate aspect ratio based on available space
+                  // 5 rows, 4 columns, with spacing
+                  final itemHeight = (availableHeight - (4 * 8)) / 5; // 4 gaps between 5 rows
+                  final itemWidth = (availableWidth - (3 * 8)) / 4; // 3 gaps between 4 columns
+                  final calculatedAspectRatio = itemWidth / itemHeight;
+                  
+                  return GridView.count(
+                    crossAxisCount: 4,
+                    childAspectRatio: calculatedAspectRatio,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    padding: const EdgeInsets.all(8),
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: games.map((game) => MenuItemButton(menuItem: game)).toList(),
+                  );
                 },
               ),
             ),
