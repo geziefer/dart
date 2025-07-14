@@ -175,11 +175,18 @@ class Menu extends StatelessWidget {
             image,
             const SizedBox(height: 10),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 4,
-                childAspectRatio: 2.2,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: 2.2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
                 padding: const EdgeInsets.all(8),
-                children: games,
+                itemCount: games.length,
+                itemBuilder: (context, index) {
+                  return MenuItemButton(menuItem: games[index]);
+                },
               ),
             ),
           ],
@@ -189,9 +196,8 @@ class Menu extends StatelessWidget {
   }
 }
 
-class MenuItem extends StatelessWidget {
+class MenuItem {
   const MenuItem({
-    super.key,
     required this.id,
     required this.name,
     required this.view,
@@ -204,32 +210,38 @@ class MenuItem extends StatelessWidget {
   final Widget view;
   final MenuitemController controller;
   final Map<String, dynamic> params;
+}
+
+class MenuItemButton extends StatelessWidget {
+  const MenuItemButton({
+    super.key,
+    required this.menuItem,
+  });
+
+  final MenuItem menuItem;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: Container(
-        margin: const EdgeInsets.all(5),
-        child: OutlinedButton(
-          onPressed: () {
-            controller.init(this);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => view),
-            );
-          },
-          style: menuButtonStyle,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                name,
-                style: menuButtonTextStyle,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+    return Container(
+      margin: const EdgeInsets.all(2),
+      child: OutlinedButton(
+        onPressed: () {
+          menuItem.controller.init(menuItem);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => menuItem.view),
+          );
+        },
+        style: menuButtonStyle,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              menuItem.name,
+              style: menuButtonTextStyle,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
