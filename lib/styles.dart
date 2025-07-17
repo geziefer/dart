@@ -83,7 +83,7 @@ const numpadScoreButtonLargeTextStyle = TextStyle(
 );
 
 const numpadScoreButtonSmallTextStyle = TextStyle(
-  fontSize: 32,
+  fontSize: 35,
   color: Colors.white,
 );
 
