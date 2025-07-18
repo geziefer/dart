@@ -1,4 +1,5 @@
 import 'package:dart/controller/controller_finishes.dart';
+import 'package:dart/styles.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:dart/widget/fullcircle.dart';
 import 'package:dart/widget/header.dart';
@@ -16,6 +17,8 @@ class ViewFinishes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ControllerFinishes controller = Provider.of<ControllerFinishes>(context);
+    Map currentStats = controller.getCurrentStats();
+    String stats = controller.getStats();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Column(
@@ -27,9 +30,9 @@ class ViewFinishes extends StatelessWidget {
             child: Header(gameName: title),
           ),
 
-          // ########## Main part with game results and num pad
+          // ########## Main part with game results and dart board
           Expanded(
-            flex: 9,
+            flex: 7,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -44,50 +47,44 @@ class ViewFinishes extends StatelessWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Round counter
+                                Text(
+                                  controller.getRoundCounterText(),
+                                  style: roundCounterTextStyle,
+                                ),
+                                const SizedBox(height: 20),
+                                // Preferred finish question
                                 Text(
                                   controller.getPreferredText(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Color.fromARGB(255, 215, 198, 132),
-                                  ),
+                                  style: outputTextStyle,
                                 ),
+                                // Preferred finish input
                                 Text(
                                   controller.getPreferredInput(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Colors.white,
-                                  ),
+                                  style: inputTextStyle,
                                 ),
+                                // Alternative finish question
                                 Text(
                                   controller.getAlternativeText(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Color.fromARGB(255, 215, 198, 132),
-                                  ),
+                                  style: outputTextStyle,
                                 ),
+                                // Alternative finish input
                                 Text(
                                   controller.getAlternativeInput(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Colors.white,
-                                  ),
+                                  style: inputTextStyle,
                                 ),
                                 const SizedBox(
                                   height: 10,
                                 ),
+                                // Result (✅/❌ with time)
                                 Text(
                                   controller.getResultText(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Color.fromARGB(255, 215, 198, 132),
-                                  ),
+                                  style: outputTextStyle,
                                 ),
+                                // Solution text when incorrect
                                 Text(
                                   controller.getSolutionText(),
-                                  style: const TextStyle(
-                                    fontSize: 50,
-                                    color: Colors.white,
-                                  ),
+                                  style: inputTextStyle,
                                 ),
                               ]),
                         ),
@@ -111,6 +108,46 @@ class ViewFinishes extends StatelessWidget {
                     ],
                   ),
                 ),
+              ],
+            ),
+          ),
+
+          // ########## Bottom row with current stats
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                const Divider(color: Colors.white, thickness: 3),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Richtig: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['correct']}",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "   Korrektheit: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['percentage']}%",
+                      style: statsNumberTextStyle,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      stats,
+                      style: statsSummaryTextStyle,
+                    ),
+                  ],
+                )
               ],
             ),
           ),

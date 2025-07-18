@@ -23,13 +23,7 @@ class ScoreColumn extends StatelessWidget {
         ),
         Text(
           content,
-          style: TextStyle(
-            fontSize: 68,
-            fontFeatures: const <FontFeature>[
-              FontFeature.tabularFigures(),
-            ],
-            color: color,
-          ),
+          style: scoreTextStyle.copyWith(color: color),
           textAlign: TextAlign.right,
         ),
       ],

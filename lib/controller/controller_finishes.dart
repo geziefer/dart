@@ -5,7 +5,9 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class ControllerFinishes extends ControllerBase
     implements MenuitemController, DartboardController {
@@ -446,17 +448,37 @@ class ControllerFinishes extends ControllerBase
   late FinishesState currentState;
   Stopwatch stopwatch = Stopwatch();
 
+  // Session tracking variables
+  int currentRound = 1;
+  int correctRounds = 0;
+  int totalTimeSeconds = 0; // Track total time spent in all completed rounds
+  static const int maxRounds = 10;
+
   @override
   void init(MenuItem item) {
     this.item = item;
     from = item.params['from'];
     to = item.params['to'];
+    
+    // Initialize session
+    currentRound = 1;
+    correctRounds = 0;
+    totalTimeSeconds = 0;
+    
     createRandomFinish();
   }
 
   void createRandomFinish() {
     var r = Random();
-    int finish = r.nextInt(to - from + 1) + from;
+    
+    // Get all available finishes in the range
+    List<int> availableFinishes = finishes.keys
+        .where((finish) => finish >= from && finish <= to)
+        .toList();
+    
+    // Select random finish from available ones
+    int finish = availableFinishes[r.nextInt(availableFinishes.length)];
+    
     currentFinish = finish;
     preferred = finishes[currentFinish]![0];
     alternative = finishes[currentFinish]![1];
@@ -470,6 +492,10 @@ class ControllerFinishes extends ControllerBase
 
   String getPreferredText() {
     return "Finish für ${currentFinish.toString()}:";
+  }
+
+  String getRoundCounterText() {
+    return "Runde $currentRound/$maxRounds";
   }
 
   String getPreferredInput() {
@@ -522,18 +548,125 @@ class ControllerFinishes extends ControllerBase
           currentState = FinishesState.solution;
         }
       case FinishesState.solution:
-        createRandomFinish();
-        currentState = FinishesState.inputPreferred;
+        // Check if session is complete
+        if (currentRound >= maxRounds) {
+          // Use post-frame callback to avoid context across async gaps
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showSummaryDialog(context);
+          });
+        } else {
+          // Continue to next round
+          currentRound++;
+          createRandomFinish();
+          currentState = FinishesState.inputPreferred;
+        }
     }
     notifyListeners();
   }
 
+  // Show summary dialog using SummaryDialog widget
+  void _showSummaryDialog(BuildContext context) {
+    // Update game statistics
+    _updateGameStats();
+
+    double correctnessPercentage = (correctRounds / maxRounds) * 100;
+    double averageTime = _getAverageTime();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return SummaryDialog(
+          lines: [
+            SummaryLine('Richtige Runden', '$correctRounds/$maxRounds'),
+            SummaryLine('Korrektheit', '${correctnessPercentage.toStringAsFixed(1)}%',
+                emphasized: true),
+            SummaryLine('ØZeit/Runde', '${averageTime.toStringAsFixed(1)}s',
+                emphasized: true),
+          ],
+        );
+      },
+    );
+  }
+
+  // Update game statistics
+  void _updateGameStats() {
+    GetStorage storage = GetStorage(item.id);
+    int numberGames = storage.read('numberGames') ?? 0;
+    int totalCorrectRounds = storage.read('totalCorrectRounds') ?? 0;
+    int totalRounds = storage.read('totalRounds') ?? 0;
+    int totalTimeAllGames = storage.read('totalTimeAllGames') ?? 0;
+    double recordPercentage = storage.read('recordPercentage') ?? 0.0;
+    double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
+    
+    double currentPercentage = (correctRounds / maxRounds) * 100;
+    double currentAverageTime = _getAverageTime();
+    double overallPercentage = totalRounds > 0 
+        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) * 100
+        : currentPercentage;
+    double overallAverageTime = (totalRounds + maxRounds) > 0
+        ? ((totalTimeAllGames + totalTimeSeconds) / (totalRounds + maxRounds))
+        : currentAverageTime;
+
+    storage.write('numberGames', numberGames + 1);
+    storage.write('totalCorrectRounds', totalCorrectRounds + correctRounds);
+    storage.write('totalRounds', totalRounds + maxRounds);
+    storage.write('totalTimeAllGames', totalTimeAllGames + totalTimeSeconds);
+    
+    if (currentPercentage > recordPercentage) {
+      storage.write('recordPercentage', currentPercentage);
+    }
+    
+    if (recordAverageTime == 0.0 || currentAverageTime < recordAverageTime) {
+      storage.write('recordAverageTime', currentAverageTime);
+    }
+    
+    storage.write('overallPercentage', overallPercentage);
+    storage.write('overallAverageTime', overallAverageTime);
+  }
+
+  Map getCurrentStats() {
+    double currentPercentage = currentRound > 1 
+        ? (correctRounds / (currentRound - 1)) * 100 
+        : 0.0;
+    
+    return {
+      'round': currentRound,
+      'correct': correctRounds,
+      'percentage': currentPercentage.toStringAsFixed(1),
+    };
+  }
+
+  double _getAverageTime() {
+    int completedRounds = currentRound - 1;
+    return completedRounds > 0 ? (totalTimeSeconds / completedRounds) : 0.0;
+  }
+
+  String getStats() {
+    GetStorage storage = GetStorage(item.id);
+    int numberGames = storage.read('numberGames') ?? 0;
+    double recordPercentage = storage.read('recordPercentage') ?? 0.0;
+    double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
+    double overallPercentage = storage.read('overallPercentage') ?? 0.0;
+    double overallAverageTime = storage.read('overallAverageTime') ?? 0.0;
+    
+    return '#S: $numberGames  ♛%: ${recordPercentage.toStringAsFixed(1)}%  ♛⌀: ${recordAverageTime.toStringAsFixed(1)}s  Ø%: ${overallPercentage.toStringAsFixed(1)}%  Ø⌀: ${overallAverageTime.toStringAsFixed(1)}s';
+  }
+
   void checkCorrect() {
     const listEquality = ListEquality();
-    correct = listEquality.equals(preferred, preferredInput) &&
-            listEquality.equals(alternative, altervativeInput)
-        ? "✅ ${getStoppedTime()}"
-        : "❌";
+    bool isCorrect = listEquality.equals(preferred, preferredInput) &&
+            listEquality.equals(alternative, altervativeInput);
+    
+    // Add current round time to total
+    totalTimeSeconds += stopwatch.elapsed.inSeconds;
+    
+    if (isCorrect) {
+      correctRounds++;
+      correct = "✅ ${getStoppedTime()}";
+    } else {
+      correct = "❌";
+    }
   }
 }
 

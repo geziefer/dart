@@ -112,8 +112,32 @@ const scoreLabelTextStyle = TextStyle(
   color: Color.fromARGB(255, 215, 198, 132),
 );
 
+const scoreTextStyle = TextStyle(
+  fontSize: 68,
+  fontFeatures: <FontFeature>[
+    FontFeature.tabularFigures(),
+  ],
+  color: Colors.white,
+);
+
 const boardTextStyle = TextStyle(
   color: Colors.white,
   fontWeight: FontWeight.bold,
   fontSize: 30,
+);
+
+const roundCounterTextStyle = TextStyle(
+  fontSize: 40,
+  color: Color.fromARGB(255, 215, 198, 132),
+  fontWeight: FontWeight.bold,
+);
+
+const outputTextStyle = TextStyle(
+  fontSize: 50,
+  color: Color.fromARGB(255, 215, 198, 132),
+);
+
+const inputTextStyle = TextStyle(
+  fontSize: 50,
+  color: Colors.white,
 );
