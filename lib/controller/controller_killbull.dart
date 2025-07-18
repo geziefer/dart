@@ -1,8 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/styles.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -69,93 +69,56 @@ class ControllerKillBull extends ControllerBase
       // check if game should end (0 bulls hit)
       if (value == 0) {
         gameEnded = true;
-        showDialog(
-            context: context,
-            builder: (context) {
-              // save stats to device
-              GetStorage storage = GetStorage(item.id);
-              int numberGames = storage.read('numberGames') ?? 0;
-              int recordRounds = storage.read('recordRounds') ?? 0;
-              int recordScore = storage.read('recordScore') ?? 0;
-              double longtermScore = storage.read('longtermScore') ?? 0;
-              
-              storage.write('numberGames', numberGames + 1);
-              if (recordRounds == 0 || round > recordRounds) {
-                storage.write('recordRounds', round);
-              }
-              if (recordScore == 0 || totalScore > recordScore) {
-                storage.write('recordScore', totalScore);
-              }
-              storage.write(
-                  'longtermScore',
-                  (((longtermScore * numberGames) + totalScore) /
-                      (numberGames + 1)));
-
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(2))),
-                child: SizedBox(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        child: const Text(
-                          "Zusammenfassung",
-                          style: endSummaryHeaderTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        child: Text(
-                          'Runden: ${round - 1}',
-                          style: endSummaryTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        child: Text(
-                          'Punkte: $totalScore',
-                          style: endSummaryTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        child: Text(
-                          'Punkte/Runde: ${_getAvgScore()}',
-                          style: endSummaryEmphasizedTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          style: okButtonStyle,
-                          child: const Text(
-                            'OK',
-                            style: okButtonTextStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            });
+        // Use post-frame callback to avoid context across async gaps
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showSummaryDialog(context);
+        });
       } else {
         // continue to next round
         round++;
       }
     }
     notifyListeners();
+  }
+
+  // Show summary dialog using SummaryDialog widget
+  void _showSummaryDialog(BuildContext context) {
+    // Update game statistics
+    _updateGameStats();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return SummaryDialog(
+          lines: [
+            SummaryLine('Runden', '${round - 1}'),
+            SummaryLine('Punkte', '$totalScore'),
+            SummaryLine('Punkte/Runde', _getAvgScore().toStringAsFixed(1),
+                emphasized: true),
+          ],
+        );
+      },
+    );
+  }
+
+  // Update game statistics
+  void _updateGameStats() {
+    GetStorage storage = GetStorage(item.id);
+    int numberGames = storage.read('numberGames') ?? 0;
+    int recordRounds = storage.read('recordRounds') ?? 0;
+    int recordScore = storage.read('recordScore') ?? 0;
+    double longtermScore = storage.read('longtermScore') ?? 0;
+
+    storage.write('numberGames', numberGames + 1);
+    if (recordRounds == 0 || round > recordRounds) {
+      storage.write('recordRounds', round);
+    }
+    if (recordScore == 0 || totalScore > recordScore) {
+      storage.write('recordScore', totalScore);
+    }
+    storage.write('longtermScore',
+        (((longtermScore * numberGames) + totalScore) / (numberGames + 1)));
   }
 
   double _getAvgScore() {
