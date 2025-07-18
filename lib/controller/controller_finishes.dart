@@ -477,7 +477,8 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getAlternativeText() {
-    return currentState == FinishesState.inputAlternative
+    return currentState == FinishesState.inputAlternative ||
+            currentState == FinishesState.solution
         ? "Alternative für ${currentFinish.toString()}:"
         : "";
   }
