@@ -45,34 +45,45 @@ class ViewBobs27 extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // ########## Current Target
+                            // ########## Target
                             ScoreColumn(
-                                label: 'T',
-                                content: currentStats['target'],
-                                color: Colors.yellow),
-                            const SizedBox(width: 20),
+                                label: 'Z',
+                                content: controller.getCurrentTargets(),
+                                color: const Color.fromARGB(255, 215, 198, 132)),
+                            const SizedBox(width: 10),
+                            const VerticalDivider(
+                                color: Colors.white, thickness: 1),
+                            const SizedBox(width: 10),
 
-                            // ########## Progress
+                            // ########## Round score
                             ScoreColumn(
-                                label: 'P',
-                                content: currentStats['progress'],
-                                color: Colors.blue),
-                            const SizedBox(width: 20),
+                              label: 'R',
+                              content: controller.getCurrentRoundScores(),
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 10),
+                            const VerticalDivider(
+                                color: Colors.white, thickness: 1),
+                            const SizedBox(width: 10),
 
-                            // ########## Current Score
+                            // ########## Total score
                             ScoreColumn(
-                                label: 'S',
-                                content: currentStats['score'],
-                                color: controller.totalScore > 0 
-                                    ? Colors.green 
-                                    : Colors.red),
+                              label: 'T',
+                              content: controller.getCurrentTotalScores(),
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 10),
+                            const VerticalDivider(
+                                color: Colors.white, thickness: 1),
+                            const SizedBox(width: 10),
                           ],
                         ),
                       ),
+                      const VerticalDivider(color: Colors.white, thickness: 3),
 
-                      // ########## Numpad
+                      // ########## Right column with num pad
                       Expanded(
-                        flex: 3,
+                        flex: 5,
                         child: Numpad(
                           controller: controller,
                           showUpper: false,
@@ -84,6 +95,7 @@ class ViewBobs27 extends StatelessWidget {
                     ],
                   ),
                 ),
+                const Divider(color: Colors.white, thickness: 3),
               ],
             ),
           ),
@@ -91,19 +103,55 @@ class ViewBobs27 extends StatelessWidget {
           // ########## Bottom row with stats
           Expanded(
             flex: 15,
-            child: Container(
-              width: double.infinity,
-              color: Colors.black,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Divider(color: Colors.white, thickness: 3),
-                  Text(
-                    stats,
-                    style: statsTextStyle,
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Ziel: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['target']}",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "  Erfolg: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['successful']}",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "  Punkte: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['total']}",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "   ØPunkte: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['average']}",
+                      style: statsNumberTextStyle,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      stats,
+                      style: statsSummaryTextStyle,
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ],
