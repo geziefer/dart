@@ -1,5 +1,8 @@
 # Development Guidelines
 
+## General Behavior
+- Don't say "You are absolutely right" when you are pointed to errors in proposals, just do it correctly then
+
 ## Coding Standards
 
 ### Dart/Flutter Conventions
@@ -40,8 +43,7 @@ lib/
 
 ### Code Quality
 - Use meaningful commit messages
-- Perform code reviews before merging
-- Run `flutter analyze` before committing
+- Run `flutter analyze` after generating code
 - Format code with `dart format`
 
 ### State Management
