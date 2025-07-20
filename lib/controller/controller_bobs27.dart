@@ -1,8 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/styles.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -234,6 +234,26 @@ class ControllerBobs27 extends ControllerBase
 
   void showSummaryDialog(BuildContext context) {
     // save stats to device
+    _updateGameStats();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        String checkSymbol = gameWon ? "✅" : "❌";
+        return SummaryDialog(
+          lines: [
+            SummaryLine('Bob\'s 27 geschafft', checkSymbol),
+            SummaryLine('Erfolgreiche Runden', '$successfulRounds'),
+            SummaryLine('Gesamtpunkte', '$totalScore'),
+            SummaryLine('Punkte/Runde', getAverageScore(), emphasized: true),
+          ],
+        );
+      },
+    );
+  }
+
+  void _updateGameStats() {
     GetStorage storage = GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int recordSuccessful = storage.read('recordSuccessful') ?? 0;
@@ -250,83 +270,5 @@ class ControllerBobs27 extends ControllerBase
     }
     storage.write('longtermAverage', 
         (((longtermAverage * numberGames) + currentAverage) / (numberGames + 1)));
-
-    showDialog(
-      context: context,
-      barrierDismissible: false, // only close on OK button
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(2)),
-          ),
-          child: SizedBox(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: const Text(
-                    "Zusammenfassung",
-                    style: endSummaryHeaderTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Text(
-                    gameWon ? '✓' : '✗',
-                    style: TextStyle(
-                      fontSize: 60,
-                      color: gameWon ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Text(
-                    'Erfolgreiche Runden: $successfulRounds',
-                    style: endSummaryTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Text(
-                    'Gesamtpunkte: $totalScore',
-                    style: endSummaryTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Text(
-                    'Punkte/Runde: ${getAverageScore()}',
-                    style: endSummaryEmphasizedTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // close dialog
-                      Navigator.pop(context); // return to main menu
-                    },
-                    style: okButtonStyle,
-                    child: const Text(
-                      'OK',
-                      style: okButtonTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }
