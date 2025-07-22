@@ -56,23 +56,23 @@ class ArcSectionPainter extends CustomPainter {
       canvas.drawPath(path, paint);
     }
 
-    // Draw center circle and arc
+    // Draw center circle and arc with proper dartboard proportions
     final centerCirclePaint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.fill;
 
-    final centerCircleRadius = radius * 0.1;
+    final centerCircleRadius = radius * 0.1; // Inner bull (red)
     canvas.drawCircle(Offset(size.width / 2, size.height / 2),
         centerCircleRadius, centerCirclePaint);
 
     final centerArcPaint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.stroke
-      ..strokeWidth = centerCircleRadius;
+      ..strokeWidth = radius * 0.15; // Much thicker stroke for larger outer bull
 
     final centerArcRect = Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2),
-        radius: centerCircleRadius * 1.5);
+        radius: centerCircleRadius * 1.75); // Larger radius for bigger outer bull
     canvas.drawArc(centerArcRect, 0, 2 * pi, false, centerArcPaint);
   }
 

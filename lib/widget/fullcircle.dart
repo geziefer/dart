@@ -63,9 +63,9 @@ class FullCircle extends StatelessWidget {
           return;
         }
 
-        // Check center arc
+        // Check center arc (outer bull) - much larger area
         final double innerArcRadius = radius * 0.1;
-        final double outerArcRadius = radius * 0.25;
+        final double outerArcRadius = radius * 0.25; // Significantly larger outer bull area
         if (ArcSectionPainter(
                 radius: radius,
                 arcSections: arcSections,
@@ -176,15 +176,20 @@ class FullCirclePainter extends CustomPainter {
 
       // Calculate the position for the text
       final double labelAngle = startAngle + sweepAngle / 2;
-      // Adjust this value to position the text above the arc
-      final double labelRadius = radius + 20;
+      // Scale the label distance based on radius size
+      final double labelRadius = radius + (radius * 0.08); // Dynamic spacing based on radius
       final double labelX = center.dx + labelRadius * cos(labelAngle);
       final double labelY = center.dy + labelRadius * sin(labelAngle);
 
-      // Draw the text
+      // Draw the text with size relative to radius
+      final double fontSize = (radius / 10).clamp(20.0, 35.0); // Scale font size with radius
       final textSpan = TextSpan(
         text: sliceIDs[sliceIndex],
-        style: boardTextStyle,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+        ),
       );
       final textPainter = TextPainter(
         text: textSpan,
@@ -202,19 +207,19 @@ class FullCirclePainter extends CustomPainter {
       ..color = Colors.red
       ..style = PaintingStyle.fill;
 
-    final centerCircleRadius = radius * 0.1;
+    final centerCircleRadius = radius * 0.1; // Inner bull (red)
     canvas.drawCircle(Offset(size.width / 2, size.height / 2),
         centerCircleRadius, centerCirclePaint);
 
-    // Draw center arc
+    // Draw center arc with larger outer bull
     final centerArcPaint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.stroke
-      ..strokeWidth = radius * 0.15;
+      ..strokeWidth = radius * 0.15; // Much thicker stroke for larger outer bull
 
     final centerArcRect = Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2),
-        radius: centerCircleRadius * 2);
+        radius: centerCircleRadius * 1.75); // Larger radius for bigger outer bull
     canvas.drawArc(centerArcRect, 0, 2 * pi, false, centerArcPaint);
   }
 

@@ -94,15 +94,36 @@ class ViewFinishes extends StatelessWidget {
                       // ########## Right column with dart board
                       Expanded(
                         flex: 6,
-                        child: FullCircle(
-                          controller: controller,
-                          radius: 300,
-                          arcSections: [
-                            ArcSection(startPercent: 0.2),
-                            ArcSection(startPercent: 0.4),
-                            ArcSection(startPercent: 0.6),
-                            ArcSection(startPercent: 0.8),
-                          ],
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            // Calculate the available space for the dartboard
+                            // Use the smaller dimension to ensure it fits, with padding
+                            double availableWidth = constraints.maxWidth;
+                            double availableHeight = constraints.maxHeight;
+                            double maxSize = (availableWidth < availableHeight 
+                                ? availableWidth 
+                                : availableHeight) - 40; // 40px total padding
+                            
+                            // Calculate radius (dartboard diameter should fit in maxSize)
+                            // Account for the number labels that extend beyond the circle
+                            double radius = (maxSize - 60) / 2; // 60px for number labels
+                            
+                            // Ensure minimum and maximum bounds
+                            radius = radius.clamp(200.0, 280.0);
+                            
+                            return Center(
+                              child: FullCircle(
+                                controller: controller,
+                                radius: radius,
+                                arcSections: [
+                                  ArcSection(startPercent: 0.2),
+                                  ArcSection(startPercent: 0.4),
+                                  ArcSection(startPercent: 0.6),
+                                  ArcSection(startPercent: 0.8),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
