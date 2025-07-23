@@ -90,8 +90,8 @@ class ControllerBobs27 extends ControllerBase
     }
 
     // process the round
-    int currentTarget = getCurrentTargetNumber();
-    int roundScore = calculateScore(currentTarget, hits);
+    int currentTarget = _getCurrentTargetNumber();
+    int roundScore = _calculateScore(currentTarget, hits);
     
     // record the round (complete current row)
     roundScores[roundScores.length - 1] = roundScore; // overwrite current round score
@@ -113,7 +113,7 @@ class ControllerBobs27 extends ControllerBase
     } else {
       // advance to next target (add next row with EMPTY values)
       currentTargetIndex++;
-      targets.add(getCurrentTargetDisplay());
+      targets.add(_getCurrentTargetDisplay());
       roundScores.add(0); // add EMPTY round score (0 means empty display)
       totalScores.add(0); // add EMPTY total (0 means empty display)
       round++;
@@ -124,7 +124,7 @@ class ControllerBobs27 extends ControllerBase
     // show summary if game ended
     if (gameEnded) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        showSummaryDialog(context);
+        _showSummaryDialog(context);
       });
     }
   }
@@ -144,7 +144,7 @@ class ControllerBobs27 extends ControllerBase
     return false; // no buttons disabled in Bob's 27
   }
 
-  int getCurrentTargetNumber() {
+  int _getCurrentTargetNumber() {
     if (currentTargetIndex < 20) {
       return currentTargetIndex + 1; // targets 1-20
     } else {
@@ -152,8 +152,8 @@ class ControllerBobs27 extends ControllerBase
     }
   }
 
-  String getCurrentTargetDisplay() {
-    int target = getCurrentTargetNumber();
+  String _getCurrentTargetDisplay() {
+    int target = _getCurrentTargetNumber();
     if (target == 21) {
       return "B";
     } else {
@@ -161,7 +161,7 @@ class ControllerBobs27 extends ControllerBase
     }
   }
 
-  int calculateScore(int target, int hits) {
+  int _calculateScore(int target, int hits) {
     int doubleValue;
     if (target == 21) { // bull
       doubleValue = 50;
@@ -208,14 +208,14 @@ class ControllerBobs27 extends ControllerBase
 
   Map getCurrentStats() {
     return {
-      'target': getCurrentTargetDisplay(),
+      'target': _getCurrentTargetDisplay(),
       'successful': successfulRounds,
       'total': totalScore,
-      'average': getAverageScore(),
+      'average': _getAverageScore(),
     };
   }
 
-  String getAverageScore() {
+  String _getAverageScore() {
     if (round == 1) {
       return "0.0";
     }
@@ -232,7 +232,7 @@ class ControllerBobs27 extends ControllerBase
     return '#S: $numberGames  ♛E: $recordSuccessful  ♛P: $recordTotal  ØP: ${longtermAverage.toStringAsFixed(1)}';
   }
 
-  void showSummaryDialog(BuildContext context) {
+  void _showSummaryDialog(BuildContext context) {
     // save stats to device
     _updateGameStats();
 
@@ -246,7 +246,7 @@ class ControllerBobs27 extends ControllerBase
             SummaryLine('Bob\'s 27 geschafft', '', checkSymbol: checkSymbol),
             SummaryLine('Erfolgreiche Runden', '$successfulRounds'),
             SummaryLine('Gesamtpunkte', '$totalScore'),
-            SummaryLine('Punkte/Runde', getAverageScore(), emphasized: true),
+            SummaryLine('Punkte/Runde', _getAverageScore(), emphasized: true),
           ],
         );
       },
@@ -259,7 +259,7 @@ class ControllerBobs27 extends ControllerBase
     int recordSuccessful = storage.read('recordSuccessful') ?? 0;
     int recordTotal = storage.read('recordTotal') ?? 0;
     double longtermAverage = storage.read('longtermAverage') ?? 0;
-    double currentAverage = double.parse(getAverageScore());
+    double currentAverage = double.parse(_getAverageScore());
     
     storage.write('numberGames', numberGames + 1);
     if (recordSuccessful == 0 || successfulRounds > recordSuccessful) {

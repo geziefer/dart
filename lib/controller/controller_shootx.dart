@@ -105,7 +105,7 @@ class ControllerShootx extends ControllerBase
     int numberGames = storage.read('numberGames') ?? 0;
     int recordNumbers = storage.read('recordNumbers') ?? 0;
     double longtermNumbers = storage.read('longtermNumbers') ?? 0;
-    double avgNumbers = getAvgNumbers();
+    double avgNumbers = _getAvgNumbers();
 
     storage.write('numberGames', numberGames + 1);
     if (recordNumbers == 0 || number > recordNumbers) {
@@ -115,7 +115,7 @@ class ControllerShootx extends ControllerBase
         (((longtermNumbers * numberGames) + avgNumbers) / (numberGames + 1)));
   }
 
-  double getAvgNumbers() {
+  double _getAvgNumbers() {
     return round == 1 ? 0 : (number / (round - 1));
   }
 
@@ -151,7 +151,7 @@ class ControllerShootx extends ControllerBase
     return {
       'round': round,
       'bulls': number,
-      'avgBulls': getAvgNumbers().toStringAsFixed(1),
+      'avgBulls': _getAvgNumbers().toStringAsFixed(1),
     };
   }
 

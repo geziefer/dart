@@ -121,7 +121,7 @@ class ControllerHalfit extends ControllerBase
   }
 
   // Helper method to create individual summary lines with separate symbols
-  List<SummaryLine> createSummaryLines() {
+  List<SummaryLine> _createSummaryLines() {
     List<SummaryLine> lines = [];
     
     // Add the total score line
@@ -149,7 +149,7 @@ class ControllerHalfit extends ControllerBase
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return SummaryDialog(
-          lines: createSummaryLines(),
+          lines: _createSummaryLines(),
         );
       },
     );

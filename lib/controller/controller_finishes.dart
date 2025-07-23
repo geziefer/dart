@@ -466,10 +466,10 @@ class ControllerFinishes extends ControllerBase
     correctRounds = 0;
     totalTimeSeconds = 0;
 
-    createRandomFinish();
+    _createRandomFinish();
   }
 
-  void createRandomFinish() {
+  void _createRandomFinish() {
     var r = Random();
 
     // Get all available finishes in the range
@@ -523,7 +523,7 @@ class ControllerFinishes extends ControllerBase
     return stoppedTime;
   }
 
-  String getStoppedTime() {
+  String _getStoppedTime() {
     return stopwatch.isRunning ? "" : "${stopwatch.elapsed.inSeconds}s";
   }
 
@@ -542,7 +542,7 @@ class ControllerFinishes extends ControllerBase
           currentState = FinishesState.inputAlternative;
           if (alternative.isEmpty) {
             currentState = FinishesState.solution;
-            checkCorrect();
+            _checkCorrect();
           }
         }
         break;
@@ -550,7 +550,7 @@ class ControllerFinishes extends ControllerBase
         altervativeInput.add(value);
         if (altervativeInput.length == alternative.length) {
           stopwatch.stop();
-          checkCorrect();
+          _checkCorrect();
           currentState = FinishesState.solution;
         }
       case FinishesState.solution:
@@ -563,7 +563,7 @@ class ControllerFinishes extends ControllerBase
         } else {
           // Continue to next round
           currentRound++;
-          createRandomFinish();
+          _createRandomFinish();
           currentState = FinishesState.inputPreferred;
         }
     }
@@ -660,7 +660,7 @@ class ControllerFinishes extends ControllerBase
     return '#S: $numberGames  ♛%: ${recordPercentage.toStringAsFixed(1)}%  ♛⌀: ${recordAverageTime.toStringAsFixed(1)}s  Ø%: ${overallPercentage.toStringAsFixed(1)}%  Ø⌀: ${overallAverageTime.toStringAsFixed(1)}s';
   }
 
-  void checkCorrect() {
+  void _checkCorrect() {
     const listEquality = ListEquality();
     bool isCorrect = listEquality.equals(preferred, preferredInput) &&
         listEquality.equals(alternative, altervativeInput);
@@ -671,7 +671,7 @@ class ControllerFinishes extends ControllerBase
     if (isCorrect) {
       correctRounds++;
       correctSymbol = "✅";
-      stoppedTime = getStoppedTime();
+      stoppedTime = _getStoppedTime();
     } else {
       correctSymbol = "❌";
       stoppedTime = "";
