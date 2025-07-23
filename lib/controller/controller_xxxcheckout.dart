@@ -215,6 +215,25 @@ class ControllerXXXCheckout extends ControllerBase
     });
   }
 
+  // Helper method to create individual summary lines with separate symbols
+  List<SummaryLine> _createSummaryLines() {
+    List<SummaryLine> lines = [];
+    
+    // Add individual lines for each leg result with check symbols
+    for (int i = 0; i < results.length && i < finishes.length; i++) {
+      String checkSymbol = finishes[i] ? "✅" : "❌";
+      lines.add(SummaryLine('Leg ${i + 1}', '${results[i]} Darts', checkSymbol: checkSymbol));
+    }
+    
+    // Add average score line
+    lines.add(SummaryLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
+    
+    // Add average darts line
+    lines.add(SummaryLine('ØDarts', getCurrentStats()['avgDarts'], emphasized: true));
+    
+    return lines;
+  }
+
   // Show summary dialog
   void _showSummaryDialog(BuildContext context) {
     showDialog(
@@ -222,23 +241,7 @@ class ControllerXXXCheckout extends ControllerBase
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return SummaryDialog(
-          lines: [
-            SummaryLine(
-              '',
-              createMultilineString(
-                  results, [], 'Leg', 'Darts', finishes, 10, true),
-            ),
-            SummaryLine(
-              'ØPunkte',
-              getCurrentStats()['avgScore'],
-              emphasized: true,
-            ),
-            SummaryLine(
-              'ØDarts',
-              getCurrentStats()['avgDarts'],
-              emphasized: true,
-            ),
-          ],
+          lines: _createSummaryLines(),
         );
       },
     );
