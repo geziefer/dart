@@ -1,5 +1,4 @@
 import 'package:dart/interfaces/dartboard_controller.dart';
-import 'package:dart/styles.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -65,7 +64,8 @@ class FullCircle extends StatelessWidget {
 
         // Check center arc (outer bull) - much larger area
         final double innerArcRadius = radius * 0.1;
-        final double outerArcRadius = radius * 0.25; // Significantly larger outer bull area
+        final double outerArcRadius =
+            radius * 0.25; // Significantly larger outer bull area
         if (ArcSectionPainter(
                 radius: radius,
                 arcSections: arcSections,
@@ -177,12 +177,14 @@ class FullCirclePainter extends CustomPainter {
       // Calculate the position for the text
       final double labelAngle = startAngle + sweepAngle / 2;
       // Scale the label distance based on radius size
-      final double labelRadius = radius + (radius * 0.08); // Dynamic spacing based on radius
+      final double labelRadius =
+          radius + (radius * 0.08); // Dynamic spacing based on radius
       final double labelX = center.dx + labelRadius * cos(labelAngle);
       final double labelY = center.dy + labelRadius * sin(labelAngle);
 
       // Draw the text with size relative to radius
-      final double fontSize = (radius / 10).clamp(20.0, 35.0); // Scale font size with radius
+      final double fontSize =
+          (radius / 10).clamp(20.0, 35.0); // Scale font size with radius
       final textSpan = TextSpan(
         text: sliceIDs[sliceIndex],
         style: TextStyle(
@@ -215,11 +217,13 @@ class FullCirclePainter extends CustomPainter {
     final centerArcPaint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.stroke
-      ..strokeWidth = radius * 0.15; // Much thicker stroke for larger outer bull
+      ..strokeWidth =
+          radius * 0.15; // Much thicker stroke for larger outer bull
 
     final centerArcRect = Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2),
-        radius: centerCircleRadius * 1.75); // Larger radius for bigger outer bull
+        radius:
+            centerCircleRadius * 1.75); // Larger radius for bigger outer bull
     canvas.drawArc(centerArcRect, 0, 2 * pi, false, centerArcPaint);
   }
 

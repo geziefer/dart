@@ -117,7 +117,7 @@ class ControllerRTCX extends ControllerBase
         String checkSymbol = finished ? "✅" : "❌";
         return SummaryDialog(
           lines: [
-            SummaryLine('RTC geschafft', checkSymbol),
+            SummaryLine('RTC geschafft', '', checkSymbol: checkSymbol),
             SummaryLine('Anzahl Darts', '$dart'),
             SummaryLine('Darts/Checkout', getCurrentStats()['avgChecks'],
                 emphasized: true),

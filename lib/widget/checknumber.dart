@@ -13,7 +13,7 @@ class CheckNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String checkSymbol = currentNumber > number ? " ✅" : "\u{00A0}";
+    bool showCheck = currentNumber > number;
     // exclude numbers > 20
     if (number > 20) {
       return const Text('');
@@ -30,9 +30,20 @@ class CheckNumber extends StatelessWidget {
           ),
           SizedBox(
             width: 100,
-            child: Text(
-              '$checkSymbol  ',
-              style: checkNumberStyle,
+            child: Row(
+              children: [
+                if (showCheck)
+                  Text(
+                    '✅',
+                    style: emojiTextStyle,
+                  )
+                else
+                  Text(
+                    '\u{00A0}', // non-breaking space
+                    style: checkNumberStyle,
+                  ),
+                const Text('  ', style: checkNumberStyle), // spacing
+              ],
             ),
           ),
         ],

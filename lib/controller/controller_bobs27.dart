@@ -243,7 +243,7 @@ class ControllerBobs27 extends ControllerBase
         String checkSymbol = gameWon ? "✅" : "❌";
         return SummaryDialog(
           lines: [
-            SummaryLine('Bob\'s 27 geschafft', checkSymbol),
+            SummaryLine('Bob\'s 27 geschafft', '', checkSymbol: checkSymbol),
             SummaryLine('Erfolgreiche Runden', '$successfulRounds'),
             SummaryLine('Gesamtpunkte', '$totalScore'),
             SummaryLine('Punkte/Runde', getAverageScore(), emphasized: true),

@@ -126,18 +126,17 @@ const boardTextStyle = TextStyle(
   fontSize: 30,
 );
 
-const roundCounterTextStyle = TextStyle(
-  fontSize: 40,
-  color: Color.fromARGB(255, 215, 198, 132),
-  fontWeight: FontWeight.bold,
-);
-
 const outputTextStyle = TextStyle(
-  fontSize: 50,
+  fontSize: 45,
   color: Color.fromARGB(255, 215, 198, 132),
 );
 
 const inputTextStyle = TextStyle(
-  fontSize: 50,
+  fontSize: 45,
   color: Colors.white,
+);
+
+const emojiTextStyle = TextStyle(
+  fontSize: 45,
+  fontFamily: "NotoColorEmoji",
 );

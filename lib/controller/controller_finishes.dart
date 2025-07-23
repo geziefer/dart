@@ -444,7 +444,8 @@ class ControllerFinishes extends ControllerBase
   late List<String> alternative;
   late List<String> preferredInput;
   late List<String> altervativeInput;
-  late String correct;
+  late String correctSymbol;
+  late String stoppedTime;
   late FinishesState currentState;
   Stopwatch stopwatch = Stopwatch();
 
@@ -459,43 +460,44 @@ class ControllerFinishes extends ControllerBase
     this.item = item;
     from = item.params['from'];
     to = item.params['to'];
-    
+
     // Initialize session
     currentRound = 1;
     correctRounds = 0;
     totalTimeSeconds = 0;
-    
+
     createRandomFinish();
   }
 
   void createRandomFinish() {
     var r = Random();
-    
+
     // Get all available finishes in the range
     List<int> availableFinishes = finishes.keys
         .where((finish) => finish >= from && finish <= to)
         .toList();
-    
+
     // Select random finish from available ones
     int finish = availableFinishes[r.nextInt(availableFinishes.length)];
-    
+
     currentFinish = finish;
     preferred = finishes[currentFinish]![0];
     alternative = finishes[currentFinish]![1];
     preferredInput = List.empty(growable: true);
     altervativeInput = List.empty(growable: true);
-    correct = "";
+    correctSymbol = "";
+    stoppedTime = "";
     currentState = FinishesState.inputPreferred;
     stopwatch.reset();
     stopwatch.start();
   }
 
   String getPreferredText() {
-    return "Finish für ${currentFinish.toString()}:";
+    return "Finish ${currentFinish.toString()}:";
   }
 
   String getRoundCounterText() {
-    return "Runde $currentRound/$maxRounds";
+    return "Runde $currentRound";
   }
 
   String getPreferredInput() {
@@ -505,7 +507,7 @@ class ControllerFinishes extends ControllerBase
   String getAlternativeText() {
     return currentState == FinishesState.inputAlternative ||
             currentState == FinishesState.solution
-        ? "Alternative für ${currentFinish.toString()}:"
+        ? "Alternative ${currentFinish.toString()}:"
         : "";
   }
 
@@ -513,8 +515,12 @@ class ControllerFinishes extends ControllerBase
     return altervativeInput.join(' ');
   }
 
-  String getResultText() {
-    return correct;
+  String getResultSymbol() {
+    return correctSymbol;
+  }
+
+  String getResultTime() {
+    return stoppedTime;
   }
 
   String getStoppedTime() {
@@ -522,7 +528,7 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getSolutionText() {
-    return currentState == FinishesState.solution && correct == "❌"
+    return currentState == FinishesState.solution && correctSymbol == "❌"
         ? "${preferred.join(' ')}\n${alternative.join(' ')}"
         : "";
   }
@@ -579,7 +585,8 @@ class ControllerFinishes extends ControllerBase
         return SummaryDialog(
           lines: [
             SummaryLine('Richtige Runden', '$correctRounds/$maxRounds'),
-            SummaryLine('Korrektheit', '${correctnessPercentage.toStringAsFixed(1)}%',
+            SummaryLine(
+                'Korrektheit', '${correctnessPercentage.toStringAsFixed(1)}%',
                 emphasized: true),
             SummaryLine('ØZeit/Runde', '${averageTime.toStringAsFixed(1)}s',
                 emphasized: true),
@@ -598,11 +605,12 @@ class ControllerFinishes extends ControllerBase
     int totalTimeAllGames = storage.read('totalTimeAllGames') ?? 0;
     double recordPercentage = storage.read('recordPercentage') ?? 0.0;
     double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
-    
+
     double currentPercentage = (correctRounds / maxRounds) * 100;
     double currentAverageTime = _getAverageTime();
-    double overallPercentage = totalRounds > 0 
-        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) * 100
+    double overallPercentage = totalRounds > 0
+        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) *
+            100
         : currentPercentage;
     double overallAverageTime = (totalRounds + maxRounds) > 0
         ? ((totalTimeAllGames + totalTimeSeconds) / (totalRounds + maxRounds))
@@ -612,24 +620,23 @@ class ControllerFinishes extends ControllerBase
     storage.write('totalCorrectRounds', totalCorrectRounds + correctRounds);
     storage.write('totalRounds', totalRounds + maxRounds);
     storage.write('totalTimeAllGames', totalTimeAllGames + totalTimeSeconds);
-    
+
     if (currentPercentage > recordPercentage) {
       storage.write('recordPercentage', currentPercentage);
     }
-    
+
     if (recordAverageTime == 0.0 || currentAverageTime < recordAverageTime) {
       storage.write('recordAverageTime', currentAverageTime);
     }
-    
+
     storage.write('overallPercentage', overallPercentage);
     storage.write('overallAverageTime', overallAverageTime);
   }
 
   Map getCurrentStats() {
-    double currentPercentage = currentRound > 1 
-        ? (correctRounds / (currentRound - 1)) * 100 
-        : 0.0;
-    
+    double currentPercentage =
+        currentRound > 1 ? (correctRounds / (currentRound - 1)) * 100 : 0.0;
+
     return {
       'round': currentRound,
       'correct': correctRounds,
@@ -649,23 +656,25 @@ class ControllerFinishes extends ControllerBase
     double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
     double overallPercentage = storage.read('overallPercentage') ?? 0.0;
     double overallAverageTime = storage.read('overallAverageTime') ?? 0.0;
-    
+
     return '#S: $numberGames  ♛%: ${recordPercentage.toStringAsFixed(1)}%  ♛⌀: ${recordAverageTime.toStringAsFixed(1)}s  Ø%: ${overallPercentage.toStringAsFixed(1)}%  Ø⌀: ${overallAverageTime.toStringAsFixed(1)}s';
   }
 
   void checkCorrect() {
     const listEquality = ListEquality();
     bool isCorrect = listEquality.equals(preferred, preferredInput) &&
-            listEquality.equals(alternative, altervativeInput);
-    
+        listEquality.equals(alternative, altervativeInput);
+
     // Add current round time to total
     totalTimeSeconds += stopwatch.elapsed.inSeconds;
-    
+
     if (isCorrect) {
       correctRounds++;
-      correct = "✅ ${getStoppedTime()}";
+      correctSymbol = "✅";
+      stoppedTime = getStoppedTime();
     } else {
-      correct = "❌";
+      correctSymbol = "❌";
+      stoppedTime = "";
     }
   }
 }

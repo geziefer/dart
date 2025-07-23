@@ -120,6 +120,25 @@ class ControllerHalfit extends ControllerBase
     notifyListeners();
   }
 
+  // Helper method to create individual summary lines with separate symbols
+  List<SummaryLine> createSummaryLines() {
+    List<SummaryLine> lines = [];
+    
+    // Add the total score line
+    lines.add(SummaryLine('Punkte', '$totalScore'));
+    
+    // Add individual lines for each label/score with check symbols
+    for (int i = 0; i < labels.length && i < scores.length; i++) {
+      String checkSymbol = hit[i] ? "✅" : "❌";
+      lines.add(SummaryLine(labels[i], '${scores[i]}', checkSymbol: checkSymbol));
+    }
+    
+    // Add average score line
+    lines.add(SummaryLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
+    
+    return lines;
+  }
+
   // Show summary dialog using SummaryDialog widget
   void _showSummaryDialog(BuildContext context) {
     // Update game statistics
@@ -130,15 +149,7 @@ class ControllerHalfit extends ControllerBase
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return SummaryDialog(
-          lines: [
-            SummaryLine('Punkte', '$totalScore'),
-            SummaryLine(
-              '',
-              createMultilineString(labels, scores, '', '', hit, 10, false),
-            ),
-            SummaryLine('ØPunkte', getCurrentStats()['avgScore'],
-                emphasized: true),
-          ],
+          lines: createSummaryLines(),
         );
       },
     );

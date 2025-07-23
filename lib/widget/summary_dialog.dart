@@ -31,15 +31,38 @@ class SummaryDialog extends StatelessWidget {
             ),
             ...lines.map((line) => Container(
                   margin: const EdgeInsets.all(10),
-                  child: Text(
-                    line.label.isEmpty
-                        ? line.value
-                        : '${line.label}: ${line.value}',
-                    style: line.emphasized
-                        ? endSummaryEmphasizedTextStyle
-                        : endSummaryTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: line.checkSymbol != null
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              line.label.isEmpty
+                                  ? line.value
+                                  : '${line.label}: ${line.value}',
+                              style: line.emphasized
+                                  ? endSummaryEmphasizedTextStyle
+                                  : endSummaryTextStyle,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              line.checkSymbol!,
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontFamily: "NotoColorEmoji",
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          line.label.isEmpty
+                              ? line.value
+                              : '${line.label}: ${line.value}',
+                          style: line.emphasized
+                              ? endSummaryEmphasizedTextStyle
+                              : endSummaryTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
                 )),
             Container(
               margin: const EdgeInsets.all(10),
@@ -68,6 +91,7 @@ class SummaryLine {
   final String label;
   final String value;
   final bool emphasized;
+  final String? checkSymbol; // Optional check symbol (emoji) to display after the text
 
-  SummaryLine(this.label, this.value, {this.emphasized = false});
+  SummaryLine(this.label, this.value, {this.emphasized = false, this.checkSymbol});
 }

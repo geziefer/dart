@@ -47,11 +47,26 @@ class ViewFinishes extends StatelessWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Round counter
-                                Text(
-                                  controller.getRoundCounterText(),
-                                  style: roundCounterTextStyle,
+                                // Result symbol and time in separate widgets
+                                Row(
+                                  children: [
+                                    // Round counter
+                                    Text(
+                                      '${controller.getRoundCounterText()} ',
+                                      style: outputTextStyle,
+                                    ),
+                                    Text(
+                                      controller.getResultSymbol(),
+                                      style: emojiTextStyle,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      ' ${controller.getResultTime()}',
+                                      style: outputTextStyle,
+                                    ),
+                                  ],
                                 ),
+
                                 const SizedBox(height: 20),
                                 // Preferred finish question
                                 Text(
@@ -76,15 +91,11 @@ class ViewFinishes extends StatelessWidget {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                // Result (✅/❌ with time)
-                                Text(
-                                  controller.getResultText(),
-                                  style: outputTextStyle,
-                                ),
+
                                 // Solution text when incorrect
                                 Text(
                                   controller.getSolutionText(),
-                                  style: inputTextStyle,
+                                  style: outputTextStyle,
                                 ),
                               ]),
                         ),
@@ -100,17 +111,19 @@ class ViewFinishes extends StatelessWidget {
                             // Use the smaller dimension to ensure it fits, with padding
                             double availableWidth = constraints.maxWidth;
                             double availableHeight = constraints.maxHeight;
-                            double maxSize = (availableWidth < availableHeight 
-                                ? availableWidth 
-                                : availableHeight) - 40; // 40px total padding
-                            
+                            double maxSize = (availableWidth < availableHeight
+                                    ? availableWidth
+                                    : availableHeight) -
+                                40; // 40px total padding
+
                             // Calculate radius (dartboard diameter should fit in maxSize)
                             // Account for the number labels that extend beyond the circle
-                            double radius = (maxSize - 60) / 2; // 60px for number labels
-                            
+                            double radius =
+                                (maxSize - 60) / 2; // 60px for number labels
+
                             // Ensure minimum and maximum bounds
                             radius = radius.clamp(200.0, 280.0);
-                            
+
                             return Center(
                               child: FullCircle(
                                 controller: controller,
