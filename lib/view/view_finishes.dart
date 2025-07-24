@@ -160,15 +160,23 @@ class ViewFinishes extends StatelessWidget {
                       style: statsTextStyle,
                     ),
                     Text(
-                      "${currentStats['correct']}",
+                      "${currentStats['correct']} (${currentStats['percentage']}%)",
                       style: statsNumberTextStyle,
                     ),
                     const Text(
-                      "   Korrektheit: ",
+                      "   Zeit: ",
                       style: statsTextStyle,
                     ),
                     Text(
-                      "${currentStats['percentage']}%",
+                      "${currentStats['totalTime']}s",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "   ØZeit: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['averageTime']}s",
                       style: statsNumberTextStyle,
                     ),
                   ],

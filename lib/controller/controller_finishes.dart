@@ -634,13 +634,18 @@ class ControllerFinishes extends ControllerBase
   }
 
   Map getCurrentStats() {
+    int completedRounds = currentRound - 1;
     double currentPercentage =
-        currentRound > 1 ? (correctRounds / (currentRound - 1)) * 100 : 0.0;
+        completedRounds > 0 ? (correctRounds / completedRounds) * 100 : 0.0;
+    double averageTime =
+        completedRounds > 0 ? (totalTimeSeconds / completedRounds) : 0.0;
 
     return {
       'round': currentRound,
       'correct': correctRounds,
       'percentage': currentPercentage.toStringAsFixed(1),
+      'totalTime': totalTimeSeconds,
+      'averageTime': averageTime.toStringAsFixed(1),
     };
   }
 
@@ -657,7 +662,7 @@ class ControllerFinishes extends ControllerBase
     double overallPercentage = storage.read('overallPercentage') ?? 0.0;
     double overallAverageTime = storage.read('overallAverageTime') ?? 0.0;
 
-    return '#S: $numberGames  ♛%: ${recordPercentage.toStringAsFixed(1)}%  ♛⌀: ${recordAverageTime.toStringAsFixed(1)}s  Ø%: ${overallPercentage.toStringAsFixed(1)}%  Ø⌀: ${overallAverageTime.toStringAsFixed(1)}s';
+    return '#S: $numberGames  ♛P: ${recordPercentage.toStringAsFixed(1)}%  ♛Z: ${recordAverageTime.toStringAsFixed(1)}s  ØP: ${overallPercentage.toStringAsFixed(1)}%  ØZ: ${overallAverageTime.toStringAsFixed(1)}s';
   }
 
   void _checkCorrect() {
@@ -668,13 +673,14 @@ class ControllerFinishes extends ControllerBase
     // Add current round time to total
     totalTimeSeconds += stopwatch.elapsed.inSeconds;
 
+    // Always display the time, regardless of correctness
+    stoppedTime = _getStoppedTime();
+
     if (isCorrect) {
       correctRounds++;
       correctSymbol = "✅";
-      stoppedTime = _getStoppedTime();
     } else {
       correctSymbol = "❌";
-      stoppedTime = "";
     }
   }
 }
