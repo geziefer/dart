@@ -98,6 +98,7 @@ class ViewXXXCheckout extends StatelessWidget {
                           controller: controller,
                           showUpper: true,
                           showMiddle: true,
+                          showLower: true,
                           showExtraButtons: true,
                           showYesNo: false,
                         ),

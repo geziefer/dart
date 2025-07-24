@@ -1,13 +1,13 @@
-import 'package:dart/controller/controller_rtcx.dart';
+import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ViewRTCX extends StatelessWidget {
-  const ViewRTCX({
+class ViewTwoDarts extends StatelessWidget {
+  const ViewTwoDarts({
     super.key,
     required this.title,
   });
@@ -16,7 +16,7 @@ class ViewRTCX extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ControllerRTCX controller = Provider.of<ControllerRTCX>(context);
+    ControllerTwoDarts controller = Provider.of<ControllerTwoDarts>(context);
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(
@@ -32,36 +32,41 @@ class ViewRTCX extends StatelessWidget {
 
           // ########## Main part with game results and num pad
           Expanded(
-            flex: 72,
+            flex: 75,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
                 Expanded(
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ########## Left column with game results
                       Expanded(
                         flex: 5,
-                        child: Container(
-                          margin: const EdgeInsets.all(3),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            // ########## 5 x 4 items for all numbers
-                            children: [
-                              for (int i = 1; i <= 3; i++)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    for (int j = 1; j <= 7; j++)
-                                      CheckNumber(
-                                        currentNumber:
-                                            controller.getCurrentNumber(),
-                                        number: (i - 1) * 7 + j,
-                                      )
-                                  ],
-                                ),
-                            ],
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // ########## Target numbers
+                            ScoreColumn(
+                                label: 'Z',
+                                content: controller.getCurrentTargets(),
+                                color:
+                                    const Color.fromARGB(255, 215, 198, 132)),
+                            const SizedBox(width: 10),
+                            const VerticalDivider(
+                                color: Colors.white, thickness: 1),
+                            const SizedBox(width: 10),
+
+                            // ########## Results (success/failure symbols)
+                            ScoreColumn(
+                              label: 'C',
+                              content: controller.getCurrentResults(),
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 10),
+                            const VerticalDivider(
+                                color: Colors.white, thickness: 1),
+                            const SizedBox(width: 10),
+                          ],
                         ),
                       ),
                       const VerticalDivider(color: Colors.white, thickness: 3),
@@ -73,9 +78,9 @@ class ViewRTCX extends StatelessWidget {
                           controller: controller,
                           showUpper: false,
                           showMiddle: false,
-                          showLower: true,
+                          showLower: false,
                           showExtraButtons: false,
-                          showYesNo: false,
+                          showYesNo: true,
                         ),
                       ),
                     ],
@@ -88,26 +93,34 @@ class ViewRTCX extends StatelessWidget {
 
           // ########## Bottom row with stats
           Expanded(
-            flex: 18,
+            flex: 15,
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Runde: ",
+                      "Ziel: ",
                       style: statsTextStyle,
                     ),
                     Text(
-                      "${currentStats['throw']}",
+                      "${currentStats['target']}",
                       style: statsNumberTextStyle,
                     ),
                     const Text(
-                      "   ØDarts/Checkout: ",
+                      "  Checks: ",
                       style: statsTextStyle,
                     ),
                     Text(
-                      "${currentStats['avgChecks']}",
+                      "${currentStats['checks']}",
+                      style: statsNumberTextStyle,
+                    ),
+                    const Text(
+                      "  ØChecks: ",
+                      style: statsTextStyle,
+                    ),
+                    Text(
+                      "${currentStats['avgChecks'].toStringAsFixed(1)}%",
                       style: statsNumberTextStyle,
                     ),
                   ],

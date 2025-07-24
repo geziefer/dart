@@ -13,6 +13,10 @@ class ScoreColumn extends StatelessWidget {
   final String content;
   final Color color;
 
+  bool _containsEmoji(String text) {
+    return text.contains('✅') || text.contains('❌');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,7 +27,9 @@ class ScoreColumn extends StatelessWidget {
         ),
         Text(
           content,
-          style: scoreTextStyle.copyWith(color: color),
+          style: _containsEmoji(content) 
+              ? emojiLargeTextStyle.copyWith(color: color)
+              : scoreTextStyle.copyWith(color: color),
           textAlign: TextAlign.right,
         ),
       ],

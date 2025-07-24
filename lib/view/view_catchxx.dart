@@ -89,6 +89,7 @@ class ViewCatchXX extends StatelessWidget {
                           controller: controller,
                           showUpper: false,
                           showMiddle: true,
+                          showLower: true,
                           showExtraButtons: false,
                           showYesNo: false,
                         ),

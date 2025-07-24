@@ -140,3 +140,8 @@ const emojiTextStyle = TextStyle(
   fontSize: 45,
   fontFamily: "NotoColorEmoji",
 );
+
+const emojiLargeTextStyle = TextStyle(
+  fontSize: 68,
+  fontFamily: "NotoColorEmoji",
+);

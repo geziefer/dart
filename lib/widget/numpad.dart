@@ -9,6 +9,7 @@ class Numpad extends StatelessWidget {
     required this.controller,
     required this.showUpper,
     required this.showMiddle,
+    required this.showLower,
     required this.showExtraButtons,
     required this.showYesNo,
   });
@@ -16,6 +17,7 @@ class Numpad extends StatelessWidget {
   final NumpadController controller; // controller class which supports Numpad
   final bool showUpper; // flag if upper row 7-9 should be shown
   final bool showMiddle; // flag if middle row 4-6 should be shown
+  final bool showLower; // flag if lower row 1-3 should be shown
   final bool
       showExtraButtons; // flag if extra buttons for predefined results should be shown
   final bool showYesNo; // flag if only yes and no should be shown in lower row
@@ -69,18 +71,19 @@ class Numpad extends StatelessWidget {
                     ],
                   ),
                 ),
-              Expanded(
-                flex: 1,
-                // ########## 3rd row 1, 2, 3
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (int i = 1; i <= 3; i++)
-                      _buildNumpadButton(
-                          context, controller, i.toString(), i, true),
-                  ],
+              if (showLower)
+                Expanded(
+                  flex: 1,
+                  // ########## 3rd row 1, 2, 3
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (int i = 1; i <= 3; i++)
+                        _buildNumpadButton(
+                            context, controller, i.toString(), i, true),
+                    ],
+                  ),
                 ),
-              ),
               // ########## 4th row back, 0, enter or back, yes, no
               if (showYesNo)
                 Expanded(
@@ -117,6 +120,7 @@ class Numpad extends StatelessWidget {
   Widget _buildNumpadButton(BuildContext context, NumpadController controller,
       String label, int value, bool large) {
     bool isDisabled = controller.isButtonDisabled(value);
+    bool isEmoji = label == '❌' || label == '✅';
     return Expanded(
       flex: 1,
       child: Container(
@@ -135,9 +139,11 @@ class Numpad extends StatelessWidget {
           style: isDisabled ? numpadDisabledTextStyle : numpadTextStyle,
           child: Text(
             label,
-            style: isDisabled 
-                ? (large ? numpadScoreButtonLargeDisabledTextStyle : numpadScoreButtonSmallDisabledTextStyle)
-                : (large ? numpadScoreButtonLargeTextStyle : numpadScoreButtonSmallTextStyle),
+            style: isEmoji 
+                ? emojiTextStyle
+                : isDisabled 
+                    ? (large ? numpadScoreButtonLargeDisabledTextStyle : numpadScoreButtonSmallDisabledTextStyle)
+                    : (large ? numpadScoreButtonLargeTextStyle : numpadScoreButtonSmallTextStyle),
             textAlign: TextAlign.center,
           ),
         ),

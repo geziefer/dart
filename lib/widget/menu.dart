@@ -6,6 +6,7 @@ import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/controller/controller_bobs27.dart';
+import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -15,6 +16,7 @@ import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:dart/view/view_bobs27.dart';
+import 'package:dart/view/view_twodarts.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -154,8 +156,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: '2D',
       name: '2 Darts',
-      view: const ViewCatchXX(title: '2 Darts Finishes'),
-      controller: ControllerCatchXX(),
+      view: const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
+      controller: ControllerTwoDarts(),
       params: const {},
     ),
     MenuItem(
