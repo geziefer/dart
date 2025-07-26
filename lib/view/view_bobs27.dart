@@ -87,7 +87,7 @@ class ViewBobs27 extends StatelessWidget {
                         child: Numpad(
                           controller: controller,
                           showUpper: false,
-                          showMiddle: true,
+                          showMiddle: false,
                           showLower: true,
                           showExtraButtons: false,
                           showYesNo: false,
