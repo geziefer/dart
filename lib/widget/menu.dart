@@ -7,6 +7,7 @@ import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/controller/controller_bobs27.dart';
 import 'package:dart/controller/controller_twodarts.dart';
+import 'package:dart/controller/controller_check121.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -17,6 +18,7 @@ import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:dart/view/view_bobs27.dart';
 import 'package:dart/view/view_twodarts.dart';
+import 'package:dart/view/view_check121.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -100,8 +102,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'C121',
       name: 'Check 121',
-      view: const ViewCatchXX(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
-      controller: ControllerCatchXX(),
+      view: const ViewCheck121(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
+      controller: ControllerCheck121(),
       params: const {},
     ),
     MenuItem(
