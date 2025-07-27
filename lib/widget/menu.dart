@@ -93,9 +93,9 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'F41',
-      name: 'Finish 41',
-      view: const ViewCatchXX(title: 'Finish 41 in 1 Aufnahme'),
+      id: '10U1D',
+      name: '10 Up 1 Down',
+      view: const ViewCatchXX(title: '10 Up 1 Down - Finish ab 50'),
       controller: ControllerCatchXX(),
       params: const {},
     ),
@@ -121,9 +121,9 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'D132',
-      name: 'Double 132',
-      view: const ViewCatchXX(title: 'Double 132 - Scoring mit Doubles'),
+      id: 'DPath',
+      name: 'Double Path',
+      view: const ViewCatchXX(title: 'Double Path - Typische Double Pfade'),
       controller: ControllerCatchXX(),
       params: const {},
     ),
@@ -158,14 +158,15 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: '2D',
       name: '2 Darts',
-      view: const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
+      view:
+          const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
       controller: ControllerTwoDarts(),
       params: const {},
     ),
     MenuItem(
-      id: 'NB',
-      name: 'No Bogeys',
-      view: const ViewFinishes(title: 'Bogey-Zahlen vermeiden'),
+      id: 'SB',
+      name: 'Speed Bull',
+      view: const ViewFinishes(title: 'Speed Bull - 1 Minute Bulls'),
       controller: ControllerFinishes(),
       params: const {'from': 61, 'to': 170},
     ),
@@ -186,15 +187,19 @@ class Menu extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   // Calculate the available height for the grid
-                  final availableHeight = constraints.maxHeight - 16; // subtract padding
-                  final availableWidth = constraints.maxWidth - 16; // subtract padding
-                  
+                  final availableHeight =
+                      constraints.maxHeight - 16; // subtract padding
+                  final availableWidth =
+                      constraints.maxWidth - 16; // subtract padding
+
                   // Calculate aspect ratio based on available space
                   // 5 rows, 4 columns, with spacing
-                  final itemHeight = (availableHeight - (4 * 8)) / 5; // 4 gaps between 5 rows
-                  final itemWidth = (availableWidth - (3 * 8)) / 4; // 3 gaps between 4 columns
+                  final itemHeight =
+                      (availableHeight - (4 * 8)) / 5; // 4 gaps between 5 rows
+                  final itemWidth = (availableWidth - (3 * 8)) /
+                      4; // 3 gaps between 4 columns
                   final calculatedAspectRatio = itemWidth / itemHeight;
-                  
+
                   return GridView.count(
                     crossAxisCount: 4,
                     childAspectRatio: calculatedAspectRatio,
@@ -202,7 +207,9 @@ class Menu extends StatelessWidget {
                     mainAxisSpacing: 8,
                     padding: const EdgeInsets.all(8),
                     physics: const NeverScrollableScrollPhysics(),
-                    children: games.map((game) => MenuItemButton(menuItem: game)).toList(),
+                    children: games
+                        .map((game) => MenuItemButton(menuItem: game))
+                        .toList(),
                   );
                 },
               ),
