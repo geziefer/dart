@@ -8,6 +8,7 @@ import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/controller/controller_bobs27.dart';
 import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/controller/controller_check121.dart';
+import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +40,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerBobs27()),
         ChangeNotifierProvider(create: (context) => ControllerTwoDarts()),
         ChangeNotifierProvider(create: (context) => ControllerCheck121()),
+        ChangeNotifierProvider(create: (context) => ControllerSpeedBull()),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',

@@ -141,6 +141,12 @@ const emojiTextStyle = TextStyle(
   fontFamily: "NotoColorEmoji",
 );
 
+const timerTextStyle = TextStyle(
+  fontSize: 100,
+  fontWeight: FontWeight.bold,
+  color: Color.fromARGB(255, 215, 198, 132),
+);
+
 const emojiLargeTextStyle = TextStyle(
   fontSize: 68,
   fontFamily: "NotoColorEmoji",
