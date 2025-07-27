@@ -9,6 +9,7 @@ import 'package:dart/controller/controller_bobs27.dart';
 import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/controller/controller_check121.dart';
 import 'package:dart/controller/controller_speedbull.dart';
+import 'package:dart/controller/controller_doublepath.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -21,6 +22,7 @@ import 'package:dart/view/view_bobs27.dart';
 import 'package:dart/view/view_twodarts.dart';
 import 'package:dart/view/view_check121.dart';
 import 'package:dart/view/view_speedbull.dart';
+import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -125,8 +127,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'DPath',
       name: 'Double Path',
-      view: const ViewCatchXX(title: 'Double Path - Typische Double Pfade'),
-      controller: ControllerCatchXX(),
+      view: const ViewDoublePath(title: 'Double Path - Typische Double Pfade'),
+      controller: ControllerDoublePath(),
       params: const {},
     ),
     MenuItem(
