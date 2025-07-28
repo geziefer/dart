@@ -243,7 +243,7 @@ class ControllerCheck121 extends ControllerBase
       builder: (BuildContext dialogContext) {
         return SummaryDialog(
           lines: [
-            SummaryLine('Gespielte Runden', '$round'),
+            SummaryLine('Gespielte Runden', '${round - 1}'),
             SummaryLine('Höchstes Ziel', '$highestTarget'),
             SummaryLine('Letzter Safepoint', '$savePoint'),
             SummaryLine('Ø Erfolgreiche Runden', _getAverageAttempts(),

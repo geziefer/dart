@@ -8,13 +8,19 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerKillBull extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerKillBull _instance = ControllerKillBull._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerKillBull._private();
+  // Constructor with optional dependency injection for testing
+  ControllerKillBull({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerKillBull() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerKillBull.create() {
+    return ControllerKillBull();
+  }
+
+  // Factory for testing with injected storage
+  factory ControllerKillBull.forTesting(GetStorage storage) {
+    return ControllerKillBull(storage: storage);
   }
 
   late MenuItem item; // item which created the controller
@@ -92,7 +98,7 @@ class ControllerKillBull extends ControllerBase
       builder: (BuildContext dialogContext) {
         return SummaryDialog(
           lines: [
-            SummaryLine('Runden', '${round - 1}'),
+            SummaryLine('Runden', '$round'),
             SummaryLine('Punkte', '$totalScore'),
             SummaryLine('Punkte/Runde', _getAvgScore().toStringAsFixed(1),
                 emphasized: true),
@@ -104,7 +110,7 @@ class ControllerKillBull extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int recordRounds = storage.read('recordRounds') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
@@ -163,7 +169,7 @@ class ControllerKillBull extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item.id);
     int numberGames = storage.read('numberGames') ?? 0;
     int recordRounds = storage.read('recordRounds') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;

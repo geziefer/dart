@@ -137,7 +137,7 @@ class Menu extends StatelessWidget {
       id: 'KB',
       name: 'Kill Bull',
       view: const ViewKillBull(title: 'Kill Bull - Bull ohne Unterbrechung'),
-      controller: ControllerKillBull(),
+      controller: ControllerKillBull.create(),
       params: const {},
     ),
     MenuItem(
