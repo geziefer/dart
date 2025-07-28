@@ -23,7 +23,7 @@ class ControllerKillBull extends ControllerBase
     return ControllerKillBull(storage: storage);
   }
 
-  late MenuItem item; // item which created the controller
+  MenuItem? item; // item which created the controller
 
   List<int> roundNumbers = <int>[]; // list of round numbers
   List<int> roundScores = <int>[]; // list of scores per round
@@ -110,7 +110,7 @@ class ControllerKillBull extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'killbull');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordRounds = storage.read('recordRounds') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
@@ -169,7 +169,7 @@ class ControllerKillBull extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = _injectedStorage ?? GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'killbull');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordRounds = storage.read('recordRounds') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
