@@ -26,9 +26,9 @@ class ControllerXXXCheckout extends ControllerBase
 
   MenuItem? item; // item which created the controller
 
-  late int xxx; // score to start with
-  late int max; // limit of rounds per leg (-1 = unlimited)
-  late int end; // number of rounds after game ends
+  int xxx = 0; // score to start with
+  int max = 0; // limit of rounds per leg (-1 = unlimited)
+  int end = 0; // number of rounds after game ends
 
   List<int> rounds = <int>[]; // list of rounds in leg
   List<int> scores = <int>[]; // list of thrown scores in leg
@@ -40,7 +40,7 @@ class ControllerXXXCheckout extends ControllerBase
   int round = 1; // round number in leg
   int wins = 0; // number of finished legs
   int score = 0; // current score in leg
-  late int remaining; // current remaining points in leg, will be set in init
+  int remaining = 0; // current remaining points in leg, will be set in init
   int dart = 0; // current used darts in leg
   int totalDarts = 0; // total number of darts used in all legs
   int lastTotalDarts = 0; // total darts after last end of leg for average

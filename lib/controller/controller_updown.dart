@@ -199,6 +199,8 @@ class ControllerUpDown extends ControllerBase
     // Show completed rounds plus current round (if not finished)
     int roundsToShow =
         results.length < 13 ? results.length + 1 : results.length;
+    // Safety check: don't exceed the actual rounds list length
+    roundsToShow = roundsToShow > rounds.length ? rounds.length : roundsToShow;
     for (int i = 0; i < roundsToShow; i++) {
       displayRounds.add('${rounds[i]}');
     }
@@ -210,6 +212,8 @@ class ControllerUpDown extends ControllerBase
     // Show completed targets plus current target (if not finished)
     int targetsToShow =
         results.length < 13 ? results.length + 1 : results.length;
+    // Safety check: don't exceed the actual targets list length
+    targetsToShow = targetsToShow > targets.length ? targets.length : targetsToShow;
     for (int i = 0; i < targetsToShow; i++) {
       displayTargets.add('${targets[i]}');
     }

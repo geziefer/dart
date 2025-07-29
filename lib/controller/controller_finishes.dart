@@ -443,16 +443,16 @@ class ControllerFinishes extends ControllerBase
 
   MenuItem? item; // item which created the controller
   // will be initialized in init or indirectly in createRandomFiish()
-  late int from;
-  late int to;
-  late int currentFinish;
-  late List<String> preferred;
-  late List<String> alternative;
-  late List<String> preferredInput;
-  late List<String> altervativeInput;
-  late String correctSymbol;
-  late String stoppedTime;
-  late FinishesState currentState;
+  int from = 0;
+  int to = 0;
+  int currentFinish = 0;
+  List<String> preferred = [];
+  List<String> alternative = [];
+  List<String> preferredInput = [];
+  List<String> altervativeInput = [];
+  String correctSymbol = "";
+  String stoppedTime = "";
+  FinishesState currentState = FinishesState.inputPreferred;
   Stopwatch stopwatch = Stopwatch();
 
   // Session tracking variables

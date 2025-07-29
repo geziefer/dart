@@ -25,8 +25,8 @@ class ControllerShootx extends ControllerBase
 
   MenuItem? item; // item which created the controller
 
-  late int x; // number to throw at
-  late int max; // limit of rounds per leg
+  int x = 0; // number to throw at
+  int max = 0; // limit of rounds per leg
 
   List<int> rounds = <int>[]; // list of round numbers (index - 1)
   List<int> thrownNumbers = <int>[]; // list of thrown number per round
