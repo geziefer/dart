@@ -8,16 +8,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerBobs27 extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerBobs27 _instance = ControllerBobs27._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerBobs27._private();
+  // Constructor with optional dependency injection for testing
+  ControllerBobs27({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerBobs27() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerBobs27.create() {
+    return ControllerBobs27();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerBobs27.forTesting(GetStorage storage) {
+    return ControllerBobs27(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<String> targets = <String>[]; // list of targets (1, 2, ..., 20, B)
   List<int> roundScores = <int>[]; // list of scores per round
@@ -224,7 +230,7 @@ class ControllerBobs27 extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'bobs27');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordSuccessful = storage.read('recordSuccessful') ?? 0;
     int recordTotal = storage.read('recordTotal') ?? 0;
@@ -254,7 +260,7 @@ class ControllerBobs27 extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'bobs27');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordSuccessful = storage.read('recordSuccessful') ?? 0;
     int recordTotal = storage.read('recordTotal') ?? 0;

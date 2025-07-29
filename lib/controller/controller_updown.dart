@@ -6,18 +6,24 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class Controller10Up1Down extends ControllerBase
+class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final Controller10Up1Down _instance = Controller10Up1Down._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  Controller10Up1Down._private();
+  // Constructor with optional dependency injection for testing
+  ControllerUpDown({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory Controller10Up1Down() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerUpDown.create() {
+    return ControllerUpDown();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerUpDown.forTesting(GetStorage storage) {
+    return ControllerUpDown(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<int> rounds = <int>[]; // round numbers
   List<int> targets = <int>[]; // target values for each round
@@ -156,7 +162,8 @@ class Controller10Up1Down extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage =
+        _injectedStorage ?? GetStorage(item?.id ?? '10up1down');
     int numberGames = storage.read('numberGames') ?? 0;
     int totalSuccesses = storage.read('totalSuccesses') ?? 0;
     int recordTarget = storage.read('recordTarget') ?? 50;
@@ -260,7 +267,8 @@ class Controller10Up1Down extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage =
+        _injectedStorage ?? GetStorage(item?.id ?? '10up1down');
     int numberGames = storage.read('numberGames') ?? 0;
     int totalSuccesses = storage.read('totalSuccesses') ?? 0;
     int recordTarget = storage.read('recordTarget') ?? 50;

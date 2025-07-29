@@ -9,16 +9,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerRTCX _instance = ControllerRTCX._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerRTCX._private();
+  // Constructor with optional dependency injection for testing
+  ControllerRTCX({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerRTCX() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerRTCX.create() {
+    return ControllerRTCX();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerRTCX.forTesting(GetStorage storage) {
+    return ControllerRTCX(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
   late int max; // limit of rounds per leg (-1 = unlimited)
 
   List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
@@ -129,7 +135,7 @@ class ControllerRTCX extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'rtcx');
     int numberGames = storage.read('numberGames') ?? 0;
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;
@@ -183,7 +189,7 @@ class ControllerRTCX extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'rtcx');
     int numberGames = storage.read('numberGames') ?? 0;
     int numberFinishes = storage.read('numberFinishes') ?? 0;
     int recordDarts = storage.read('recordDarts') ?? 0;

@@ -8,16 +8,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerCatchXX extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerCatchXX _instance = ControllerCatchXX._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerCatchXX._private();
+  // Constructor with optional dependency injection for testing
+  ControllerCatchXX({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerCatchXX() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerCatchXX.create() {
+    return ControllerCatchXX();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerCatchXX.forTesting(GetStorage storage) {
+    return ControllerCatchXX(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<int> targets = <int>[]; // list of targets to check
   List<int> thrownHits = <int>[]; // list of thrown hits per round
@@ -117,7 +123,7 @@ class ControllerCatchXX extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'catchxx');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordHits = storage.read('recordHits') ?? 0;
     int recordPoints = storage.read('recordPoints') ?? 0;
@@ -223,7 +229,7 @@ class ControllerCatchXX extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'catchxx');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordHits = storage.read('recordHits') ?? 0;
     int recordPoints = storage.read('recordPoints') ?? 0;

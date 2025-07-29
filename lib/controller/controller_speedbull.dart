@@ -9,16 +9,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerSpeedBull extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerSpeedBull _instance = ControllerSpeedBull._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerSpeedBull._private();
+  // Constructor with optional dependency injection for testing
+  ControllerSpeedBull({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerSpeedBull() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerSpeedBull.create() {
+    return ControllerSpeedBull();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerSpeedBull.forTesting(GetStorage storage) {
+    return ControllerSpeedBull(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<int> rounds = <int>[]; // list of round numbers
   List<int> hits = <int>[]; // list of hits per round
@@ -177,7 +183,7 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'speedbull');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordHits = storage.read('recordHits') ?? 0;
     double overallAverage = storage.read('overallAverage') ?? 0;
@@ -213,7 +219,7 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'speedbull');
     int numberGames = storage.read('numberGames') ?? 0;
     int totalHitsAllGames = storage.read('totalHitsAllGames') ?? 0;
     int totalRoundsAllGames = storage.read('totalRoundsAllGames') ?? 0;

@@ -8,13 +8,19 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerHalfit extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerHalfit _instance = ControllerHalfit._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerHalfit._private();
+  // Constructor with optional dependency injection for testing
+  ControllerHalfit({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerHalfit() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerHalfit.create() {
+    return ControllerHalfit();
+  }
+
+  // Factory for testing with injected storage
+  factory ControllerHalfit.forTesting(GetStorage storage) {
+    return ControllerHalfit(storage: storage);
   }
 
   static final labels = <String>[
@@ -29,7 +35,7 @@ class ControllerHalfit extends ControllerBase
     'B',
   ];
 
-  late MenuItem item; // item which created the controller
+  MenuItem? item; // item which created the controller
 
   List<String> rounds = <String>[]; // list of rounds in game
   List<int> scores = <int>[]; // list of thrown scores in each round
@@ -157,7 +163,7 @@ class ControllerHalfit extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'halfit');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
     double longtermScore = storage.read('longtermScore') ?? 0;
@@ -212,7 +218,7 @@ class ControllerHalfit extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'halfit');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordScore = storage.read('recordScore') ?? 0;
     double longtermScore = storage.read('longtermScore') ?? 0;

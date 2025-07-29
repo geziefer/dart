@@ -1,4 +1,4 @@
-import 'package:dart/controller/controller_10up1down.dart';
+import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
@@ -6,8 +6,8 @@ import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class View10Up1Down extends StatelessWidget {
-  const View10Up1Down({
+class ViewUpDown extends StatelessWidget {
+  const ViewUpDown({
     super.key,
     required this.title,
   });
@@ -16,7 +16,7 @@ class View10Up1Down extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Controller10Up1Down controller = Provider.of<Controller10Up1Down>(context);
+    ControllerUpDown controller = Provider.of<ControllerUpDown>(context);
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
 

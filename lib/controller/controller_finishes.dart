@@ -11,13 +11,19 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerFinishes extends ControllerBase
     implements MenuitemController, DartboardController {
-  static final ControllerFinishes _instance = ControllerFinishes._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerFinishes._private();
+  // Constructor with optional dependency injection for testing
+  ControllerFinishes({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerFinishes() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerFinishes.create() {
+    return ControllerFinishes();
+  }
+
+  // Factory for testing with injected storage
+  factory ControllerFinishes.forTesting(GetStorage storage) {
+    return ControllerFinishes(storage: storage);
   }
 
   static final Map<int, List<List<String>>> finishes = {
@@ -435,7 +441,7 @@ class ControllerFinishes extends ControllerBase
     ],
   };
 
-  late MenuItem item; // item which created the controller
+  MenuItem? item; // item which created the controller
   // will be initialized in init or indirectly in createRandomFiish()
   late int from;
   late int to;
@@ -598,7 +604,7 @@ class ControllerFinishes extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'finishes');
     int numberGames = storage.read('numberGames') ?? 0;
     int totalCorrectRounds = storage.read('totalCorrectRounds') ?? 0;
     int totalRounds = storage.read('totalRounds') ?? 0;
@@ -655,7 +661,7 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'finishes');
     int numberGames = storage.read('numberGames') ?? 0;
     double recordPercentage = storage.read('recordPercentage') ?? 0.0;
     double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;

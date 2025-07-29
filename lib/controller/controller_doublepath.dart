@@ -8,16 +8,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerDoublePath extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerDoublePath _instance = ControllerDoublePath._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerDoublePath._private();
+  // Constructor with optional dependency injection for testing
+  ControllerDoublePath({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerDoublePath() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerDoublePath.create() {
+    return ControllerDoublePath();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerDoublePath.forTesting(GetStorage storage) {
+    return ControllerDoublePath(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<String> targets = <String>[]; // list of target sequences
   List<int> hitCounts = <int>[]; // number of targets hit per round (0-3)
@@ -127,7 +133,7 @@ class ControllerDoublePath extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'doublepath');
     int numberGames = storage.read('numberGames') ?? 0;
     int totalGamePoints = storage.read('totalPoints') ?? 0;
     int recordRoundPoints = storage.read('recordRoundPoints') ?? 0;
@@ -231,7 +237,7 @@ class ControllerDoublePath extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'doublepath');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordRoundPoints = storage.read('recordRoundPoints') ?? 0;
     double recordRoundAverage = storage.read('recordRoundAverage') ?? 0.0;

@@ -8,16 +8,22 @@ import 'package:get_storage/get_storage.dart';
 
 class ControllerTwoDarts extends ControllerBase
     implements MenuitemController, NumpadController {
-  static final ControllerTwoDarts _instance = ControllerTwoDarts._private();
+  final GetStorage? _injectedStorage;
 
-  // singleton
-  ControllerTwoDarts._private();
+  // Constructor with optional dependency injection for testing
+  ControllerTwoDarts({GetStorage? storage}) : _injectedStorage = storage;
 
-  factory ControllerTwoDarts() {
-    return _instance;
+  // Factory for production use (maintains backward compatibility)
+  factory ControllerTwoDarts.create() {
+    return ControllerTwoDarts();
   }
 
-  late MenuItem item; // item which created the controller
+  // Factory for testing with injected storage
+  factory ControllerTwoDarts.forTesting(GetStorage storage) {
+    return ControllerTwoDarts(storage: storage);
+  }
+
+  MenuItem? item; // item which created the controller
 
   List<int> targets = <int>[]; // list of targets to show
   List<bool> results = <bool>[]; // list of success/failure results
@@ -91,7 +97,7 @@ class ControllerTwoDarts extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'twodarts');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordSuccesses = storage.read('recordSuccesses') ?? 0;
     double longtermSuccesses = storage.read('longtermSuccesses') ?? 0;
@@ -153,7 +159,7 @@ class ControllerTwoDarts extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = GetStorage(item.id);
+    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'twodarts');
     int numberGames = storage.read('numberGames') ?? 0;
     int recordSuccesses = storage.read('recordSuccesses') ?? 0;
     double longtermSuccesses = storage.read('longtermSuccesses') ?? 0;

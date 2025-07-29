@@ -10,7 +10,7 @@ import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/controller/controller_check121.dart';
 import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/controller/controller_doublepath.dart';
-import 'package:dart/controller/controller_10up1down.dart';
+import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -24,7 +24,7 @@ import 'package:dart/view/view_twodarts.dart';
 import 'package:dart/view/view_check121.dart';
 import 'package:dart/view/view_speedbull.dart';
 import 'package:dart/view/view_doublepath.dart';
-import 'package:dart/view/view_10up1down.dart';
+import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -101,8 +101,8 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: '10U1D',
       name: '10 Up\n1 Down',
-      view: const View10Up1Down(title: '10 Up 1 Down - Finish ab 50'),
-      controller: Controller10Up1Down(),
+      view: const ViewUpDown(title: '10 Up 1 Down - Finish ab 50'),
+      controller: ControllerUpDown(),
       params: const {},
     ),
     MenuItem(
