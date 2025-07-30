@@ -6,6 +6,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -25,7 +26,7 @@ class ControllerRTCX extends ControllerBase
   }
 
   MenuItem? item; // item which created the controller
-  late int max; // limit of rounds per leg (-1 = unlimited)
+  int max = -1; // limit of rounds per leg (-1 = unlimited)
 
   List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
   int currentNumber = 1; // current number to throw at
@@ -43,6 +44,11 @@ class ControllerRTCX extends ControllerBase
     round = 1;
     dart = 0;
     finished = false;
+  }
+
+  @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerRTCX>(context, listen: false).init(item);
   }
 
   @override

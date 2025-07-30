@@ -5,6 +5,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerHalfit extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -60,6 +61,11 @@ class ControllerHalfit extends ControllerBase
     totalScore = 40;
     avgScore = 0;
     input = "";
+  }
+
+  @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerHalfit>(context, listen: false).init(item);
   }
 
   @override

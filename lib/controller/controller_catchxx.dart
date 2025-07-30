@@ -5,6 +5,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerCatchXX extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -49,6 +50,9 @@ class ControllerCatchXX extends ControllerBase
   }
 
   @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerCatchXX>(context, listen: false).init(item);
+  }
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -194,7 +198,6 @@ class ControllerCatchXX extends ControllerBase
         totalPoints, [], '', '', [], totalPoints.length == 40 ? 5 : 4, false);
   }
 
-  @override
   bool isButtonDisabled(int value) {
     // Button 1 is always disabled as it's not possible to finish any target in 1 dart
     if (value == 1) {
@@ -207,12 +210,10 @@ class ControllerCatchXX extends ControllerBase
     return false;
   }
 
-  @override
   void correctDarts(int value) {
     // not used here
   }
 
-  @override
   String getInput() {
     // not used here
     return "";

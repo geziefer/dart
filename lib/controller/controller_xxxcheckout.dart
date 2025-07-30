@@ -6,6 +6,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -79,7 +80,15 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerXXXCheckout>(context, listen: false).init(item);
+  }
+
+  @override
   void pressNumpadButton(BuildContext context, int value) {
+    // Prevent operation before initialization
+    if (xxx == 0) return;
+    
     // undo button pressed
     if (value == -2) {
       if (input.isEmpty && rounds.isNotEmpty) {
@@ -129,7 +138,7 @@ class ControllerXXXCheckout extends ControllerBase
       } else {
         score = int.parse(input);
       }
-      if (scores.isEmpty) {
+      if (scores.isEmpty && remainings.isNotEmpty) {
         remainings.removeLast();
       }
       rounds.add(round);

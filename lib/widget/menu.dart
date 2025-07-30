@@ -27,6 +27,7 @@ import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({
@@ -257,7 +258,8 @@ class MenuItemButton extends StatelessWidget {
       margin: const EdgeInsets.all(2),
       child: OutlinedButton(
         onPressed: () {
-          menuItem.controller.init(menuItem);
+          // Generic initialization - each controller handles its own Provider lookup
+          menuItem.controller.initFromProvider(context, menuItem);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => menuItem.view),

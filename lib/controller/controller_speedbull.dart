@@ -6,6 +6,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerSpeedBull extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -35,7 +36,7 @@ class ControllerSpeedBull extends ControllerBase
   bool lastThrowAllowed = false; // flag for final throw after timer ends
 
   // Timer related
-  late int gameDurationSeconds; // configurable game duration
+  int gameDurationSeconds = 60; // configurable game duration
   int remainingSeconds = 0; // remaining time
   Timer? gameTimer; // timer instance
 
@@ -60,6 +61,10 @@ class ControllerSpeedBull extends ControllerBase
     gameTimer = null;
   }
 
+  @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerSpeedBull>(context, listen: false).init(item);
+  }
   void startGame() {
     if (gameStarted || gameEnded) return;
 
@@ -81,7 +86,6 @@ class ControllerSpeedBull extends ControllerBase
     notifyListeners();
   }
 
-  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -149,17 +153,14 @@ class ControllerSpeedBull extends ControllerBase
     notifyListeners();
   }
 
-  @override
   String getInput() {
     return "";
   }
 
-  @override
   void correctDarts(int value) {
     // not used here
   }
 
-  @override
   bool isButtonDisabled(int value) {
     return false; // no buttons disabled in Speed Bull
   }
@@ -244,7 +245,6 @@ class ControllerSpeedBull extends ControllerBase
     storage.write('overallAverage', overallAverage);
   }
 
-  @override
   void dispose() {
     gameTimer?.cancel();
     super.dispose();

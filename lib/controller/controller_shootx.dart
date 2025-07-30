@@ -5,6 +5,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 
 class ControllerShootx extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -48,6 +49,9 @@ class ControllerShootx extends ControllerBase
   }
 
   @override
+  void initFromProvider(BuildContext context, MenuItem item) {
+    Provider.of<ControllerShootx>(context, listen: false).init(item);
+  }
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -137,17 +141,14 @@ class ControllerShootx extends ControllerBase
     return createMultilineString(totalNumbers, [], '', '', [], 5, false);
   }
 
-  @override
   void correctDarts(int value) {
     // not used here
   }
 
-  @override
   bool isButtonDisabled(int value) {
     return false; // no buttons disabled in shootx
   }
 
-  @override
   String getInput() {
     // not used here
     return "";
