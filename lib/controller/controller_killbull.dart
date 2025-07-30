@@ -49,6 +49,7 @@ class ControllerKillBull extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerKillBull>(context, listen: false).init(item);
   }
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -147,14 +148,17 @@ class ControllerKillBull extends ControllerBase
     return createMultilineString(totalScores, [], '', '', [], 5, false);
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   bool isButtonDisabled(int value) {
     return false; // no buttons disabled in kill bull
   }
 
+  @override
   String getInput() {
     // not used here
     return "";

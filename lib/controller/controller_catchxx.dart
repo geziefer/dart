@@ -53,6 +53,7 @@ class ControllerCatchXX extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerCatchXX>(context, listen: false).init(item);
   }
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -198,6 +199,7 @@ class ControllerCatchXX extends ControllerBase
         totalPoints, [], '', '', [], totalPoints.length == 40 ? 5 : 4, false);
   }
 
+  @override
   bool isButtonDisabled(int value) {
     // Button 1 is always disabled as it's not possible to finish any target in 1 dart
     if (value == 1) {
@@ -210,10 +212,12 @@ class ControllerCatchXX extends ControllerBase
     return false;
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   String getInput() {
     // not used here
     return "";

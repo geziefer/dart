@@ -27,7 +27,6 @@ import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({

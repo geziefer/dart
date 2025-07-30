@@ -57,6 +57,7 @@ class ControllerDoublePath extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerDoublePath>(context, listen: false).init(item);
   }
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -202,6 +203,7 @@ class ControllerDoublePath extends ControllerBase
     return createMultilineString(displayTotals, [], '', '', [], 5, false);
   }
 
+  @override
   bool isButtonDisabled(int value) {
     // Game finished, disable all input
     if (currentRound >= 5) return true;
@@ -216,10 +218,12 @@ class ControllerDoublePath extends ControllerBase
     return true; // all other buttons disabled
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   String getInput() {
     return ''; // Keep input section empty for this game
   }

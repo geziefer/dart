@@ -45,6 +45,7 @@ class ControllerTwoDarts extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerTwoDarts>(context, listen: false).init(item);
   }
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -131,6 +132,7 @@ class ControllerTwoDarts extends ControllerBase
     return createMultilineString(displayResults, [], '', '', [], 5, false);
   }
 
+  @override
   bool isButtonDisabled(int value) {
     // Undo button disabled if no results to undo
     if (value == -2) return results.isEmpty;
@@ -139,10 +141,12 @@ class ControllerTwoDarts extends ControllerBase
     return true; // all other buttons disabled
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   String getInput() {
     if (currentTargetIndex < 10) {
       return 'Ziel: ${61 + currentTargetIndex}';

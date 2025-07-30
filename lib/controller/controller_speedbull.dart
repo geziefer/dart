@@ -86,6 +86,7 @@ class ControllerSpeedBull extends ControllerBase
     notifyListeners();
   }
 
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -153,14 +154,17 @@ class ControllerSpeedBull extends ControllerBase
     notifyListeners();
   }
 
+  @override
   String getInput() {
     return "";
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   bool isButtonDisabled(int value) {
     return false; // no buttons disabled in Speed Bull
   }
@@ -245,6 +249,7 @@ class ControllerSpeedBull extends ControllerBase
     storage.write('overallAverage', overallAverage);
   }
 
+  @override
   void dispose() {
     gameTimer?.cancel();
     super.dispose();

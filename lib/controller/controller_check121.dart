@@ -60,6 +60,7 @@ class ControllerCheck121 extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerCheck121>(context, listen: false).init(item);
   }
+  @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
     if (value == -2) {
@@ -166,14 +167,17 @@ class ControllerCheck121 extends ControllerBase
     notifyListeners();
   }
 
+  @override
   String getInput() {
     return "";
   }
 
+  @override
   void correctDarts(int value) {
     // not used here
   }
 
+  @override
   bool isButtonDisabled(int value) {
     return false; // no buttons disabled in Check 121
   }
