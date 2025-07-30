@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class ControllerHalfit extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -51,6 +53,7 @@ class ControllerHalfit extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     rounds = <String>[labels.first];
     scores = <int>[];
@@ -169,17 +172,16 @@ class ControllerHalfit extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'halfit');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
     double avgScore = _getAvgScore();
 
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordScore == 0 || totalScore > recordScore) {
-      storage.write('recordScore', totalScore);
+      _storageService!.write('recordScore', totalScore);
     }
-    storage.write('longtermScore',
+    _storageService!.write('longtermScore',
         (((longtermScore * numberGames) + avgScore) / (numberGames + 1)));
   }
 
@@ -224,10 +226,9 @@ class ControllerHalfit extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'halfit');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛P: $recordScore  ØP: ${longtermScore.toStringAsFixed(1)}';
   }
 }

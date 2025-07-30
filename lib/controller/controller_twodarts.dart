@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class ControllerTwoDarts extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -34,6 +36,7 @@ class ControllerTwoDarts extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     targets = <int>[61];
     results = <bool>[];
@@ -102,16 +105,15 @@ class ControllerTwoDarts extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'twodarts');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordSuccesses = storage.read('recordSuccesses') ?? 0;
-    double longtermSuccesses = storage.read('longtermSuccesses') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
+    double longtermSuccesses = _storageService!.read<double>('longtermSuccesses', defaultValue: 0.0)!;
     
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordSuccesses == 0 || successCount > recordSuccesses) {
-      storage.write('recordSuccesses', successCount);
+      _storageService!.write('recordSuccesses', successCount);
     }
-    storage.write('longtermSuccesses',
+    _storageService!.write('longtermSuccesses',
         (((longtermSuccesses * numberGames) + successCount) / (numberGames + 1)));
   }
 
@@ -164,10 +166,9 @@ class ControllerTwoDarts extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'twodarts');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordSuccesses = storage.read('recordSuccesses') ?? 0;
-    double longtermSuccesses = storage.read('longtermSuccesses') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
+    double longtermSuccesses = _storageService!.read<double>('longtermSuccesses', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛C: $recordSuccesses  ØC: ${longtermSuccesses.toStringAsFixed(1)}';
   }
 }

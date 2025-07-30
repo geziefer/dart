@@ -5,10 +5,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerKillBull extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -36,6 +38,7 @@ class ControllerKillBull extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     roundNumbers = <int>[];
     roundScores = <int>[];
@@ -115,20 +118,19 @@ class ControllerKillBull extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'killbull');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordRounds = storage.read('recordRounds') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordRounds = _storageService!.read<int>('recordRounds', defaultValue: 0)!;
+    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
 
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordRounds == 0 || round > recordRounds) {
-      storage.write('recordRounds', round);
+      _storageService!.write('recordRounds', round);
     }
     if (recordScore == 0 || totalScore > recordScore) {
-      storage.write('recordScore', totalScore);
+      _storageService!.write('recordScore', totalScore);
     }
-    storage.write('longtermScore',
+    _storageService!.write('longtermScore',
         (((longtermScore * numberGames) + totalScore) / (numberGames + 1)));
   }
 
@@ -174,11 +176,10 @@ class ControllerKillBull extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'killbull');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordRounds = storage.read('recordRounds') ?? 0;
-    int recordScore = storage.read('recordScore') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordRounds = _storageService!.read<int>('recordRounds', defaultValue: 0)!;
+    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛R: $recordRounds  ♛P: $recordScore  ØP: ${longtermScore.toStringAsFixed(1)}';
   }
 }

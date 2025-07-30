@@ -5,10 +5,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -37,6 +39,7 @@ class ControllerUpDown extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     rounds = <int>[1];
     targets = <int>[50];
@@ -167,36 +170,34 @@ class ControllerUpDown extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage =
-        _injectedStorage ?? GetStorage(item?.id ?? '10up1down');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalSuccesses = storage.read('totalSuccesses') ?? 0;
-    int recordTarget = storage.read('recordTarget') ?? 50;
-    int recordSuccesses = storage.read('recordSuccesses') ?? 0;
-    double recordAverage = storage.read('recordAverage') ?? 0.0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalSuccesses = _storageService!.read<int>('totalSuccesses', defaultValue: 0)!;
+    int recordTarget = _storageService!.read<int>('recordTarget', defaultValue: 50)!;
+    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
+    double recordAverage = _storageService!.read<double>('recordAverage', defaultValue: 0.0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
 
     double gameAverage = successCount / 13.0;
 
-    storage.write('numberGames', numberGames + 1);
-    storage.write('totalSuccesses', totalSuccesses + successCount);
+    _storageService!.write('numberGames', numberGames + 1);
+    _storageService!.write('totalSuccesses', totalSuccesses + successCount);
 
     if (highestTarget > recordTarget) {
-      storage.write('recordTarget', highestTarget);
+      _storageService!.write('recordTarget', highestTarget);
     }
 
     if (successCount > recordSuccesses) {
-      storage.write('recordSuccesses', successCount);
+      _storageService!.write('recordSuccesses', successCount);
     }
 
     if (gameAverage > recordAverage) {
-      storage.write('recordAverage', gameAverage);
+      _storageService!.write('recordAverage', gameAverage);
     }
 
     // Calculate new long-term average
     double newLongtermAverage =
         ((longtermAverage * numberGames) + gameAverage) / (numberGames + 1);
-    storage.write('longtermAverage', newLongtermAverage);
+    _storageService!.write('longtermAverage', newLongtermAverage);
   }
 
   String getCurrentRounds() {
@@ -276,14 +277,12 @@ class ControllerUpDown extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage =
-        _injectedStorage ?? GetStorage(item?.id ?? '10up1down');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalSuccesses = storage.read('totalSuccesses') ?? 0;
-    int recordTarget = storage.read('recordTarget') ?? 50;
-    int recordSuccesses = storage.read('recordSuccesses') ?? 0;
-    double recordAverage = storage.read('recordAverage') ?? 0.0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalSuccesses = _storageService!.read<int>('totalSuccesses', defaultValue: 0)!;
+    int recordTarget = _storageService!.read<int>('recordTarget', defaultValue: 50)!;
+    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
+    double recordAverage = _storageService!.read<double>('recordAverage', defaultValue: 0.0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
 
     return '#S: $numberGames  #C: $totalSuccesses  ♛Z: $recordTarget  ♛C: $recordSuccesses  ♛S: ${recordAverage.toStringAsFixed(1)}  ØC: ${longtermAverage.toStringAsFixed(1)}';
   }

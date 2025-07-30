@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class ControllerCatchXX extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -38,6 +40,7 @@ class ControllerCatchXX extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     targets = <int>[61];
     thrownPoints = <int>[];
@@ -128,21 +131,20 @@ class ControllerCatchXX extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'catchxx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordHits = storage.read('recordHits') ?? 0;
-    int recordPoints = storage.read('recordPoints') ?? 0;
-    double longtermPoints = storage.read('longtermPoints') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
+    int recordPoints = _storageService!.read<int>('recordPoints', defaultValue: 0)!;
+    double longtermPoints = _storageService!.read<double>('longtermPoints', defaultValue: 0.0)!;
     double avgPoints = _getAvgPoints();
     
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordHits == 0 || hits > recordHits) {
-      storage.write('recordHits', hits);
+      _storageService!.write('recordHits', hits);
     }
     if (recordPoints == 0 || points > recordPoints) {
-      storage.write('recordPoints', points);
+      _storageService!.write('recordPoints', points);
     }
-    storage.write('longtermPoints',
+    _storageService!.write('longtermPoints',
         (((longtermPoints * numberGames) + avgPoints) / (numberGames + 1)));
   }
 
@@ -234,11 +236,10 @@ class ControllerCatchXX extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'catchxx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordHits = storage.read('recordHits') ?? 0;
-    int recordPoints = storage.read('recordPoints') ?? 0;
-    double longtermPoints = storage.read('longtermPoints') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
+    int recordPoints = _storageService!.read<int>('recordPoints', defaultValue: 0)!;
+    double longtermPoints = _storageService!.read<double>('longtermPoints', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛C: $recordHits  ♛P: $recordPoints  ØP: ${longtermPoints.toStringAsFixed(1)}';
   }
 }

@@ -6,10 +6,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -37,6 +39,7 @@ class ControllerRTCX extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
     max = item.params['max'];
 
     throws = <int>[];
@@ -141,21 +144,20 @@ class ControllerRTCX extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'rtcx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int numberFinishes = storage.read('numberFinishes') ?? 0;
-    int recordDarts = storage.read('recordDarts') ?? 0;
-    double longtermChecks = storage.read('longtermChecks') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes = _storageService!.read<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts = _storageService!.read<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks = _storageService!.read<double>('longtermChecks', defaultValue: 0.0)!;
     double avgChecks = _getAvgChecks();
 
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (finished) {
-      storage.write('numberFinishes', numberFinishes + 1);
+      _storageService!.write('numberFinishes', numberFinishes + 1);
     }
     if (recordDarts == 0 || dart < recordDarts) {
-      storage.write('recordDarts', dart);
+      _storageService!.write('recordDarts', dart);
     }
-    storage.write('longtermChecks',
+    _storageService!.write('longtermChecks',
         (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1)));
   }
 
@@ -195,11 +197,10 @@ class ControllerRTCX extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'rtcx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int numberFinishes = storage.read('numberFinishes') ?? 0;
-    int recordDarts = storage.read('recordDarts') ?? 0;
-    double longtermChecks = storage.read('longtermChecks') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes = _storageService!.read<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts = _storageService!.read<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks = _storageService!.read<double>('longtermChecks', defaultValue: 0.0)!;
     return '#S: $numberGames  #G: $numberFinishes  ♛D: $recordDarts  ØC: ${longtermChecks.toStringAsFixed(1)}';
   }
 }

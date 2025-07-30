@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class ControllerShootx extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -38,6 +40,7 @@ class ControllerShootx extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
     x = item.params['x'];
     max = item.params['max'];
 
@@ -112,17 +115,16 @@ class ControllerShootx extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'shootx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordNumbers = storage.read('recordNumbers') ?? 0;
-    double longtermNumbers = storage.read('longtermNumbers') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordNumbers = _storageService!.read<int>('recordNumbers', defaultValue: 0)!;
+    double longtermNumbers = _storageService!.read<double>('longtermNumbers', defaultValue: 0.0)!;
     double avgNumbers = _getAvgNumbers();
 
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordNumbers == 0 || number > recordNumbers) {
-      storage.write('recordNumbers', number);
+      _storageService!.write('recordNumbers', number);
     }
-    storage.write('longtermNumbers',
+    _storageService!.write('longtermNumbers',
         (((longtermNumbers * numberGames) + avgNumbers) / (numberGames + 1)));
   }
 
@@ -168,10 +170,9 @@ class ControllerShootx extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'shootx');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordNumbers = storage.read('recordNumbers') ?? 0;
-    double longtermNumbers = storage.read('longtermNumbers') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordNumbers = _storageService!.read<int>('recordNumbers', defaultValue: 0)!;
+    double longtermNumbers = _storageService!.read<double>('longtermNumbers', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛N: ${recordNumbers.toStringAsFixed(1)}  ØH: ${longtermNumbers.toStringAsFixed(1)}';
   }
 }

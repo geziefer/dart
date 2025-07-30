@@ -6,10 +6,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -54,6 +56,7 @@ class ControllerXXXCheckout extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
     xxx = item.params['xxx'];
     max = item.params['max'];
     end = item.params['end'];
@@ -265,30 +268,29 @@ class ControllerXXXCheckout extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'xxxcheckout');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordFinishes = storage.read('recordFinishes') ?? 0;
-    double recordScore = storage.read('recordScore') ?? 0;
-    double recordDarts = storage.read('recordDarts') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
-    double longtermDarts = storage.read('longtermDarts') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordFinishes = _storageService!.read<int>('recordFinishes', defaultValue: 0)!;
+    double recordScore = _storageService!.read<double>('recordScore', defaultValue: 0.0)!;
+    double recordDarts = _storageService!.read<double>('recordDarts', defaultValue: 0.0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
+    double longtermDarts = _storageService!.read<double>('longtermDarts', defaultValue: 0.0)!;
     double avgScore = _getAvgScore();
     double avgDarts = _getAvgDarts();
 
     // Update storage
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (wins == 0 || wins > recordFinishes) {
-      storage.write('recordFinishes', recordFinishes + 1);
+      _storageService!.write('recordFinishes', recordFinishes + 1);
     }
     if (recordScore == 0 || avgScore < recordScore) {
-      storage.write('recordScore', avgScore);
+      _storageService!.write('recordScore', avgScore);
     }
     if (recordDarts == 0 || avgDarts < recordDarts) {
-      storage.write('recordDarts', avgDarts);
+      _storageService!.write('recordDarts', avgDarts);
     }
-    storage.write('longtermScore',
+    _storageService!.write('longtermScore',
         (((longtermScore * numberGames) + avgScore) / (numberGames + 1)));
-    storage.write('longtermDarts',
+    _storageService!.write('longtermDarts',
         (((longtermDarts * numberGames) + avgDarts) / (numberGames + 1)));
   }
 
@@ -344,13 +346,12 @@ class ControllerXXXCheckout extends ControllerBase
 
   String getStats() {
     // read stats from device, use gameno as key
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'xxxcheckout');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordFinishes = storage.read('recordFinishes') ?? 0;
-    double recordScore = storage.read('recordScore') ?? 0;
-    double recordDarts = storage.read('recordDarts') ?? 0;
-    double longtermScore = storage.read('longtermScore') ?? 0;
-    double longtermDarts = storage.read('longtermDarts') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordFinishes = _storageService!.read<int>('recordFinishes', defaultValue: 0)!;
+    double recordScore = _storageService!.read<double>('recordScore', defaultValue: 0.0)!;
+    double recordDarts = _storageService!.read<double>('recordDarts', defaultValue: 0.0)!;
+    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
+    double longtermDarts = _storageService!.read<double>('longtermDarts', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛G: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
   }
 }

@@ -6,10 +6,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerSpeedBull extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -43,6 +45,7 @@ class ControllerSpeedBull extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     // Get duration from params, default to 60 seconds
     gameDurationSeconds = item.params['duration'] ?? 60;
@@ -188,10 +191,9 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'speedbull');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordHits = storage.read('recordHits') ?? 0;
-    double overallAverage = storage.read('overallAverage') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
+    double overallAverage = _storageService!.read<double>('overallAverage', defaultValue: 0.0)!;
 
     return '#S: $numberGames  ♛P: $recordHits  ØP: ${overallAverage.toStringAsFixed(1)}';
   }
@@ -224,20 +226,19 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'speedbull');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalHitsAllGames = storage.read('totalHitsAllGames') ?? 0;
-    int totalRoundsAllGames = storage.read('totalRoundsAllGames') ?? 0;
-    int recordHits = storage.read('recordHits') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalHitsAllGames = _storageService!.read<int>('totalHitsAllGames', defaultValue: 0)!;
+    int totalRoundsAllGames = _storageService!.read<int>('totalRoundsAllGames', defaultValue: 0)!;
+    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
 
     int completedRounds = round - 1; // exclude current empty round
 
-    storage.write('numberGames', numberGames + 1);
-    storage.write('totalHitsAllGames', totalHitsAllGames + totalHits);
-    storage.write('totalRoundsAllGames', totalRoundsAllGames + completedRounds);
+    _storageService!.write('numberGames', numberGames + 1);
+    _storageService!.write('totalHitsAllGames', totalHitsAllGames + totalHits);
+    _storageService!.write('totalRoundsAllGames', totalRoundsAllGames + completedRounds);
 
     if (recordHits == 0 || totalHits > recordHits) {
-      storage.write('recordHits', totalHits);
+      _storageService!.write('recordHits', totalHits);
     }
 
     // calculate overall average hits per round
@@ -246,7 +247,7 @@ class ControllerSpeedBull extends ControllerBase
     if (newTotalRounds > 0) {
       overallAverage = (totalHitsAllGames + totalHits) / newTotalRounds;
     }
-    storage.write('overallAverage', overallAverage);
+    _storageService!.write('overallAverage', overallAverage);
   }
 
   @override

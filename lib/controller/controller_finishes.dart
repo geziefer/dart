@@ -8,10 +8,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerFinishes extends ControllerBase
     implements MenuitemController, DartboardController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -465,6 +467,7 @@ class ControllerFinishes extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
     from = item.params['from'];
     to = item.params['to'];
 
@@ -610,13 +613,12 @@ class ControllerFinishes extends ControllerBase
 
   // Update game statistics
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'finishes');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalCorrectRounds = storage.read('totalCorrectRounds') ?? 0;
-    int totalRounds = storage.read('totalRounds') ?? 0;
-    int totalTimeAllGames = storage.read('totalTimeAllGames') ?? 0;
-    double recordPercentage = storage.read('recordPercentage') ?? 0.0;
-    double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalCorrectRounds = _storageService!.read<int>('totalCorrectRounds', defaultValue: 0)!;
+    int totalRounds = _storageService!.read<int>('totalRounds', defaultValue: 0)!;
+    int totalTimeAllGames = _storageService!.read<int>('totalTimeAllGames', defaultValue: 0)!;
+    double recordPercentage = _storageService!.read<double>('recordPercentage', defaultValue: 0.0)!;
+    double recordAverageTime = _storageService!.read<double>('recordAverageTime', defaultValue: 0.0)!;
 
     double currentPercentage = (correctRounds / maxRounds) * 100;
     double currentAverageTime = _getAverageTime();
@@ -628,21 +630,21 @@ class ControllerFinishes extends ControllerBase
         ? ((totalTimeAllGames + totalTimeSeconds) / (totalRounds + maxRounds))
         : currentAverageTime;
 
-    storage.write('numberGames', numberGames + 1);
-    storage.write('totalCorrectRounds', totalCorrectRounds + correctRounds);
-    storage.write('totalRounds', totalRounds + maxRounds);
-    storage.write('totalTimeAllGames', totalTimeAllGames + totalTimeSeconds);
+    _storageService!.write('numberGames', numberGames + 1);
+    _storageService!.write('totalCorrectRounds', totalCorrectRounds + correctRounds);
+    _storageService!.write('totalRounds', totalRounds + maxRounds);
+    _storageService!.write('totalTimeAllGames', totalTimeAllGames + totalTimeSeconds);
 
     if (currentPercentage > recordPercentage) {
-      storage.write('recordPercentage', currentPercentage);
+      _storageService!.write('recordPercentage', currentPercentage);
     }
 
     if (recordAverageTime == 0.0 || currentAverageTime < recordAverageTime) {
-      storage.write('recordAverageTime', currentAverageTime);
+      _storageService!.write('recordAverageTime', currentAverageTime);
     }
 
-    storage.write('overallPercentage', overallPercentage);
-    storage.write('overallAverageTime', overallAverageTime);
+    _storageService!.write('overallPercentage', overallPercentage);
+    _storageService!.write('overallAverageTime', overallAverageTime);
   }
 
   Map getCurrentStats() {
@@ -667,12 +669,11 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'finishes');
-    int numberGames = storage.read('numberGames') ?? 0;
-    double recordPercentage = storage.read('recordPercentage') ?? 0.0;
-    double recordAverageTime = storage.read('recordAverageTime') ?? 0.0;
-    double overallPercentage = storage.read('overallPercentage') ?? 0.0;
-    double overallAverageTime = storage.read('overallAverageTime') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    double recordPercentage = _storageService!.read<double>('recordPercentage', defaultValue: 0.0)!;
+    double recordAverageTime = _storageService!.read<double>('recordAverageTime', defaultValue: 0.0)!;
+    double overallPercentage = _storageService!.read<double>('overallPercentage', defaultValue: 0.0)!;
+    double overallAverageTime = _storageService!.read<double>('overallAverageTime', defaultValue: 0.0)!;
 
     return '#S: $numberGames  ♛P: ${recordPercentage.toStringAsFixed(1)}%  ♛Z: ${recordAverageTime.toStringAsFixed(1)}s  ØP: ${overallPercentage.toStringAsFixed(1)}%  ØZ: ${overallAverageTime.toStringAsFixed(1)}s';
   }

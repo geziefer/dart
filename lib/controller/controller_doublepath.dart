@@ -5,10 +5,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerDoublePath extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -44,6 +46,7 @@ class ControllerDoublePath extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     targets = List.from(targetSequences);
     hitCounts = <int>[];
@@ -138,33 +141,32 @@ class ControllerDoublePath extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'doublepath');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalGamePoints = storage.read('totalPoints') ?? 0;
-    int recordRoundPoints = storage.read('recordRoundPoints') ?? 0;
-    double recordRoundAverage = storage.read('recordRoundAverage') ?? 0.0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalGamePoints = _storageService!.read<int>('totalPoints', defaultValue: 0)!;
+    int recordRoundPoints = _storageService!.read<int>('recordRoundPoints', defaultValue: 0)!;
+    double recordRoundAverage = _storageService!.read<double>('recordRoundAverage', defaultValue: 0.0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
 
     int gameTotal = totalPoints.isNotEmpty ? totalPoints.last : 0;
     double gameAverage = gameTotal / 5.0;
     int maxRoundPoints =
         points.isNotEmpty ? points.reduce((a, b) => a > b ? a : b) : 0;
 
-    storage.write('numberGames', numberGames + 1);
-    storage.write('totalPoints', totalGamePoints + gameTotal);
+    _storageService!.write('numberGames', numberGames + 1);
+    _storageService!.write('totalPoints', totalGamePoints + gameTotal);
 
     if (maxRoundPoints > recordRoundPoints) {
-      storage.write('recordRoundPoints', maxRoundPoints);
+      _storageService!.write('recordRoundPoints', maxRoundPoints);
     }
 
     if (gameAverage > recordRoundAverage) {
-      storage.write('recordRoundAverage', gameAverage);
+      _storageService!.write('recordRoundAverage', gameAverage);
     }
 
     // Calculate new long-term average
     double newLongtermAverage =
         ((longtermAverage * numberGames) + gameAverage) / (numberGames + 1);
-    storage.write('longtermAverage', newLongtermAverage);
+    _storageService!.write('longtermAverage', newLongtermAverage);
   }
 
   String getCurrentTargets() {
@@ -242,11 +244,10 @@ class ControllerDoublePath extends ControllerBase
 
   String getStats() {
     // read stats from device
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'doublepath');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordRoundPoints = storage.read('recordRoundPoints') ?? 0;
-    double recordRoundAverage = storage.read('recordRoundAverage') ?? 0.0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0.0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordRoundPoints = _storageService!.read<int>('recordRoundPoints', defaultValue: 0)!;
+    double recordRoundAverage = _storageService!.read<double>('recordRoundAverage', defaultValue: 0.0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
 
     return '#S: $numberGames  ♛P: $recordRoundPoints  ♛Ø: ${recordRoundAverage.toStringAsFixed(1)}  ØP: ${longtermAverage.toStringAsFixed(1)}';
   }

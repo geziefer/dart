@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class ControllerBobs27 extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -39,6 +41,7 @@ class ControllerBobs27 extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     targets = <String>['1']; // start with target 1
     roundScores = <int>[0]; // start with empty round score (0 = empty display)
@@ -235,11 +238,10 @@ class ControllerBobs27 extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'bobs27');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordSuccessful = storage.read('recordSuccessful') ?? 0;
-    int recordTotal = storage.read('recordTotal') ?? 0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordSuccessful = _storageService!.read<int>('recordSuccessful', defaultValue: 0)!;
+    int recordTotal = _storageService!.read<int>('recordTotal', defaultValue: 0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
     return '#S: $numberGames  ♛E: $recordSuccessful  ♛P: $recordTotal  ØP: ${longtermAverage.toStringAsFixed(1)}';
   }
 
@@ -265,21 +267,20 @@ class ControllerBobs27 extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'bobs27');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int recordSuccessful = storage.read('recordSuccessful') ?? 0;
-    int recordTotal = storage.read('recordTotal') ?? 0;
-    double longtermAverage = storage.read('longtermAverage') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int recordSuccessful = _storageService!.read<int>('recordSuccessful', defaultValue: 0)!;
+    int recordTotal = _storageService!.read<int>('recordTotal', defaultValue: 0)!;
+    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
     double currentAverage = double.parse(_getAverageScore());
     
-    storage.write('numberGames', numberGames + 1);
+    _storageService!.write('numberGames', numberGames + 1);
     if (recordSuccessful == 0 || successfulRounds > recordSuccessful) {
-      storage.write('recordSuccessful', successfulRounds);
+      _storageService!.write('recordSuccessful', successfulRounds);
     }
     if (recordTotal == 0 || totalScore > recordTotal) {
-      storage.write('recordTotal', totalScore);
+      _storageService!.write('recordTotal', totalScore);
     }
-    storage.write('longtermAverage', 
+    _storageService!.write('longtermAverage', 
         (((longtermAverage * numberGames) + currentAverage) / (numberGames + 1)));
   }
 }

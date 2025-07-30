@@ -5,10 +5,12 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ControllerCheck121 extends ControllerBase
     implements MenuitemController, NumpadController {
+  StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
   // Constructor with optional dependency injection for testing
@@ -42,6 +44,7 @@ class ControllerCheck121 extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
 
     rounds = <int>[1]; // start with round 1
     targets = <int>[121]; // start with target 121
@@ -228,12 +231,11 @@ class ControllerCheck121 extends ControllerBase
   }
 
   String getStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'check121');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalSuccessfulRounds = storage.read('totalSuccessfulRounds') ?? 0;
-    int totalRoundsPlayed = storage.read('totalRoundsPlayed') ?? 0;
-    int highestTarget = storage.read('highestTarget') ?? 0;
-    int highestSavePoint = storage.read('highestSavePoint') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalSuccessfulRounds = _storageService!.read<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed = _storageService!.read<int>('totalRoundsPlayed', defaultValue: 0)!;
+    int highestTarget = _storageService!.read<int>('highestTarget', defaultValue: 0)!;
+    int highestSavePoint = _storageService!.read<int>('highestSavePoint', defaultValue: 0)!;
 
     // Calculate percentage of successful rounds across all games
     double averageSuccessPercentage = 0.0;
@@ -266,25 +268,24 @@ class ControllerCheck121 extends ControllerBase
   }
 
   void _updateGameStats() {
-    GetStorage storage = _injectedStorage ?? GetStorage(item?.id ?? 'check121');
-    int numberGames = storage.read('numberGames') ?? 0;
-    int totalSuccessfulRounds = storage.read('totalSuccessfulRounds') ?? 0;
-    int totalRoundsPlayed = storage.read('totalRoundsPlayed') ?? 0;
-    int storedHighestTarget = storage.read('highestTarget') ?? 0;
-    int highestSavePoint = storage.read('highestSavePoint') ?? 0;
+    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
+    int totalSuccessfulRounds = _storageService!.read<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed = _storageService!.read<int>('totalRoundsPlayed', defaultValue: 0)!;
+    int storedHighestTarget = _storageService!.read<int>('highestTarget', defaultValue: 0)!;
+    int highestSavePoint = _storageService!.read<int>('highestSavePoint', defaultValue: 0)!;
 
     int currentRoundsPlayed = round - 1; // exclude current empty round
 
-    storage.write('numberGames', numberGames + 1);
-    storage.write(
+    _storageService!.write('numberGames', numberGames + 1);
+    _storageService!.write(
         'totalSuccessfulRounds', totalSuccessfulRounds + successfulRounds);
-    storage.write('totalRoundsPlayed', totalRoundsPlayed + currentRoundsPlayed);
+    _storageService!.write('totalRoundsPlayed', totalRoundsPlayed + currentRoundsPlayed);
 
     if (storedHighestTarget == 0 || highestTarget > storedHighestTarget) {
-      storage.write('highestTarget', highestTarget);
+      _storageService!.write('highestTarget', highestTarget);
     }
     if (highestSavePoint == 0 || savePoint > highestSavePoint) {
-      storage.write('highestSavePoint', savePoint);
+      _storageService!.write('highestSavePoint', savePoint);
     }
   }
 }
