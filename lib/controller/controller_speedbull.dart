@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class ControllerSpeedBull extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     // Get duration from params, default to 60 seconds
     gameDurationSeconds = item.params['duration'] ?? 60;
@@ -191,63 +193,66 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
-    double overallAverage = _storageService!.read<double>('overallAverage', defaultValue: 0.0)!;
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordHits = statsService.getStat<int>('recordHits', defaultValue: 0)!;
+    double overallAverage = statsService.getStat<double>('overallAverage', defaultValue: 0.0)!;
 
-    return '#S: $numberGames  ♛P: $recordHits  ØP: ${overallAverage.toStringAsFixed(1)}';
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'P': recordHits,        // Punkte/Hits
+      },
+      averages: {
+        'P': overallAverage,    // Durchschnittspunkte
+      },
+    );
   }
 
   void _showSummaryDialog(BuildContext context) {
-    // save stats to device
-    _updateGameStats();
+    showSummaryDialog(context);
+  }
 
+  @override
+  List<SummaryLine> createSummaryLines() {
     int completedRounds = round - 1; // exclude current empty round
     double averageHitsPerRound = 0.0;
     if (completedRounds > 0) {
       averageHitsPerRound = totalHits / completedRounds;
     }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Runden gespielt', '$completedRounds'),
-            SummaryLine('Bull Treffer', '$totalHits'),
-            SummaryLine(
-                'Ø Treffer/Runde', averageHitsPerRound.toStringAsFixed(1),
-                emphasized: true),
-          ],
-        );
-      },
-    );
+    
+    return [
+      SummaryService.createValueLine('Runden gespielt', completedRounds),
+      SummaryService.createValueLine('Bull Treffer', totalHits),
+      SummaryService.createAverageLine('Ø Treffer/Runde', averageHitsPerRound, emphasized: true),
+    ];
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalHitsAllGames = _storageService!.read<int>('totalHitsAllGames', defaultValue: 0)!;
-    int totalRoundsAllGames = _storageService!.read<int>('totalRoundsAllGames', defaultValue: 0)!;
-    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
+  @override
+  String getGameTitle() => 'Speed Bull';
 
+  @override
+  void updateSpecificStats() {
     int completedRounds = round - 1; // exclude current empty round
-
-    _storageService!.write('numberGames', numberGames + 1);
-    _storageService!.write('totalHitsAllGames', totalHitsAllGames + totalHits);
-    _storageService!.write('totalRoundsAllGames', totalRoundsAllGames + completedRounds);
-
-    if (recordHits == 0 || totalHits > recordHits) {
-      _storageService!.write('recordHits', totalHits);
-    }
-
-    // calculate overall average hits per round
+    
+    // Update cumulative stats
+    int totalHitsAllGames = statsService.getStat<int>('totalHitsAllGames', defaultValue: 0)!;
+    int totalRoundsAllGames = statsService.getStat<int>('totalRoundsAllGames', defaultValue: 0)!;
+    
+    statsService.updateStats({
+      'totalHitsAllGames': totalHitsAllGames + totalHits,
+      'totalRoundsAllGames': totalRoundsAllGames + completedRounds,
+    });
+    
+    // Update records
+    statsService.updateRecord<int>('recordHits', totalHits);
+    
+    // Calculate and store overall average
     double overallAverage = 0.0;
     int newTotalRounds = totalRoundsAllGames + completedRounds;
     if (newTotalRounds > 0) {
       overallAverage = (totalHitsAllGames + totalHits) / newTotalRounds;
     }
-    _storageService!.write('overallAverage', overallAverage);
+    statsService.updateStats({'overallAverage': overallAverage});
   }
 
   @override

@@ -37,6 +37,7 @@ class ControllerTwoDarts extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     targets = <int>[61];
     results = <bool>[];

@@ -2,6 +2,7 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class ControllerBobs27 extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     targets = <String>['1']; // start with target 1
     roundScores = <int>[0]; // start with empty round score (0 = empty display)
@@ -238,49 +240,49 @@ class ControllerBobs27 extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordSuccessful = _storageService!.read<int>('recordSuccessful', defaultValue: 0)!;
-    int recordTotal = _storageService!.read<int>('recordTotal', defaultValue: 0)!;
-    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛E: $recordSuccessful  ♛P: $recordTotal  ØP: ${longtermAverage.toStringAsFixed(1)}';
-  }
-
-  void _showSummaryDialog(BuildContext context) {
-    // save stats to device
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        String checkSymbol = gameWon ? "✅" : "❌";
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Bob\'s 27 geschafft', '', checkSymbol: checkSymbol),
-            SummaryLine('Erfolgreiche Runden', '$successfulRounds'),
-            SummaryLine('Gesamtpunkte', '$totalScore'),
-            SummaryLine('Punkte/Runde', _getAverageScore(), emphasized: true),
-          ],
-        );
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordSuccessful = statsService.getStat<int>('recordSuccessful', defaultValue: 0)!;
+    int recordTotal = statsService.getStat<int>('recordTotal', defaultValue: 0)!;
+    double longtermAverage = statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'E': recordSuccessful,  // Erfolgreiche Runden
+        'P': recordTotal,       // Punkte
+      },
+      averages: {
+        'P': longtermAverage,   // Durchschnittspunkte
       },
     );
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordSuccessful = _storageService!.read<int>('recordSuccessful', defaultValue: 0)!;
-    int recordTotal = _storageService!.read<int>('recordTotal', defaultValue: 0)!;
-    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
+  void _showSummaryDialog(BuildContext context) {
+    showSummaryDialog(context);
+  }
+
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createCompletionLine('Bob\'s 27', gameWon),
+      SummaryService.createValueLine('Erfolgreiche Runden', successfulRounds),
+      SummaryService.createValueLine('Gesamtpunkte', totalScore),
+      SummaryService.createValueLine('Punkte/Runde', _getAverageScore(), emphasized: true),
+    ];
+  }
+
+  @override
+  String getGameTitle() => 'Bob\'s 27';
+
+  @override
+  void updateSpecificStats() {
     double currentAverage = double.parse(_getAverageScore());
     
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordSuccessful == 0 || successfulRounds > recordSuccessful) {
-      _storageService!.write('recordSuccessful', successfulRounds);
-    }
-    if (recordTotal == 0 || totalScore > recordTotal) {
-      _storageService!.write('recordTotal', totalScore);
-    }
-    _storageService!.write('longtermAverage', 
-        (((longtermAverage * numberGames) + currentAverage) / (numberGames + 1)));
+    // Update records using StatsService
+    statsService.updateRecord<int>('recordSuccessful', successfulRounds);
+    statsService.updateRecord<int>('recordTotal', totalScore);
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermAverage', currentAverage);
   }
 }

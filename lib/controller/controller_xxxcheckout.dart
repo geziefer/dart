@@ -57,6 +57,7 @@ class ControllerXXXCheckout extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
     xxx = item.params['xxx'];
     max = item.params['max'];
     end = item.params['end'];

@@ -47,6 +47,7 @@ class ControllerDoublePath extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     targets = List.from(targetSequences);
     hitCounts = <int>[];

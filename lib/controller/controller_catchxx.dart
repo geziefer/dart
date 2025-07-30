@@ -2,6 +2,7 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class ControllerCatchXX extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     targets = <int>[61];
     thrownPoints = <int>[];
@@ -112,40 +114,31 @@ class ControllerCatchXX extends ControllerBase
   }
 
   void _showSummaryDialog(BuildContext context) {
-    // save stats to device, use gameno as key
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Anzahl Checks', '$hits'),
-            SummaryLine('Anzahl Punkte', '$points'),
-            SummaryLine('Punkte/Runde', '${getCurrentStats()['avgPoints']}', emphasized: true),
-          ],
-        );
-      },
-    );
+    showSummaryDialog(context);
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
-    int recordPoints = _storageService!.read<int>('recordPoints', defaultValue: 0)!;
-    double longtermPoints = _storageService!.read<double>('longtermPoints', defaultValue: 0.0)!;
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createValueLine('Anzahl Checks', hits),
+      SummaryService.createValueLine('Anzahl Punkte', points),
+      SummaryService.createValueLine('Punkte/Runde', getCurrentStats()['avgPoints'], emphasized: true),
+    ];
+  }
+
+  @override
+  String getGameTitle() => 'CatchXX';
+
+  @override
+  void updateSpecificStats() {
     double avgPoints = _getAvgPoints();
     
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordHits == 0 || hits > recordHits) {
-      _storageService!.write('recordHits', hits);
-    }
-    if (recordPoints == 0 || points > recordPoints) {
-      _storageService!.write('recordPoints', points);
-    }
-    _storageService!.write('longtermPoints',
-        (((longtermPoints * numberGames) + avgPoints) / (numberGames + 1)));
+    // Update records using StatsService
+    statsService.updateRecord<int>('recordHits', hits);
+    statsService.updateRecord<int>('recordPoints', points);
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermPoints', avgPoints);
   }
 
   /// Calculate points based on number of darts used
@@ -235,11 +228,20 @@ class ControllerCatchXX extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device, use gameno as key
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordHits = _storageService!.read<int>('recordHits', defaultValue: 0)!;
-    int recordPoints = _storageService!.read<int>('recordPoints', defaultValue: 0)!;
-    double longtermPoints = _storageService!.read<double>('longtermPoints', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛C: $recordHits  ♛P: $recordPoints  ØP: ${longtermPoints.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordHits = statsService.getStat<int>('recordHits', defaultValue: 0)!;
+    int recordPoints = statsService.getStat<int>('recordPoints', defaultValue: 0)!;
+    double longtermPoints = statsService.getStat<double>('longtermPoints', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'C': recordHits,     // Checks
+        'P': recordPoints,   // Punkte
+      },
+      averages: {
+        'P': longtermPoints, // Durchschnittspunkte
+      },
+    );
   }
 }

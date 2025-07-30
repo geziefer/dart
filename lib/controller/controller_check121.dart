@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class ControllerCheck121 extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     rounds = <int>[1]; // start with round 1
     targets = <int>[121]; // start with target 121
@@ -231,11 +233,11 @@ class ControllerCheck121 extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalSuccessfulRounds = _storageService!.read<int>('totalSuccessfulRounds', defaultValue: 0)!;
-    int totalRoundsPlayed = _storageService!.read<int>('totalRoundsPlayed', defaultValue: 0)!;
-    int highestTarget = _storageService!.read<int>('highestTarget', defaultValue: 0)!;
-    int highestSavePoint = _storageService!.read<int>('highestSavePoint', defaultValue: 0)!;
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int totalSuccessfulRounds = statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed = statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
+    int highestTarget = statsService.getStat<int>('highestTarget', defaultValue: 0)!;
+    int highestSavePoint = statsService.getStat<int>('highestSavePoint', defaultValue: 0)!;
 
     // Calculate percentage of successful rounds across all games
     double averageSuccessPercentage = 0.0;
@@ -243,49 +245,51 @@ class ControllerCheck121 extends ControllerBase
       averageSuccessPercentage = totalSuccessfulRounds / totalRoundsPlayed;
     }
 
-    return '#S: $numberGames  ♛E: $totalSuccessfulRounds  ♛Z: $highestTarget  ♛S: $highestSavePoint  ØC: ${averageSuccessPercentage.toStringAsFixed(1)}';
-  }
-
-  void _showSummaryDialog(BuildContext context) {
-    // save stats to device
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Gespielte Runden', '${round - 1}'),
-            SummaryLine('Höchstes Ziel', '$highestTarget'),
-            SummaryLine('Letzter Safepoint', '$savePoint'),
-            SummaryLine('Ø Erfolgreiche Runden', _getAverageAttempts(),
-                emphasized: true),
-          ],
-        );
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'E': totalSuccessfulRounds,  // Erfolgreiche Runden
+        'Z': highestTarget,          // Ziel
+        'S': highestSavePoint,       // Safepoint
+      },
+      averages: {
+        'C': averageSuccessPercentage, // Checks
       },
     );
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalSuccessfulRounds = _storageService!.read<int>('totalSuccessfulRounds', defaultValue: 0)!;
-    int totalRoundsPlayed = _storageService!.read<int>('totalRoundsPlayed', defaultValue: 0)!;
-    int storedHighestTarget = _storageService!.read<int>('highestTarget', defaultValue: 0)!;
-    int highestSavePoint = _storageService!.read<int>('highestSavePoint', defaultValue: 0)!;
+  void _showSummaryDialog(BuildContext context) {
+    showSummaryDialog(context);
+  }
 
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createValueLine('Gespielte Runden', round - 1),
+      SummaryService.createValueLine('Höchstes Ziel', highestTarget),
+      SummaryService.createValueLine('Letzter Safepoint', savePoint),
+      SummaryService.createValueLine('Ø Erfolgreiche Runden', _getAverageAttempts(), emphasized: true),
+    ];
+  }
+
+  @override
+  String getGameTitle() => 'Check 121';
+
+  @override
+  void updateSpecificStats() {
     int currentRoundsPlayed = round - 1; // exclude current empty round
-
-    _storageService!.write('numberGames', numberGames + 1);
-    _storageService!.write(
-        'totalSuccessfulRounds', totalSuccessfulRounds + successfulRounds);
-    _storageService!.write('totalRoundsPlayed', totalRoundsPlayed + currentRoundsPlayed);
-
-    if (storedHighestTarget == 0 || highestTarget > storedHighestTarget) {
-      _storageService!.write('highestTarget', highestTarget);
-    }
-    if (highestSavePoint == 0 || savePoint > highestSavePoint) {
-      _storageService!.write('highestSavePoint', savePoint);
-    }
+    
+    // Update cumulative stats
+    int totalSuccessfulRounds = statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed = statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
+    
+    statsService.updateStats({
+      'totalSuccessfulRounds': totalSuccessfulRounds + successfulRounds,
+      'totalRoundsPlayed': totalRoundsPlayed + currentRoundsPlayed,
+    });
+    
+    // Update records
+    statsService.updateRecord<int>('highestTarget', highestTarget);
+    statsService.updateRecord<int>('highestSavePoint', savePoint);
   }
 }

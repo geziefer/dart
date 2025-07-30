@@ -54,6 +54,7 @@ class ControllerHalfit extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
 
     rounds = <String>[labels.first];
     scores = <int>[];

@@ -40,6 +40,7 @@ class ControllerRTCX extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
     max = item.params['max'];
 
     throws = <int>[];

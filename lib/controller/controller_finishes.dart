@@ -468,6 +468,7 @@ class ControllerFinishes extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
     from = item.params['from'];
     to = item.params['to'];
 
