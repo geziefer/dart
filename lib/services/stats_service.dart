@@ -14,17 +14,18 @@ class StatsService {
   
   /// Update a record value if the new value is better
   void updateRecord<T extends Comparable>(String key, T newValue, {bool higherIsBetter = true}) {
-    T? current = _storageService.read<T>(key, defaultValue: newValue);
+    // Read current value, using null as default to detect first-time records
+    T? current = _storageService.read<T>(key);
+    
+    // Always write if this is the first time (current is null)
     if (current == null) {
       _storageService.write(key, newValue);
       return;
     }
     
-    bool shouldUpdate = higherIsBetter 
-        ? newValue.compareTo(current) > 0 
-        : newValue.compareTo(current) < 0;
-        
-    if (shouldUpdate) {
+    // For numeric types, also write if current is 0 (matches old behavior)
+    if ((current is num && current == 0) || 
+        (higherIsBetter ? newValue.compareTo(current) > 0 : newValue.compareTo(current) < 0)) {
       _storageService.write(key, newValue);
     }
   }
@@ -40,13 +41,17 @@ class StatsService {
   }
   
   /// Update a long-term average with a new value
+  /// Note: This assumes numberGames has already been incremented by incrementGameCount()
   void updateLongTermAverage(String key, double newValue) {
-    int gameCount = _storageService.read<int>('numberGames', defaultValue: 0)!;
+    int newGameCount = _storageService.read<int>('numberGames', defaultValue: 0)!;
     double currentAverage = _storageService.read<double>(key, defaultValue: 0.0)!;
     
+    // Since numberGames has already been incremented, we need to use (newGameCount - 1) as the old count
+    int oldGameCount = newGameCount - 1;
+    
     // Calculate new average: ((old_avg * old_count) + new_value) / new_count
-    double updatedAverage = gameCount > 0 
-        ? ((currentAverage * gameCount) + newValue) / (gameCount + 1)
+    double updatedAverage = oldGameCount > 0 
+        ? ((currentAverage * oldGameCount) + newValue) / newGameCount
         : newValue;
         
     _storageService.write(key, updatedAverage);

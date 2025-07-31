@@ -2,7 +2,7 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:dart/widget/menu.dart';
+import 'package:dart/services/summary_service.dart';import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -96,37 +96,29 @@ class ControllerShootx extends ControllerBase
 
   // Show summary dialog using SummaryDialog widget
   void _showSummaryDialog(BuildContext context) {
-    // Update game statistics
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Anzahl $x', '$number'),
-            SummaryLine('$x/Runde', getCurrentStats()['avgBulls'],
-                emphasized: true),
-          ],
-        );
-      },
-    );
+    showSummaryDialog(context);
   }
 
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordNumbers = _storageService!.read<int>('recordNumbers', defaultValue: 0)!;
-    double longtermNumbers = _storageService!.read<double>('longtermNumbers', defaultValue: 0.0)!;
-    double avgNumbers = _getAvgNumbers();
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createValueLine('Anzahl $x', number),
+      SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgBulls'], emphasized: true),
+    ];
+  }
 
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordNumbers == 0 || number > recordNumbers) {
-      _storageService!.write('recordNumbers', number);
-    }
-    _storageService!.write('longtermNumbers',
-        (((longtermNumbers * numberGames) + avgNumbers) / (numberGames + 1)));
+  @override
+  String getGameTitle() => 'ShootX';
+
+  @override
+  void updateSpecificStats() {
+    double avgBulls = double.parse(getCurrentStats()['avgBulls']);
+    
+    // Update records
+    statsService.updateRecord<int>('recordNumbers', number);
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermBulls', avgBulls);
   }
 
   double _getAvgNumbers() {
@@ -170,10 +162,18 @@ class ControllerShootx extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device, use gameno as key
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordNumbers = _storageService!.read<int>('recordNumbers', defaultValue: 0)!;
-    double longtermNumbers = _storageService!.read<double>('longtermNumbers', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛N: ${recordNumbers.toStringAsFixed(1)}  ØH: ${longtermNumbers.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordNumbers = statsService.getStat<int>('recordNumbers', defaultValue: 0)!;
+    double longtermNumbers = statsService.getStat<double>('longtermNumbers', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'N': recordNumbers,        // Numbers
+      },
+      averages: {
+        'H': longtermNumbers,      // Hits
+      },
+    );
   }
 }

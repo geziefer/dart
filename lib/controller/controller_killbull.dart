@@ -1,6 +1,7 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -98,41 +99,29 @@ class ControllerKillBull extends ControllerBase
 
   // Show summary dialog using SummaryDialog widget
   void _showSummaryDialog(BuildContext context) {
-    // Update game statistics
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Runden', '$round'),
-            SummaryLine('Punkte', '$totalScore'),
-            SummaryLine('Punkte/Runde', _getAvgScore().toStringAsFixed(1),
-                emphasized: true),
-          ],
-        );
-      },
-    );
+    showSummaryDialog(context);
   }
 
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordRounds = _storageService!.read<int>('recordRounds', defaultValue: 0)!;
-    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createValueLine('Runden', round),
+      SummaryService.createValueLine('Punkte', totalScore),
+      SummaryService.createAverageLine('Punkte/Runde', _getAvgScore(), emphasized: true),
+    ];
+  }
 
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordRounds == 0 || round > recordRounds) {
-      _storageService!.write('recordRounds', round);
-    }
-    if (recordScore == 0 || totalScore > recordScore) {
-      _storageService!.write('recordScore', totalScore);
-    }
-    _storageService!.write('longtermScore',
-        (((longtermScore * numberGames) + totalScore) / (numberGames + 1)));
+  @override
+  String getGameTitle() => 'Kill Bull';
+
+  @override
+  void updateSpecificStats() {
+    // Update records
+    statsService.updateRecord<int>('recordRounds', round);
+    statsService.updateRecord<int>('recordScore', totalScore);
+    
+    // Update long-term average using totalScore (not avgScore) to match old behavior
+    statsService.updateLongTermAverage('longtermScore', totalScore.toDouble());
   }
 
   double _getAvgScore() {
@@ -176,11 +165,20 @@ class ControllerKillBull extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordRounds = _storageService!.read<int>('recordRounds', defaultValue: 0)!;
-    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛R: $recordRounds  ♛P: $recordScore  ØP: ${longtermScore.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordRounds = statsService.getStat<int>('recordRounds', defaultValue: 0)!;
+    int recordScore = statsService.getStat<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'R': recordRounds,         // Runden
+        'P': recordScore,          // Punkte
+      },
+      averages: {
+        'P': longtermScore,        // Durchschnittspunkte
+      },
+    );
   }
 }

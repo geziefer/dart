@@ -2,6 +2,7 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -137,11 +138,16 @@ class ControllerHalfit extends ControllerBase
   }
 
   // Helper method to create individual summary lines with separate symbols
-  List<SummaryLine> _createSummaryLines() {
+  void _showSummaryDialog(BuildContext context) {
+    showSummaryDialog(context);
+  }
+
+  @override
+  List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
     
     // Add the total score line
-    lines.add(SummaryLine('Punkte', '$totalScore'));
+    lines.add(SummaryService.createValueLine('Punkte', totalScore));
     
     // Add individual lines for each label/score with check symbols
     for (int i = 0; i < labels.length && i < scores.length; i++) {
@@ -150,40 +156,23 @@ class ControllerHalfit extends ControllerBase
     }
     
     // Add average score line
-    lines.add(SummaryLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
+    lines.add(SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
     
     return lines;
   }
 
-  // Show summary dialog using SummaryDialog widget
-  void _showSummaryDialog(BuildContext context) {
-    // Update game statistics
-    _updateGameStats();
+  @override
+  String getGameTitle() => 'Half It';
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: _createSummaryLines(),
-        );
-      },
-    );
-  }
-
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
+  @override
+  void updateSpecificStats() {
     double avgScore = _getAvgScore();
-
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordScore == 0 || totalScore > recordScore) {
-      _storageService!.write('recordScore', totalScore);
-    }
-    _storageService!.write('longtermScore',
-        (((longtermScore * numberGames) + avgScore) / (numberGames + 1)));
+    
+    // Update records
+    statsService.updateRecord<int>('recordScore', totalScore);
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermScore', avgScore);
   }
 
   @override
@@ -226,10 +215,18 @@ class ControllerHalfit extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device, use gameno as key
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordScore = _storageService!.read<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛P: $recordScore  ØP: ${longtermScore.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordScore = statsService.getStat<int>('recordScore', defaultValue: 0)!;
+    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'P': recordScore,          // Punkte
+      },
+      averages: {
+        'P': longtermScore,        // Durchschnittspunkte
+      },
+    );
   }
 }

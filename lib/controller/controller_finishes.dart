@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -588,64 +589,60 @@ class ControllerFinishes extends ControllerBase
 
   // Show summary dialog using SummaryDialog widget
   void _showSummaryDialog(BuildContext context) {
-    // Update game statistics
-    _updateGameStats();
+    showSummaryDialog(context);
+  }
 
+  @override
+  List<SummaryLine> createSummaryLines() {
     double correctnessPercentage = (correctRounds / maxRounds) * 100;
     double averageTime = _getAverageTime();
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: [
-            SummaryLine('Richtige Runden', '$correctRounds/$maxRounds'),
-            SummaryLine(
-                'Korrektheit', '${correctnessPercentage.toStringAsFixed(1)}%',
-                emphasized: true),
-            SummaryLine('ØZeit/Runde', '${averageTime.toStringAsFixed(1)}s',
-                emphasized: true),
-          ],
-        );
-      },
-    );
+    return [
+      SummaryService.createValueLine('Richtige Runden', '$correctRounds/$maxRounds'),
+      SummaryService.createAverageLine('Korrektheit', correctnessPercentage, emphasized: true),
+      SummaryService.createAverageLine('ØZeit/Runde', averageTime, emphasized: true),
+    ];
   }
 
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalCorrectRounds = _storageService!.read<int>('totalCorrectRounds', defaultValue: 0)!;
-    int totalRounds = _storageService!.read<int>('totalRounds', defaultValue: 0)!;
-    int totalTimeAllGames = _storageService!.read<int>('totalTimeAllGames', defaultValue: 0)!;
-    double recordPercentage = _storageService!.read<double>('recordPercentage', defaultValue: 0.0)!;
-    double recordAverageTime = _storageService!.read<double>('recordAverageTime', defaultValue: 0.0)!;
+  @override
+  String getGameTitle() => 'Finishes';
 
-    double currentPercentage = (correctRounds / maxRounds) * 100;
-    double currentAverageTime = _getAverageTime();
-    double overallPercentage = totalRounds > 0
-        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) *
-            100
-        : currentPercentage;
+  @override
+  void updateSpecificStats() {
+    double correctnessPercentage = (correctRounds / maxRounds) * 100;
+    double averageTime = _getAverageTime();
+    
+    // Update cumulative stats
+    int totalCorrectRounds = statsService.getStat<int>('totalCorrectRounds', defaultValue: 0)!;
+    int totalRounds = statsService.getStat<int>('totalRounds', defaultValue: 0)!;
+    int totalTimeAllGames = statsService.getStat<int>('totalTimeAllGames', defaultValue: 0)!;
+    
+    statsService.updateStats({
+      'totalCorrectRounds': totalCorrectRounds + correctRounds,
+      'totalRounds': totalRounds + maxRounds,
+      'totalTimeAllGames': totalTimeAllGames + totalTimeSeconds,
+    });
+    
+    // Calculate overall stats
+    double overallPercentage = (totalRounds + maxRounds) > 0
+        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) * 100
+        : correctnessPercentage;
     double overallAverageTime = (totalRounds + maxRounds) > 0
         ? ((totalTimeAllGames + totalTimeSeconds) / (totalRounds + maxRounds))
-        : currentAverageTime;
-
-    _storageService!.write('numberGames', numberGames + 1);
-    _storageService!.write('totalCorrectRounds', totalCorrectRounds + correctRounds);
-    _storageService!.write('totalRounds', totalRounds + maxRounds);
-    _storageService!.write('totalTimeAllGames', totalTimeAllGames + totalTimeSeconds);
-
-    if (currentPercentage > recordPercentage) {
-      _storageService!.write('recordPercentage', currentPercentage);
+        : averageTime;
+    
+    statsService.updateStats({
+      'overallPercentage': overallPercentage,
+      'overallAverageTime': overallAverageTime,
+    });
+    
+    // Update records
+    statsService.updateRecord<double>('recordPercentage', correctnessPercentage);
+    // For time, lower is better
+    double recordAverageTime = statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
+    if (recordAverageTime == 0.0 || averageTime < recordAverageTime) {
+      statsService.updateStats({'recordAverageTime': averageTime});
     }
-
-    if (recordAverageTime == 0.0 || currentAverageTime < recordAverageTime) {
-      _storageService!.write('recordAverageTime', currentAverageTime);
-    }
-
-    _storageService!.write('overallPercentage', overallPercentage);
-    _storageService!.write('overallAverageTime', overallAverageTime);
   }
 
   Map getCurrentStats() {
@@ -670,13 +667,25 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    double recordPercentage = _storageService!.read<double>('recordPercentage', defaultValue: 0.0)!;
-    double recordAverageTime = _storageService!.read<double>('recordAverageTime', defaultValue: 0.0)!;
-    double overallPercentage = _storageService!.read<double>('overallPercentage', defaultValue: 0.0)!;
-    double overallAverageTime = _storageService!.read<double>('overallAverageTime', defaultValue: 0.0)!;
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    double recordPercentage = statsService.getStat<double>('recordPercentage', defaultValue: 0.0)!;
+    double recordAverageTime = statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
+    double overallPercentage = statsService.getStat<double>('overallPercentage', defaultValue: 0.0)!;
+    double overallAverageTime = statsService.getStat<double>('overallAverageTime', defaultValue: 0.0)!;
 
-    return '#S: $numberGames  ♛P: ${recordPercentage.toStringAsFixed(1)}%  ♛Z: ${recordAverageTime.toStringAsFixed(1)}s  ØP: ${overallPercentage.toStringAsFixed(1)}%  ØZ: ${overallAverageTime.toStringAsFixed(1)}s';
+    // Format percentages with % symbol and times with s suffix
+    String baseStats = formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'P': '${recordPercentage.toStringAsFixed(1)}%',      // Prozent
+        'Z': '${recordAverageTime.toStringAsFixed(1)}s',     // Zeit
+      },
+      averages: {
+        'P': '${overallPercentage.toStringAsFixed(1)}%',     // Durchschnittsprozent
+        'Z': '${overallAverageTime.toStringAsFixed(1)}s',    // Durchschnittszeit
+      },
+    );
+    return baseStats;
   }
 
   void _checkCorrect() {

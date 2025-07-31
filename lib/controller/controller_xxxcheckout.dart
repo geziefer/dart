@@ -7,7 +7,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
 
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -219,9 +219,6 @@ class ControllerXXXCheckout extends ControllerBase
 
       // Check if we need to show the summary dialog
       if (leg == end) {
-        // Update game stats
-        _updateGameStats();
-
         // Use a separate method to show the summary dialog
         // This avoids using the original context across async gaps
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -234,7 +231,12 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   // Helper method to create individual summary lines with separate symbols
-  List<SummaryLine> _createSummaryLines() {
+  void _showSummaryDialog(BuildContext context) {
+    showSummaryDialog(context);
+  }
+
+  @override
+  List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
     
     // Add individual lines for each leg result with check symbols
@@ -244,55 +246,31 @@ class ControllerXXXCheckout extends ControllerBase
     }
     
     // Add average score line
-    lines.add(SummaryLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
+    lines.add(SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
     
     // Add average darts line
-    lines.add(SummaryLine('ØDarts', getCurrentStats()['avgDarts'], emphasized: true));
+    lines.add(SummaryService.createValueLine('ØDarts', getCurrentStats()['avgDarts'], emphasized: true));
     
     return lines;
   }
 
-  // Show summary dialog
-  void _showSummaryDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(
-          lines: _createSummaryLines(),
-        );
-      },
-    );
-  }
+  @override
+  String getGameTitle() => 'XXX Checkout';
 
-  // This method is no longer needed as the logic is now in _showCheckoutDialog
-
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordFinishes = _storageService!.read<int>('recordFinishes', defaultValue: 0)!;
-    double recordScore = _storageService!.read<double>('recordScore', defaultValue: 0.0)!;
-    double recordDarts = _storageService!.read<double>('recordDarts', defaultValue: 0.0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
-    double longtermDarts = _storageService!.read<double>('longtermDarts', defaultValue: 0.0)!;
+  @override
+  void updateSpecificStats() {
     double avgScore = _getAvgScore();
     double avgDarts = _getAvgDarts();
-
-    // Update storage
-    _storageService!.write('numberGames', numberGames + 1);
-    if (wins == 0 || wins > recordFinishes) {
-      _storageService!.write('recordFinishes', recordFinishes + 1);
-    }
-    if (recordScore == 0 || avgScore < recordScore) {
-      _storageService!.write('recordScore', avgScore);
-    }
-    if (recordDarts == 0 || avgDarts < recordDarts) {
-      _storageService!.write('recordDarts', avgDarts);
-    }
-    _storageService!.write('longtermScore',
-        (((longtermScore * numberGames) + avgScore) / (numberGames + 1)));
-    _storageService!.write('longtermDarts',
-        (((longtermDarts * numberGames) + avgDarts) / (numberGames + 1)));
+    int finishCount = finishes.where((f) => f).length;
+    
+    // Update records
+    statsService.updateRecord<int>('recordFinishes', finishCount);
+    statsService.updateRecord<double>('recordScore', avgScore);
+    statsService.updateRecord<double>('recordDarts', avgDarts);
+    
+    // Update long-term averages
+    statsService.updateLongTermAverage('longtermScore', avgScore);
+    statsService.updateLongTermAverage('longtermDarts', avgDarts);
   }
 
   @override
@@ -346,13 +324,24 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device, use gameno as key
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordFinishes = _storageService!.read<int>('recordFinishes', defaultValue: 0)!;
-    double recordScore = _storageService!.read<double>('recordScore', defaultValue: 0.0)!;
-    double recordDarts = _storageService!.read<double>('recordDarts', defaultValue: 0.0)!;
-    double longtermScore = _storageService!.read<double>('longtermScore', defaultValue: 0.0)!;
-    double longtermDarts = _storageService!.read<double>('longtermDarts', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛G: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordFinishes = statsService.getStat<int>('recordFinishes', defaultValue: 0)!;
+    double recordScore = statsService.getStat<double>('recordScore', defaultValue: 0.0)!;
+    double recordDarts = statsService.getStat<double>('recordDarts', defaultValue: 0.0)!;
+    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+    double longtermDarts = statsService.getStat<double>('longtermDarts', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'G': recordFinishes,       // Games/Finishes
+        'P': recordScore,          // Punkte
+        'D': recordDarts,          // Darts
+      },
+      averages: {
+        'P': longtermScore,        // Durchschnittspunkte
+        'D': longtermDarts,        // Durchschnittsdarts
+      },
+    );
   }
 }

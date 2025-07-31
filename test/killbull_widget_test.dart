@@ -120,8 +120,8 @@ void main() {
       verify(mockStorage.read('longtermScore')).called(greaterThan(0));
       verify(mockStorage.write('numberGames', 1)).called(1); // First game
       verify(mockStorage.write('recordRounds', 3)).called(1); // Round when game ended
-      verify(mockStorage.write('recordScore', 125)).called(1); // Score 125
-      verify(mockStorage.write('longtermScore', 125.0)).called(1); // Average
+      verify(mockStorage.write('recordScore', 125)).called(1); // Total score 125
+      verify(mockStorage.write('longtermScore', 125.0)).called(1); // Long-term average of total scores: 125.0 for first game
     });
 
     /// Tests the undo functionality during gameplay

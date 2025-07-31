@@ -302,7 +302,7 @@ void main() {
 
       // Assert: Verify storage operations with existing data
       verify(mockStorage.write('numberGames', 5)).called(1); // 4 + 1
-      verify(mockStorage.write('longtermSuccesses', 6.4)).called(1); // Use actual key
+      verify(mockStorage.write('longtermSuccesses', 6.4375)).called(1); // Correct calculated value
       // Note: recordSuccesses not updated because 7 < 8 (existing record)
     });
 

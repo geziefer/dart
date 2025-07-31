@@ -6,7 +6,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
 
 class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -148,57 +148,39 @@ class ControllerUpDown extends ControllerBase
   }
 
   void _showSummaryDialog(BuildContext context) {
-    // save stats to device
-    _updateGameStats();
+    showSummaryDialog(context);
+  }
 
+  @override
+  List<SummaryLine> createSummaryLines() {
     double averageSuccesses = successCount / 13.0;
     int lastTarget = targets.isNotEmpty ? targets.last : 50;
 
-    List<SummaryLine> summaryLines = [
-      SummaryLine('Checks', '$successCount', emphasized: true),
-      SummaryLine('Durchschnitt Checks', averageSuccesses.toStringAsFixed(1)),
-      SummaryLine('Letztes Ziel', '$lastTarget'),
-      SummaryLine('Höchstes Ziel', '$highestTarget'),
+    return [
+      SummaryService.createValueLine('Checks', successCount, emphasized: true),
+      SummaryService.createAverageLine('Durchschnitt Checks', averageSuccesses),
+      SummaryService.createValueLine('Letztes Ziel', lastTarget),
+      SummaryService.createValueLine('Höchstes Ziel', highestTarget),
     ];
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(lines: summaryLines);
-      },
-    );
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalSuccesses = _storageService!.read<int>('totalSuccesses', defaultValue: 0)!;
-    int recordTarget = _storageService!.read<int>('recordTarget', defaultValue: 50)!;
-    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
-    double recordAverage = _storageService!.read<double>('recordAverage', defaultValue: 0.0)!;
-    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
+  @override
+  String getGameTitle() => 'Up Down';
 
-    double gameAverage = successCount / 13.0;
-
-    _storageService!.write('numberGames', numberGames + 1);
-    _storageService!.write('totalSuccesses', totalSuccesses + successCount);
-
-    if (highestTarget > recordTarget) {
-      _storageService!.write('recordTarget', highestTarget);
-    }
-
-    if (successCount > recordSuccesses) {
-      _storageService!.write('recordSuccesses', successCount);
-    }
-
-    if (gameAverage > recordAverage) {
-      _storageService!.write('recordAverage', gameAverage);
-    }
-
-    // Calculate new long-term average
-    double newLongtermAverage =
-        ((longtermAverage * numberGames) + gameAverage) / (numberGames + 1);
-    _storageService!.write('longtermAverage', newLongtermAverage);
+  @override
+  void updateSpecificStats() {
+    double averageSuccesses = successCount / 13.0;
+    
+    // Update cumulative stats
+    int totalSuccesses = statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
+    statsService.updateStats({'totalSuccesses': totalSuccesses + successCount});
+    
+    // Update records
+    statsService.updateRecord<int>('recordSuccesses', successCount);
+    statsService.updateRecord<int>('recordHighestTarget', highestTarget);
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermSuccesses', averageSuccesses);
   }
 
   String getCurrentRounds() {
@@ -277,14 +259,24 @@ class ControllerUpDown extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int totalSuccesses = _storageService!.read<int>('totalSuccesses', defaultValue: 0)!;
-    int recordTarget = _storageService!.read<int>('recordTarget', defaultValue: 50)!;
-    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
-    double recordAverage = _storageService!.read<double>('recordAverage', defaultValue: 0.0)!;
-    double longtermAverage = _storageService!.read<double>('longtermAverage', defaultValue: 0.0)!;
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int totalSuccesses = statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
+    int recordTarget = statsService.getStat<int>('recordTarget', defaultValue: 50)!;
+    int recordSuccesses = statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
+    double recordAverage = statsService.getStat<double>('recordAverage', defaultValue: 0.0)!;
+    double longtermAverage = statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
 
-    return '#S: $numberGames  #C: $totalSuccesses  ♛Z: $recordTarget  ♛C: $recordSuccesses  ♛S: ${recordAverage.toStringAsFixed(1)}  ØC: ${longtermAverage.toStringAsFixed(1)}';
+    String baseStats = formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'Z': recordTarget,         // Ziel (Target)
+        'C': recordSuccesses,      // Checks
+        'S': recordAverage,        // Score/Average
+      },
+      averages: {
+        'C': longtermAverage,      // Checks
+      },
+    );
+    return '$baseStats  #C: $totalSuccesses';
   }
 }

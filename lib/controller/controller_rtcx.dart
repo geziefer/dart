@@ -7,7 +7,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -124,42 +124,42 @@ class ControllerRTCX extends ControllerBase
 
   // Update game statistics and show summary dialog
   void _showSummaryDialog(BuildContext context) {
-    // Save stats to device, use gameno as key
-    _updateGameStats();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        String checkSymbol = finished ? "✅" : "❌";
-        return SummaryDialog(
-          lines: [
-            SummaryLine('RTC geschafft', '', checkSymbol: checkSymbol),
-            SummaryLine('Anzahl Darts', '$dart'),
-            SummaryLine('Darts/Checkout', getCurrentStats()['avgChecks'],
-                emphasized: true),
-          ],
-        );
-      },
-    );
+    showSummaryDialog(context);
   }
 
-  // Update game statistics
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int numberFinishes = _storageService!.read<int>('numberFinishes', defaultValue: 0)!;
-    int recordDarts = _storageService!.read<int>('recordDarts', defaultValue: 0)!;
-    double longtermChecks = _storageService!.read<double>('longtermChecks', defaultValue: 0.0)!;
-    double avgChecks = _getAvgChecks();
+  @override
+  List<SummaryLine> createSummaryLines() {
+    String checkSymbol = finished ? "✅" : "❌";
+    return [
+      SummaryLine('RTC geschafft', '', checkSymbol: checkSymbol),
+      SummaryService.createValueLine('Anzahl Darts', dart),
+      SummaryService.createValueLine('Darts/Checkout', getCurrentStats()['avgChecks'], emphasized: true),
+    ];
+  }
 
-    _storageService!.write('numberGames', numberGames + 1);
+  @override
+  String getGameTitle() => 'RTCX';
+
+  @override
+  void updateSpecificStats() {
+    double avgChecks = double.parse(getCurrentStats()['avgChecks']);
+    
+    // Update finish count if game was completed
     if (finished) {
-      _storageService!.write('numberFinishes', numberFinishes + 1);
+      int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+      statsService.updateStats({'numberFinishes': numberFinishes + 1});
     }
-    if (recordDarts == 0 || dart < recordDarts) {
-      _storageService!.write('recordDarts', dart);
+    
+    // Update records (lower dart count is better for finished games)
+    if (finished) {
+      int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+      if (recordDarts == 0 || dart < recordDarts) {
+        statsService.updateStats({'recordDarts': dart});
+      }
     }
-    _storageService!.write('longtermChecks',
-        (((longtermChecks * numberGames) + avgChecks) / (numberGames + 1)));
+    
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermChecks', avgChecks);
   }
 
   int getCurrentNumber() {
@@ -197,11 +197,20 @@ class ControllerRTCX extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device, use gameno as key
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int numberFinishes = _storageService!.read<int>('numberFinishes', defaultValue: 0)!;
-    int recordDarts = _storageService!.read<int>('recordDarts', defaultValue: 0)!;
-    double longtermChecks = _storageService!.read<double>('longtermChecks', defaultValue: 0.0)!;
-    return '#S: $numberGames  #G: $numberFinishes  ♛D: $recordDarts  ØC: ${longtermChecks.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks = statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
+    
+    String baseStats = formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'D': recordDarts,          // Darts
+      },
+      averages: {
+        'C': longtermChecks,       // Checks
+      },
+    );
+    return '$baseStats  #G: $numberFinishes';   // Add finishes count separately
   }
 }

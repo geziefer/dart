@@ -2,6 +2,7 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -88,34 +89,26 @@ class ControllerTwoDarts extends ControllerBase
   }
 
   void _showSummaryDialog(BuildContext context) {
-    // save stats to device
-    _updateGameStats();
-
-    // Simple summary with just the success count
-    List<SummaryLine> summaryLines = [
-      SummaryLine('Erfolgreiche Versuche', '$successCount', emphasized: true),
-    ];
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return SummaryDialog(lines: summaryLines);
-      },
-    );
+    showSummaryDialog(context);
   }
 
-  void _updateGameStats() {
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
-    double longtermSuccesses = _storageService!.read<double>('longtermSuccesses', defaultValue: 0.0)!;
+  @override
+  List<SummaryLine> createSummaryLines() {
+    return [
+      SummaryService.createValueLine('Erfolgreiche Versuche', successCount, emphasized: true),
+    ];
+  }
+
+  @override
+  String getGameTitle() => 'Two Darts';
+
+  @override
+  void updateSpecificStats() {
+    // Update records
+    statsService.updateRecord<int>('recordSuccesses', successCount);
     
-    _storageService!.write('numberGames', numberGames + 1);
-    if (recordSuccesses == 0 || successCount > recordSuccesses) {
-      _storageService!.write('recordSuccesses', successCount);
-    }
-    _storageService!.write('longtermSuccesses',
-        (((longtermSuccesses * numberGames) + successCount) / (numberGames + 1)));
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermSuccesses', successCount.toDouble());
   }
 
   String getCurrentTargets() {
@@ -166,10 +159,18 @@ class ControllerTwoDarts extends ControllerBase
   }
 
   String getStats() {
-    // read stats from device
-    int numberGames = _storageService!.read<int>('numberGames', defaultValue: 0)!;
-    int recordSuccesses = _storageService!.read<int>('recordSuccesses', defaultValue: 0)!;
-    double longtermSuccesses = _storageService!.read<double>('longtermSuccesses', defaultValue: 0.0)!;
-    return '#S: $numberGames  ♛C: $recordSuccesses  ØC: ${longtermSuccesses.toStringAsFixed(1)}';
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordSuccesses = statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
+    double longtermSuccesses = statsService.getStat<double>('longtermSuccesses', defaultValue: 0.0)!;
+    
+    return formatStatsString(
+      numberGames: numberGames,
+      records: {
+        'C': recordSuccesses,      // Checks/Successes
+      },
+      averages: {
+        'C': longtermSuccesses,    // Durchschnittliche Checks
+      },
+    );
   }
 }
