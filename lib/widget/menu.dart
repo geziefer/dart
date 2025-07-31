@@ -257,11 +257,12 @@ class MenuItemButton extends StatelessWidget {
       margin: const EdgeInsets.all(2),
       child: OutlinedButton(
         onPressed: () {
-          // Generic initialization - each controller handles its own Provider lookup
-          menuItem.controller.initFromProvider(menuItem);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => menuItem.view),
+            MaterialPageRoute(
+              builder: (context) => menuItem.view,
+              settings: RouteSettings(arguments: menuItem),
+            ),
           );
         },
         style: menuButtonStyle,

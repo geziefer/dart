@@ -3,6 +3,7 @@ import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,16 @@ class ViewCheck121 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the MenuItem from route arguments
+    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
+    
     ControllerCheck121 controller = Provider.of<ControllerCheck121>(context);
+    
+    // Initialize the controller if not already initialized
+    if (controller.item == null && menuItem != null) {
+      controller.init(menuItem);
+    }
+    
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);

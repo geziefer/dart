@@ -6,6 +6,7 @@ import 'package:dart/widget/numpad.dart';
 import 'package:flutter/material.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
+import 'package:dart/widget/menu.dart';
 
 class ViewRTCX extends StatelessWidget {
   const ViewRTCX({
@@ -17,7 +18,15 @@ class ViewRTCX extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the MenuItem from route arguments
+    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
+    
     ControllerRTCX controller = Provider.of<ControllerRTCX>(context);
+    
+    // Initialize the controller if not already initialized
+    if (controller.item == null && menuItem != null) {
+      controller.init(menuItem);
+    }
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);

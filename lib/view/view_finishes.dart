@@ -5,6 +5,7 @@ import 'package:dart/widget/fullcircle.dart';
 import 'package:dart/widget/header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dart/widget/menu.dart';
 
 class ViewFinishes extends StatelessWidget {
   const ViewFinishes({
@@ -16,7 +17,16 @@ class ViewFinishes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the MenuItem from route arguments
+    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
+    
     ControllerFinishes controller = Provider.of<ControllerFinishes>(context);
+    
+    // Initialize the controller if not already initialized
+    if (controller.item == null && menuItem != null) {
+      controller.init(menuItem);
+    }
+    
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);

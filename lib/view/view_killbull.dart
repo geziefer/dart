@@ -6,6 +6,7 @@ import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
+import 'package:dart/widget/menu.dart';
 
 class ViewKillBull extends StatelessWidget {
   const ViewKillBull({
@@ -17,7 +18,15 @@ class ViewKillBull extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the MenuItem from route arguments (null in tests)
+    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
+    
     ControllerKillBull controller = Provider.of<ControllerKillBull>(context);
+    
+    // Initialize the controller if not already initialized and we have a menuItem
+    if (controller.item == null && menuItem != null) {
+      controller.init(menuItem);
+    }
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);

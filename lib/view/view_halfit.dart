@@ -6,6 +6,7 @@ import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
+import 'package:dart/widget/menu.dart';
 
 class ViewHalfit extends StatelessWidget {
   const ViewHalfit({
@@ -17,7 +18,16 @@ class ViewHalfit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the MenuItem from route arguments
+    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
+    
     ControllerHalfit controller = Provider.of<ControllerHalfit>(context);
+    
+    // Initialize the controller if not already initialized
+    if (controller.item == null && menuItem != null) {
+      controller.init(menuItem);
+    }
+    
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
