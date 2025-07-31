@@ -17,7 +17,6 @@ import 'twodarts_widget_test.mocks.dart';
 void main() {
   group('Two Darts Game Widget Tests', () {
     late ControllerTwoDarts controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -59,7 +58,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Assert: Verify initial state
       expect(controller.currentTargetIndex, equals(0));
@@ -68,7 +66,7 @@ void main() {
       expect(controller.results.length, equals(0));
 
       // Act: Succeed on first target (61)
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after first success
@@ -78,7 +76,7 @@ void main() {
       expect(controller.targets.length, equals(2)); // New target added
 
       // Act: Fail on second target
-      controller.pressNumpadButton(testContext, 0); // Failure
+      controller.pressNumpadButton(0); // Failure
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after failure
@@ -89,7 +87,7 @@ void main() {
       // Act: Continue with mixed results until game ends (10 targets total)
       List<int> remainingInputs = [1, 0, 1, 1, 0, 1]; // 4 more successes, 2 more failures
       for (int input in remainingInputs) {
-        controller.pressNumpadButton(testContext, input);
+        controller.pressNumpadButton(input);
         await tester.pumpAndSettle();
       }
 
@@ -98,9 +96,9 @@ void main() {
       expect(controller.successCount, equals(5)); // 1 + 4 more successes
       
       // Act: Complete final targets
-      controller.pressNumpadButton(testContext, 1); // 9th target - success
+      controller.pressNumpadButton(1); // 9th target - success
       await tester.pumpAndSettle();
-      controller.pressNumpadButton(testContext, 0); // 10th target - failure
+      controller.pressNumpadButton(0); // 10th target - failure
       await tester.pumpAndSettle();
 
       // Assert: Verify game ended correctly
@@ -128,14 +126,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Play a few targets
-      controller.pressNumpadButton(testContext, 1); // Success on target 1
+      controller.pressNumpadButton(1); // Success on target 1
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Success on target 2
+      controller.pressNumpadButton(1); // Success on target 2
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Failure on target 3
+      controller.pressNumpadButton(0); // Failure on target 3
       await tester.pump();
       
       // Assert: Verify state before undo
@@ -144,7 +141,7 @@ void main() {
       expect(controller.results.length, equals(3));
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -154,7 +151,7 @@ void main() {
       expect(controller.targets.length, equals(3)); // Target removed
 
       // Act: Undo a success
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo of success
@@ -163,7 +160,7 @@ void main() {
       expect(controller.results.length, equals(1));
 
       // Act: Continue game after undo
-      controller.pressNumpadButton(testContext, 0); // Failure instead of success
+      controller.pressNumpadButton(0); // Failure instead of success
       await tester.pump();
       
       // Assert: Game continues correctly after undo
@@ -186,10 +183,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Use return button (should work as failure)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as failure
@@ -212,7 +208,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Assert: Verify initial target
       expect(controller.targets[0], equals(61)); // First target should be 61
@@ -226,7 +221,7 @@ void main() {
         expectedTargets.add(currentTarget);
         
         // Act: Input success to progress
-        controller.pressNumpadButton(testContext, 1);
+        controller.pressNumpadButton(1);
         await tester.pump();
         
         // Assert: Verify new target was added
@@ -252,11 +247,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Play perfect game (all successes)
       for (int i = 0; i < 10; i++) {
-        controller.pressNumpadButton(testContext, 1); // All successes
+        controller.pressNumpadButton(1); // All successes
         await tester.pumpAndSettle();
       }
 
@@ -290,13 +284,12 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Play a game with 7 successes
       List<int> gameResults = [1, 1, 0, 1, 1, 0, 1, 1, 1, 0]; // 7 successes, 3 failures
       
       for (int result in gameResults) {
-        controller.pressNumpadButton(testContext, result);
+        controller.pressNumpadButton(result);
         await tester.pumpAndSettle();
       }
 
@@ -320,10 +313,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Try undo with no targets played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -332,9 +324,9 @@ void main() {
       expect(controller.results.length, equals(0));
 
       // Act: Play one target and undo
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Back to initial state
@@ -358,14 +350,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Try invalid inputs
-      controller.pressNumpadButton(testContext, 2); // Invalid
+      controller.pressNumpadButton(2); // Invalid
       await tester.pump();
-      controller.pressNumpadButton(testContext, -3); // Invalid
+      controller.pressNumpadButton(-3); // Invalid
       await tester.pump();
-      controller.pressNumpadButton(testContext, 10); // Invalid
+      controller.pressNumpadButton(10); // Invalid
       await tester.pump();
 
       // Assert: Invalid inputs should be ignored
@@ -374,9 +365,9 @@ void main() {
       expect(controller.results.length, equals(0));
 
       // Act: Try valid inputs
-      controller.pressNumpadButton(testContext, 1); // Valid success
+      controller.pressNumpadButton(1); // Valid success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Valid failure
+      controller.pressNumpadButton(0); // Valid failure
       await tester.pump();
 
       // Assert: Valid inputs should be processed
@@ -399,14 +390,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewTwoDarts));
 
       // Act: Play a few targets
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Failure
+      controller.pressNumpadButton(0); // Failure
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
 
       // Assert: Verify current stats

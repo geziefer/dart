@@ -1,13 +1,11 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -51,12 +49,12 @@ class ControllerRTCX extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerRTCX>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (throws.isNotEmpty) {
@@ -86,9 +84,9 @@ class ControllerRTCX extends ControllerBase
           int remaining = (currentNumber < 21) ? currentNumber : 0;
           finished = currentNumber > 20 ? true : false;
           if (finished) {
-            _showCheckoutDialog(context, remaining);
+            onShowCheckout?.call(remaining);
           } else {
-            _showSummaryDialog(context);
+            triggerGameEnd();
           }
         } else {
           round++;
@@ -98,34 +96,9 @@ class ControllerRTCX extends ControllerBase
     notifyListeners();
   }
 
-  // Show checkout dialog using a callback-based approach
-  void _showCheckoutDialog(BuildContext context, int remaining) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(2))),
-          // no remaining score here, so set last one
-          child: Checkout(
-            remaining: remaining,
-            controller: this,
-          ),
-        );
-      },
-    ).then((_) {
-      // Use post-frame callback to avoid context across async gaps
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showSummaryDialog(context);
-      });
-    });
-  }
+  // Checkout and summary dialogs are now handled by the view via callbacks
 
-  // Update game statistics and show summary dialog
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
+  // Summary dialog is now handled by the view via callback
 
   @override
   List<SummaryLine> createSummaryLines() {

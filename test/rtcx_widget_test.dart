@@ -17,7 +17,6 @@ void main() {
   group('RTCX Game Widget Tests', () {
     late ControllerRTCX controller;
     late MockGetStorage mockStorage;
-    late BuildContext testContext;
 
     setUp(() {
       mockStorage = MockGetStorage();
@@ -56,7 +55,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Assert: Verify initial state
       expect(controller.currentNumber, equals(1));
@@ -66,7 +64,7 @@ void main() {
 
       // Act: Hit numbers 1-5 in sequence (each hit advances by 1)
       for (int i = 1; i <= 5; i++) {
-        controller.pressNumpadButton(testContext, 1); // Hit current number
+        controller.pressNumpadButton(1); // Hit current number
         await tester.pump();
         
         expect(controller.currentNumber, equals(i + 1));
@@ -94,12 +92,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 2); // Hit 1 and 2
+      controller.pressNumpadButton(2); // Hit 1 and 2
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Hit 3
+      controller.pressNumpadButton(1); // Hit 3
       await tester.pump();
 
       // Assert: Verify state before undo
@@ -109,7 +106,7 @@ void main() {
       expect(controller.throws.length, equals(2));
 
       // Act: Undo last throw
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Verify undo worked
@@ -133,10 +130,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Use return button (should work as 0 hits)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as 0 hits
@@ -160,10 +156,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Try to hit more numbers than remaining (should be ignored)
-      controller.pressNumpadButton(testContext, 25); // Too many hits
+      controller.pressNumpadButton(25); // Too many hits
       await tester.pump();
 
       // Assert: Invalid input was ignored
@@ -172,7 +167,7 @@ void main() {
       expect(controller.dart, equals(0)); // No change
 
       // Act: Hit valid number of targets
-      controller.pressNumpadButton(testContext, 3); // Valid hits
+      controller.pressNumpadButton(3); // Valid hits
       await tester.pump();
 
       // Assert: Valid input was processed
@@ -195,12 +190,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Play game step by step to near completion
-      controller.pressNumpadButton(testContext, 10); // Hit numbers 1-10
+      controller.pressNumpadButton(10); // Hit numbers 1-10
       await tester.pump();
-      controller.pressNumpadButton(testContext, 9); // Hit numbers 11-19
+      controller.pressNumpadButton(9); // Hit numbers 11-19
       await tester.pump();
       
       // Assert: Verify near completion state
@@ -209,7 +203,7 @@ void main() {
       expect(controller.dart, equals(6)); // 2 rounds * 3 darts each
 
       // Act: Complete the game by hitting the last number
-      controller.pressNumpadButton(testContext, 1); // Hit number 20
+      controller.pressNumpadButton(1); // Hit number 20
       await tester.pump();
 
       // Assert: Verify game completion state (without waiting for dialogs)
@@ -238,10 +232,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Play some rounds and check current stats
-      controller.pressNumpadButton(testContext, 5); // Hit numbers 1-5
+      controller.pressNumpadButton(5); // Hit numbers 1-5
       await tester.pump();
       
       // Assert: Verify current stats calculation
@@ -272,10 +265,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Try to undo when no throws have been made
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Undo had no effect (no throws to undo)
@@ -308,12 +300,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewRTCX));
 
       // Act: Play exactly 3 rounds (without completing the game)
-      controller.pressNumpadButton(testContext, 1); // Round 1
+      controller.pressNumpadButton(1); // Round 1
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Round 2
+      controller.pressNumpadButton(1); // Round 2
       await tester.pump();
       
       // Assert: Verify state before final round
@@ -322,7 +313,7 @@ void main() {
       expect(controller.finished, isFalse);
       
       // Act: Play final round
-      controller.pressNumpadButton(testContext, 1); // Round 3
+      controller.pressNumpadButton(1); // Round 3
       await tester.pump();
 
       // Assert: Game ended due to round limit (without waiting for dialogs)

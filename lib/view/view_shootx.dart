@@ -4,6 +4,7 @@ import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
+import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
 
 class ViewShootx extends StatelessWidget {
@@ -17,6 +18,27 @@ class ViewShootx extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ControllerShootx controller = Provider.of<ControllerShootx>(context);
+    // Set up callbacks for UI interactions
+    controller.onGameEnded = () {
+      controller.showSummaryDialog(context);
+    };
+    controller.onShowCheckout = (remaining) {
+      // Show checkout dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(2))),
+            child: Checkout(
+              remaining: remaining,
+              controller: controller,
+            ),
+          );
+        },
+      );
+    };
     int x = controller.x;
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();

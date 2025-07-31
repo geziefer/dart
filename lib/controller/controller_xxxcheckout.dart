@@ -1,15 +1,12 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
-import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -86,12 +83,12 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerXXXCheckout>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // Prevent operation before initialization
     if (xxx == 0) return;
 
@@ -162,8 +159,39 @@ class ControllerXXXCheckout extends ControllerBase
 
       // check for checkout or limit of rounds
       if (remaining == 0 || (max != -1 && round > max)) {
-        // Use a callback-based approach to avoid context across async gaps
-        _showCheckoutDialog(context);
+        // Use callback to trigger checkout dialog
+        onShowCheckout?.call(0);
+        
+        // Process checkout results (logic moved from dialog callback)
+        results.add(dart);
+        if (remaining == 0) {
+          wins += 1;
+          finishes.add(true);
+        } else {
+          finishes.add(false);
+        }
+        round = 1;
+        remaining = xxx;
+        lastTotalDarts = totalDarts;
+        dart = 0;
+        rounds.clear();
+        scores.clear();
+        remainings.clear();
+        remainings.add(xxx);
+        darts.clear();
+
+        notifyListeners();
+
+        // Check if we need to show the summary dialog
+        if (leg == end) {
+          // Use a separate method to show the summary dialog
+          // This avoids using the original context across async gaps
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            triggerGameEnd();
+          });
+        }
+
+        leg++;
         return; // Return early to prevent further processing
       }
       // number button pressed
@@ -182,60 +210,7 @@ class ControllerXXXCheckout extends ControllerBase
     notifyListeners();
   }
 
-  // Show checkout dialog using a callback-based approach
-  void _showCheckoutDialog(BuildContext context) {
-    // Use a synchronous method to show the dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(2))),
-          child: Checkout(
-            remaining: remaining,
-            controller: this,
-          ),
-        );
-      },
-    ).then((_) {
-      // Process results after dialog is closed
-      results.add(dart);
-      if (remaining == 0) {
-        wins += 1;
-        finishes.add(true);
-      } else {
-        finishes.add(false);
-      }
-      round = 1;
-      remaining = xxx;
-      lastTotalDarts = totalDarts;
-      dart = 0;
-      rounds.clear();
-      scores.clear();
-      remainings.clear();
-      remainings.add(xxx);
-      darts.clear();
-
-      notifyListeners();
-
-      // Check if we need to show the summary dialog
-      if (leg == end) {
-        // Use a separate method to show the summary dialog
-        // This avoids using the original context across async gaps
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showSummaryDialog(context);
-        });
-      }
-
-      leg++;
-    });
-  }
-
-  // Helper method to create individual summary lines with separate symbols
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
+  // Checkout and summary dialogs are now handled by the view via callbacks
 
   @override
   List<SummaryLine> createSummaryLines() {

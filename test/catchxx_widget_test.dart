@@ -17,7 +17,6 @@ void main() {
   group('CatchXX Game Widget Tests', () {
     late ControllerCatchXX controller;
     late MockGetStorage mockStorage;
-    late BuildContext testContext;
 
     setUp(() {
       mockStorage = MockGetStorage();
@@ -56,7 +55,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Assert: Widget was created successfully
       expect(find.byType(ViewCatchXX), findsOneWidget);
@@ -85,10 +83,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Finish target 61 in 2 darts (should get 3 points)
-      controller.pressNumpadButton(testContext, 2); // 2 darts
+      controller.pressNumpadButton(2); // 2 darts
       await tester.pump();
 
       // Assert: 2 darts scored correctly
@@ -99,7 +96,7 @@ void main() {
       expect(controller.thrownPoints[0], equals(3)); // 3 points recorded
 
       // Act: Finish target 62 in 3 darts (should get 2 points)
-      controller.pressNumpadButton(testContext, 3); // 3 darts
+      controller.pressNumpadButton(3); // 3 darts
       await tester.pump();
 
       // Assert: 3 darts scored correctly
@@ -123,7 +120,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Test different dart counts
       final testCases = [
@@ -141,7 +137,7 @@ void main() {
         int darts = testCases[i]['darts'] as int;
         int expectedPoints = testCases[i]['expectedPoints'] as int;
         
-        controller.pressNumpadButton(testContext, darts);
+        controller.pressNumpadButton(darts);
         await tester.pump();
         
         totalPoints += expectedPoints;
@@ -167,10 +163,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Use return button (no score)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: No score recorded
@@ -180,7 +175,7 @@ void main() {
       expect(controller.thrownPoints[0], equals(0)); // 0 points recorded
 
       // Act: Use 0 button (no score)
-      controller.pressNumpadButton(testContext, 0); // 0 button
+      controller.pressNumpadButton(0); // 0 button
       await tester.pump();
 
       // Assert: No score recorded
@@ -204,10 +199,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Try to use button 1 (should be ignored)
-      controller.pressNumpadButton(testContext, 1); // Button 1
+      controller.pressNumpadButton(1); // Button 1
       await tester.pump();
 
       // Assert: Button 1 was ignored
@@ -235,7 +229,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Advance to target 99 (skip many targets to avoid long test)
       // Set target directly for testing purposes
@@ -247,7 +240,7 @@ void main() {
       expect(controller.isButtonDisabled(3), isFalse); // Button 3 should work
 
       // Act: Finish target 99 in 3 darts (special case: 3 points)
-      controller.pressNumpadButton(testContext, 3); // 3 darts on target 99
+      controller.pressNumpadButton(3); // 3 darts on target 99
       await tester.pump();
 
       // Assert: Target 99 scored correctly (3 points for 3 darts)
@@ -270,12 +263,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 2); // 3 points
+      controller.pressNumpadButton(2); // 3 points
       await tester.pump();
-      controller.pressNumpadButton(testContext, 3); // 2 points
+      controller.pressNumpadButton(3); // 2 points
       await tester.pump();
 
       // Assert: Verify state before undo
@@ -285,7 +277,7 @@ void main() {
       expect(controller.round, equals(3));
 
       // Act: Undo last round
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Verify undo worked
@@ -310,10 +302,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Try to undo when no rounds have been played
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Undo had no effect (no rounds to undo)
@@ -338,14 +329,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 2); // 3 points
+      controller.pressNumpadButton(2); // 3 points
       await tester.pump();
-      controller.pressNumpadButton(testContext, 4); // 1 point
+      controller.pressNumpadButton(4); // 1 point
       await tester.pump();
-      controller.pressNumpadButton(testContext, 3); // 2 points
+      controller.pressNumpadButton(3); // 2 points
       await tester.pump();
 
       // Assert: Verify statistics calculation
@@ -370,11 +360,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Play a few rounds to generate data
-      controller.pressNumpadButton(testContext, 2); // Target 61: 3 points
-      controller.pressNumpadButton(testContext, 3); // Target 62: 2 points
+      controller.pressNumpadButton(2); // Target 61: 3 points
+      controller.pressNumpadButton(3); // Target 62: 2 points
       await tester.pump();
 
       // Assert: String methods return valid data
@@ -441,11 +430,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCatchXX));
 
       // Act: Play through many targets (but not to 100 to avoid dialog)
       for (int i = 0; i < 30; i++) {
-        controller.pressNumpadButton(testContext, 2 + (i % 4)); // Varying darts (2-5)
+        controller.pressNumpadButton(2 + (i % 4)); // Varying darts (2-5)
         await tester.pump();
       }
 

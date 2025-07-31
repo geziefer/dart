@@ -82,14 +82,13 @@ void main() {
         ),
       );
 
-      final testContext = tester.element(find.byType(ViewXXXCheckout));
 
       // Act: Build input digit by digit (no submission)
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pump();
       expect(controller.input, equals("1"));
 
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pump();
       expect(controller.input, equals("12"));
 
@@ -113,12 +112,11 @@ void main() {
         ),
       );
 
-      final testContext = tester.element(find.byType(ViewXXXCheckout));
 
       // Test: Score > 180 should be rejected
-      controller.pressNumpadButton(testContext, 1);
-      controller.pressNumpadButton(testContext, 8);
-      controller.pressNumpadButton(testContext, 1); // "181" - should be rejected
+      controller.pressNumpadButton(1);
+      controller.pressNumpadButton(8);
+      controller.pressNumpadButton(1); // "181" - should be rejected
       await tester.pump();
       
       expect(controller.input, equals("18")); // Only "18" remains
@@ -139,17 +137,16 @@ void main() {
         ),
       );
 
-      final testContext = tester.element(find.byType(ViewXXXCheckout));
 
       // Act: Build some input
-      controller.pressNumpadButton(testContext, 1);
-      controller.pressNumpadButton(testContext, 2);
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(1);
+      controller.pressNumpadButton(2);
+      controller.pressNumpadButton(3);
       await tester.pump();
       expect(controller.input, equals("123"));
 
       // Act: Clear input with undo
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
       expect(controller.input, equals(""));
     });
@@ -168,11 +165,10 @@ void main() {
         ),
       );
 
-      final testContext = tester.element(find.byType(ViewXXXCheckout));
 
       // Test getInput method
-      controller.pressNumpadButton(testContext, 4);
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(4);
+      controller.pressNumpadButton(2);
       await tester.pump();
       expect(controller.getInput(), equals("42"));
 

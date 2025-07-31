@@ -5,10 +5,8 @@ import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerShootx extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -55,12 +53,12 @@ class ControllerShootx extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerShootx>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (rounds.isNotEmpty) {
@@ -88,7 +86,7 @@ class ControllerShootx extends ControllerBase
       if (round == max) {
         // Use post-frame callback to avoid context across async gaps
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showSummaryDialog(context);
+          triggerGameEnd();
         });
       } else {
         round++;
@@ -98,9 +96,6 @@ class ControllerShootx extends ControllerBase
   }
 
   // Show summary dialog using SummaryDialog widget
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

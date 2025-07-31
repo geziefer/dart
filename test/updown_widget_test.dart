@@ -17,7 +17,6 @@ import 'updown_widget_test.mocks.dart';
 void main() {
   group('10 Up 1 Down Game Widget Tests', () {
     late ControllerUpDown controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -66,7 +65,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Assert: Verify initial state
       expect(controller.currentRound, equals(1));
@@ -75,7 +73,7 @@ void main() {
       expect(controller.highestTarget, equals(50));
 
       // Act: Succeed in first round (target 50)
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after success
@@ -86,7 +84,7 @@ void main() {
       expect(controller.results[0], isTrue); // First round was successful
 
       // Act: Succeed in second round (target 60)
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pumpAndSettle();
 
       // Assert: Verify continued progression
@@ -96,7 +94,7 @@ void main() {
       expect(controller.highestTarget, equals(70));
 
       // Act: Fail in third round (target 70)
-      controller.pressNumpadButton(testContext, 0); // Failure
+      controller.pressNumpadButton(0); // Failure
       await tester.pumpAndSettle();
 
       // Assert: Verify regression after failure
@@ -108,7 +106,7 @@ void main() {
 
       // Act: Continue until game ends (13 rounds total)
       for (int i = 4; i <= 13; i++) {
-        controller.pressNumpadButton(testContext, 1); // All successes
+        controller.pressNumpadButton(1); // All successes
         await tester.pumpAndSettle();
       }
 
@@ -137,14 +135,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 1); // Success: 50 -> 60
+      controller.pressNumpadButton(1); // Success: 50 -> 60
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Success: 60 -> 70
+      controller.pressNumpadButton(1); // Success: 60 -> 70
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Failure: 70 -> 60
+      controller.pressNumpadButton(0); // Failure: 70 -> 60
       await tester.pump();
 
       // Assert: Verify state before undo
@@ -154,7 +151,7 @@ void main() {
       expect(controller.results.length, equals(3));
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -164,8 +161,7 @@ void main() {
       expect(controller.results.length, equals(2)); // Last result removed
 
       // Act: Continue game after undo with different choice
-      controller.pressNumpadButton(
-          testContext, 1); // Success instead of failure
+      controller.pressNumpadButton(1); // Success instead of failure
       await tester.pump();
 
       // Assert: Game continues correctly after undo
@@ -189,7 +185,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Test sequence: Success, Success, Failure, Success, Failure, Failure
       List<int> inputs = [1, 1, 0, 1, 0, 0];
@@ -197,7 +192,7 @@ void main() {
 
       for (int i = 0; i < inputs.length; i++) {
         // Act: Input success or failure
-        controller.pressNumpadButton(testContext, inputs[i]);
+        controller.pressNumpadButton(inputs[i]);
         await tester.pump();
 
         // Assert: Verify target progression
@@ -225,10 +220,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Use return button (should work as failure)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as failure
@@ -253,7 +247,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Play all 13 rounds with mixed results
       List<int> gameResults = [
@@ -273,7 +266,7 @@ void main() {
       ]; // 9 successes, 4 failures
 
       for (int result in gameResults) {
-        controller.pressNumpadButton(testContext, result);
+        controller.pressNumpadButton(result);
         await tester.pumpAndSettle();
       }
 
@@ -314,12 +307,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Play a game with 10 successes
       for (int i = 0; i < 13; i++) {
-        controller.pressNumpadButton(
-            testContext, i < 10 ? 1 : 0); // 10 successes, 3 failures
+        controller.pressNumpadButton(i < 10 ? 1 : 0); // 10 successes, 3 failures
         await tester.pumpAndSettle();
       }
 
@@ -344,10 +335,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Try undo with no rounds played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -356,9 +346,9 @@ void main() {
       expect(controller.results.length, equals(0));
 
       // Act: Play one round and undo
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Back to initial state
@@ -383,11 +373,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Fail multiple times to test lower boundary
       for (int i = 0; i < 10; i++) {
-        controller.pressNumpadButton(testContext, 0); // Failure
+        controller.pressNumpadButton(0); // Failure
         await tester.pump();
       }
 
@@ -411,14 +400,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewUpDown));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Failure
+      controller.pressNumpadButton(0); // Failure
       await tester.pump();
 
       // Assert: Verify current stats

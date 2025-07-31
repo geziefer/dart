@@ -5,10 +5,8 @@ import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerTwoDarts extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -48,12 +46,12 @@ class ControllerTwoDarts extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerTwoDarts>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (results.isNotEmpty) {
@@ -83,16 +81,13 @@ class ControllerTwoDarts extends ControllerBase
       // check if game is finished (all 10 targets completed)
       if (results.length == 10) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showSummaryDialog(context);
+          triggerGameEnd();
         });
       }
     }
     notifyListeners();
   }
 
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

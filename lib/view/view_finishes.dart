@@ -17,6 +17,10 @@ class ViewFinishes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ControllerFinishes controller = Provider.of<ControllerFinishes>(context);
+    // Set up callbacks for UI interactions
+    controller.onGameEnded = () {
+      controller.showSummaryDialog(context);
+    };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(

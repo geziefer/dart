@@ -58,7 +58,7 @@ class FullCircle extends StatelessWidget {
                 sliceIndex: 0,
                 rotationAngle: rotationAngle)
             .isPointInsideCenterCircle(position, size, centerCircleRadius)) {
-          controller.pressDartboard(context, 'DB');
+          controller.pressDartboard('DB');
           return;
         }
 
@@ -74,7 +74,7 @@ class FullCircle extends StatelessWidget {
                 rotationAngle: rotationAngle)
             .isPointInsideCenterArc(
                 position, size, innerArcRadius, outerArcRadius)) {
-          controller.pressDartboard(context, 'SB');
+          controller.pressDartboard('SB');
           return;
         }
 
@@ -111,7 +111,7 @@ class FullCircle extends StatelessWidget {
                 3 => "D",
                 _ => ""
               };
-              controller.pressDartboard(context, '$arcField$arcNo');
+              controller.pressDartboard('$arcField$arcNo');
               break;
             }
           }

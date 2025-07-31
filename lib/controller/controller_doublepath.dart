@@ -4,11 +4,9 @@ import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerDoublePath extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -60,12 +58,12 @@ class ControllerDoublePath extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerDoublePath>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (hitCounts.isNotEmpty) {
@@ -105,7 +103,7 @@ class ControllerDoublePath extends ControllerBase
     // check if game is finished (all 5 rounds completed)
     if (currentRound >= 5) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showSummaryDialog(context);
+        triggerGameEnd();
       });
     }
   }
@@ -123,9 +121,6 @@ class ControllerDoublePath extends ControllerBase
     }
   }
 
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

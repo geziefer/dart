@@ -128,12 +128,12 @@ class Numpad extends StatelessWidget {
         child: TextButton(
           onPressed: isDisabled ? null : () {
             // call interface method from controller
-            controller.pressNumpadButton(context, value);
+            controller.pressNumpadButton(value);
           },
           // for enter button accept long press as rest value, other ignore
           onLongPress: isDisabled ? null : () {
             if (value == -1) {
-              controller.pressNumpadButton(context, -3);
+              controller.pressNumpadButton(-3);
             }
           },
           style: isDisabled ? numpadDisabledTextStyle : numpadTextStyle,

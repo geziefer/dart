@@ -9,6 +9,11 @@ abstract class ControllerBase extends ChangeNotifier {
   // Common services that all controllers can use
   StatsService? _statsService;
   
+  // Callback functions for UI interactions (to decouple from BuildContext)
+  VoidCallback? onGameEnded;
+  Function(String message)? onShowMessage;
+  Function(int remaining)? onShowCheckout; // For games with checkout dialogs
+  
   /// Initialize common services (should be called by concrete controllers)
   void initializeServices(StorageService storageService) {
     _statsService = StatsService(storageService);
@@ -28,10 +33,14 @@ abstract class ControllerBase extends ChangeNotifier {
     updateSpecificStats();
   }
   
+  /// Common method to trigger game end (calls callback instead of showing dialog directly)
+  void triggerGameEnd() {
+    updateGameStats();
+    onGameEnded?.call();
+  }
+  
   /// Common method to show summary dialog
   void showSummaryDialog(BuildContext context) {
-    updateGameStats();
-    
     List<SummaryLine> summaryLines = createSummaryLines();
     SummaryService.showGameSummary(context, summaryLines: summaryLines);
   }

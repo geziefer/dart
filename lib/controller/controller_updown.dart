@@ -3,12 +3,10 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -55,12 +53,12 @@ class ControllerUpDown extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerUpDown>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (results.isNotEmpty) {
@@ -144,15 +142,12 @@ class ControllerUpDown extends ControllerBase
       // check if game is finished (all 13 rounds completed)
       if (results.length == 13) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showSummaryDialog(context);
+          triggerGameEnd();
         });
       }
     }
   }
 
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

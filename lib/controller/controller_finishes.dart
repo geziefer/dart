@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
@@ -7,10 +7,8 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:provider/provider.dart';
 
 class ControllerFinishes extends ControllerBase
     implements MenuitemController, DartboardController {
@@ -482,8 +480,8 @@ class ControllerFinishes extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerFinishes>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   void _createRandomFinish() {
@@ -551,7 +549,7 @@ class ControllerFinishes extends ControllerBase
   }
 
   @override
-  void pressDartboard(BuildContext context, String value) {
+  void pressDartboard(String value) {
     switch (currentState) {
       case FinishesState.inputPreferred:
         preferredInput.add(value);
@@ -575,7 +573,7 @@ class ControllerFinishes extends ControllerBase
         if (currentRound >= maxRounds) {
           // Use post-frame callback to avoid context across async gaps
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _showSummaryDialog(context);
+            triggerGameEnd();
           });
         } else {
           // Continue to next round
@@ -588,9 +586,6 @@ class ControllerFinishes extends ControllerBase
   }
 
   // Show summary dialog using SummaryDialog widget
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

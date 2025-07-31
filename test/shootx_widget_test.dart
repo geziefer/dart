@@ -17,7 +17,6 @@ void main() {
   group('ShootX Game Widget Tests', () {
     late ControllerShootx controller;
     late MockGetStorage mockStorage;
-    late BuildContext testContext;
 
     setUp(() {
       mockStorage = MockGetStorage();
@@ -55,7 +54,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Assert: Widget was created successfully
       expect(find.byType(ViewShootx), findsOneWidget);
@@ -83,10 +81,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Record some hits in first round
-      controller.pressNumpadButton(testContext, 3); // 3 hits
+      controller.pressNumpadButton(3); // 3 hits
       await tester.pump();
 
       // Assert: First round recorded correctly
@@ -97,7 +94,7 @@ void main() {
       expect(controller.totalNumbers[0], equals(3)); // Running total
 
       // Act: Record hits in second round
-      controller.pressNumpadButton(testContext, 2); // 2 more hits
+      controller.pressNumpadButton(2); // 2 more hits
       await tester.pump();
 
       // Assert: Second round recorded correctly
@@ -122,10 +119,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Use return button (should record 0 hits)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button recorded 0 hits
@@ -149,12 +145,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 4); // 4 hits
+      controller.pressNumpadButton(4); // 4 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // 2 hits
+      controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
 
       // Assert: Verify state before undo
@@ -163,7 +158,7 @@ void main() {
       expect(controller.rounds.length, equals(2));
 
       // Act: Undo last round
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Verify undo worked
@@ -188,10 +183,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Try to undo when no rounds have been played
-      controller.pressNumpadButton(testContext, -2); // Undo button
+      controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
 
       // Assert: Undo had no effect (no rounds to undo)
@@ -214,12 +208,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 6); // 6 hits in round 1
+      controller.pressNumpadButton(6); // 6 hits in round 1
       await tester.pump();
-      controller.pressNumpadButton(testContext, 4); // 4 hits in round 2
+      controller.pressNumpadButton(4); // 4 hits in round 2
       await tester.pump();
 
       // Assert: Verify statistics calculation
@@ -229,7 +222,7 @@ void main() {
       expect(stats['avgBulls'], equals('5.0')); // 10 hits / 2 rounds = 5.0
 
       // Act: Play one more round
-      controller.pressNumpadButton(testContext, 2); // 2 hits in round 3
+      controller.pressNumpadButton(2); // 2 hits in round 3
       await tester.pump();
 
       // Assert: Verify updated statistics
@@ -253,11 +246,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Play a few rounds to generate data
-      controller.pressNumpadButton(testContext, 3); // Round 1: 3 hits
-      controller.pressNumpadButton(testContext, 1); // Round 2: 1 hit
+      controller.pressNumpadButton(3); // Round 1: 3 hits
+      controller.pressNumpadButton(1); // Round 2: 1 hit
       await tester.pump();
 
       // Assert: String methods return valid data
@@ -303,8 +295,8 @@ void main() {
       // Test getStats method
       String stats = controller.getStats();
       expect(stats, contains('#S: 0')); // Number of games
-      expect(stats, contains('♛N: 0')); // Record numbers
-      expect(stats, contains('ØH: 0')); // Average hits
+      expect(stats, contains('♛T: 0')); // Record numbers (Treffer)
+      expect(stats, contains('ØT: 0')); // Average hits (Treffer)
     });
 
     /// Tests ShootX game progression without completion
@@ -321,11 +313,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewShootx));
 
       // Act: Play through several rounds (but not all 10 to avoid dialog)
       for (int i = 1; i <= 8; i++) {
-        controller.pressNumpadButton(testContext, i % 4); // Varying hits
+        controller.pressNumpadButton(i % 4); // Varying hits
         await tester.pump();
       }
 
@@ -360,8 +351,8 @@ void main() {
       // Assert: Verify stats string with existing data
       String stats = controller.getStats();
       expect(stats, contains('#S: 5')); // Number of games
-      expect(stats, contains('♛N: 25')); // Record numbers
-      expect(stats, contains('ØH: 4.2')); // Average hits
+      expect(stats, contains('♛T: 25')); // Record numbers (Treffer)
+      expect(stats, contains('ØT: 4.2')); // Average hits (Treffer)
     });
   });
 }

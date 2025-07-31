@@ -17,7 +17,6 @@ import 'speedbull_widget_test.mocks.dart';
 void main() {
   group('Speed Bull Game Widget Tests', () {
     late ControllerSpeedBull controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -61,7 +60,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Assert: Verify initial state
       expect(controller.round, equals(1));
@@ -79,7 +77,7 @@ void main() {
       expect(controller.remainingSeconds, equals(60));
 
       // Act: Record some hits during gameplay
-      controller.pressNumpadButton(testContext, 3); // 3 bulls
+      controller.pressNumpadButton(3); // 3 bulls
       await tester.pump();
       
       // Assert: Verify first round recorded
@@ -89,9 +87,9 @@ void main() {
       expect(controller.hits[1], equals(0)); // second round is empty
 
       // Act: Record more hits
-      controller.pressNumpadButton(testContext, 2); // 2 bulls
+      controller.pressNumpadButton(2); // 2 bulls
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // 1 bull
+      controller.pressNumpadButton(1); // 1 bull
       await tester.pump();
 
       // Assert: Verify multiple rounds recorded
@@ -102,7 +100,7 @@ void main() {
 
       // Act: Simulate timer ending by setting lastThrowAllowed
       controller.lastThrowAllowed = true;
-      controller.pressNumpadButton(testContext, 2); // final throw
+      controller.pressNumpadButton(2); // final throw
       await tester.pumpAndSettle();
 
       // Assert: Verify game ended correctly
@@ -130,15 +128,14 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Start game and record hits
       controller.startGame();
       await tester.pump();
       
-      controller.pressNumpadButton(testContext, 3); // Round 1: 3 hits
+      controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Round 2: 2 hits
+      controller.pressNumpadButton(2); // Round 2: 2 hits
       await tester.pump();
       
       // Assert: Verify state before undo
@@ -147,7 +144,7 @@ void main() {
       expect(controller.hits.length, equals(3)); // [3, 2, 0]
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -157,7 +154,7 @@ void main() {
       expect(controller.hits[1], equals(0)); // Current round is empty
 
       // Act: Continue game after undo
-      controller.pressNumpadButton(testContext, 1); // 1 hit
+      controller.pressNumpadButton(1); // 1 hit
       await tester.pump();
       
       // Assert: Game continues correctly after undo
@@ -179,15 +176,14 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Start game and use return button
       controller.startGame();
       await tester.pump();
       
-      controller.pressNumpadButton(testContext, 2); // 2 hits
+      controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, -1); // Return button (0 hits)
+      controller.pressNumpadButton(-1); // Return button (0 hits)
       await tester.pump();
 
       // Assert: Return button worked as 0 hits
@@ -210,10 +206,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Try to input hits before starting game
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pump();
 
       // Assert: Input should be ignored
@@ -224,7 +219,7 @@ void main() {
       // Act: Start game and then input should work
       controller.startGame();
       await tester.pump();
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pump();
 
       // Assert: Input now works
@@ -246,16 +241,15 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Start game
       controller.startGame();
       await tester.pump();
 
       // Act: Try invalid inputs
-      controller.pressNumpadButton(testContext, 4); // Too high
+      controller.pressNumpadButton(4); // Too high
       await tester.pump();
-      controller.pressNumpadButton(testContext, -3); // Invalid negative
+      controller.pressNumpadButton(-3); // Invalid negative
       await tester.pump();
 
       // Assert: Invalid inputs ignored
@@ -263,9 +257,9 @@ void main() {
       expect(controller.round, equals(1));
 
       // Act: Try valid inputs
-      controller.pressNumpadButton(testContext, 0); // Valid: 0 hits
+      controller.pressNumpadButton(0); // Valid: 0 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 3); // Valid: 3 hits
+      controller.pressNumpadButton(3); // Valid: 3 hits
       await tester.pump();
 
       // Assert: Valid inputs accepted
@@ -294,20 +288,19 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Play a game and end it
       controller.startGame();
       await tester.pump();
       
-      controller.pressNumpadButton(testContext, 3); // 3 hits
+      controller.pressNumpadButton(3); // 3 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // 2 hits
+      controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
       
       // Simulate game ending
       controller.lastThrowAllowed = true;
-      controller.pressNumpadButton(testContext, 1); // final hit
+      controller.pressNumpadButton(1); // final hit
       await tester.pumpAndSettle();
 
       // Assert: Verify storage operations with existing data
@@ -331,13 +324,12 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Start game and try undo with no completed rounds
       controller.startGame();
       await tester.pump();
       
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Nothing should change (only 1 round exists, can't undo)
@@ -345,10 +337,10 @@ void main() {
       expect(controller.totalHits, equals(0));
 
       // Act: Complete a round and end game
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pump();
       controller.lastThrowAllowed = true;
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pumpAndSettle();
 
       // Assert: Game ended
@@ -356,7 +348,7 @@ void main() {
 
       // Act: Try undo after game ended
       int hitsBeforeUndo = controller.totalHits;
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Undo should not work after game ended
@@ -415,15 +407,14 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewSpeedBull));
 
       // Act: Start game and record hits
       controller.startGame();
       await tester.pump();
       
-      controller.pressNumpadButton(testContext, 3); // Round 1: 3 hits
+      controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Round 2: 1 hit
+      controller.pressNumpadButton(1); // Round 2: 1 hit
       await tester.pump();
 
       // Assert: Verify current stats calculation

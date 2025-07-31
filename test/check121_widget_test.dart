@@ -17,7 +17,6 @@ import 'check121_widget_test.mocks.dart';
 void main() {
   group('Check 121 Game Widget Tests', () {
     late ControllerCheck121 controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -61,7 +60,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Assert: Verify initial state
       expect(controller.round, equals(1));
@@ -71,7 +69,7 @@ void main() {
       expect(controller.gameEnded, isFalse);
 
       // Act: Succeed in first round with 2 attempts (target 121)
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after success
@@ -82,7 +80,7 @@ void main() {
       expect(controller.attempts[0], equals(2)); // First round had 2 attempts
 
       // Act: Succeed in second round with 1 attempt
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pumpAndSettle();
 
       // Assert: Verify continued progression
@@ -92,7 +90,7 @@ void main() {
       expect(controller.attempts[1], equals(1)); // Second round had 1 attempt
 
       // Act: Miss in third round (0 attempts)
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
 
       // Assert: Verify regression after miss
@@ -104,7 +102,7 @@ void main() {
 
       // Act: Continue until game ends (10 misses total)
       for (int i = 0; i < 9; i++) { // 1 existing miss + 9 more = 10 total
-        controller.pressNumpadButton(testContext, 0); // More misses
+        controller.pressNumpadButton(0); // More misses
         await tester.pumpAndSettle();
       }
 
@@ -132,14 +130,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 2); // Success with 2 attempts
+      controller.pressNumpadButton(2); // Success with 2 attempts
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Success with 1 attempt
+      controller.pressNumpadButton(1); // Success with 1 attempt
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Miss
+      controller.pressNumpadButton(0); // Miss
       await tester.pump();
       
       // Assert: Verify state before undo
@@ -149,7 +146,7 @@ void main() {
       expect(controller.attempts.length, equals(4)); // Fix this line (line 149)
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -159,7 +156,7 @@ void main() {
       expect(controller.currentTarget, equals(123)); // Use actual target value
 
       // Act: Continue game after undo with different choice
-      controller.pressNumpadButton(testContext, 3); // Success instead of miss
+      controller.pressNumpadButton(3); // Success instead of miss
       await tester.pump();
       
       // Assert: Game continues correctly after undo
@@ -182,10 +179,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Use return button (should work as miss)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as miss
@@ -209,14 +205,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Track initial values
       int initialTarget = controller.currentTarget;
       int initialSavePoint = controller.savePoint;
 
       // Act: Succeed with 1 attempt (should update save point)
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pump();
 
       // Assert: Verify save point updated after 1-attempt success
@@ -227,7 +222,7 @@ void main() {
       int newTarget = controller.currentTarget;
 
       // Act: Succeed with 3 attempts (should not update save point)
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pump();
 
       // Assert: Verify save point not updated after 3-attempt success
@@ -235,7 +230,7 @@ void main() {
       expect(controller.currentTarget, greaterThan(newTarget)); // Target still increases
 
       // Act: Miss (should revert to save point)
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pump();
 
       // Assert: Verify reversion to save point
@@ -256,17 +251,16 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Play some successful rounds first
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Success
+      controller.pressNumpadButton(2); // Success
       await tester.pump();
 
       // Act: Miss 10 times to end game
       for (int i = 0; i < 10; i++) {
-        controller.pressNumpadButton(testContext, 0); // Miss
+        controller.pressNumpadButton(0); // Miss
         await tester.pumpAndSettle();
       }
 
@@ -295,14 +289,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Try invalid inputs
-      controller.pressNumpadButton(testContext, 4); // Too high
+      controller.pressNumpadButton(4); // Too high
       await tester.pump();
-      controller.pressNumpadButton(testContext, -3); // Invalid negative
+      controller.pressNumpadButton(-3); // Invalid negative
       await tester.pump();
-      controller.pressNumpadButton(testContext, 10); // Way too high
+      controller.pressNumpadButton(10); // Way too high
       await tester.pump();
 
       // Assert: Invalid inputs should be ignored
@@ -311,7 +304,7 @@ void main() {
 
       // Act: Try valid inputs
       for (int validInput in [0, 1, 2, 3]) {
-        controller.pressNumpadButton(testContext, validInput);
+        controller.pressNumpadButton(validInput);
         await tester.pump();
       }
 
@@ -341,17 +334,16 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Play a game with 6 successful rounds
       for (int i = 0; i < 6; i++) {
-        controller.pressNumpadButton(testContext, 1); // Success
+        controller.pressNumpadButton(1); // Success
         await tester.pump();
       }
       
       // End game with misses
       for (int i = 0; i < 10; i++) {
-        controller.pressNumpadButton(testContext, 0); // Miss
+        controller.pressNumpadButton(0); // Miss
         await tester.pumpAndSettle();
       }
 
@@ -375,10 +367,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Try undo with no rounds played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -387,9 +378,9 @@ void main() {
       expect(controller.successfulRounds, equals(0));
 
       // Act: Play one round and undo
-      controller.pressNumpadButton(testContext, 2); // Success
+      controller.pressNumpadButton(2); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Back to initial state
@@ -413,14 +404,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Assert: Initial highest target
       expect(controller.highestTarget, equals(121));
 
       // Act: Succeed several times to increase target
       for (int i = 0; i < 5; i++) {
-        controller.pressNumpadButton(testContext, 1); // Success
+        controller.pressNumpadButton(1); // Success
         await tester.pump();
       }
 
@@ -429,7 +419,7 @@ void main() {
       int peakTarget = controller.highestTarget;
 
       // Act: Miss to reduce current target
-      controller.pressNumpadButton(testContext, 0); // Miss
+      controller.pressNumpadButton(0); // Miss
       await tester.pump();
 
       // Assert: Highest target should remain at peak
@@ -451,14 +441,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewCheck121));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 1); // Success
+      controller.pressNumpadButton(1); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Success
+      controller.pressNumpadButton(2); // Success
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Miss
+      controller.pressNumpadButton(0); // Miss
       await tester.pump();
 
       // Assert: Verify current stats

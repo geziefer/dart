@@ -4,6 +4,7 @@ import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
+import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
 
 class ViewKillBull extends StatelessWidget {
@@ -17,6 +18,27 @@ class ViewKillBull extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ControllerKillBull controller = Provider.of<ControllerKillBull>(context);
+    // Set up callbacks for UI interactions
+    controller.onGameEnded = () {
+      controller.showSummaryDialog(context);
+    };
+    controller.onShowCheckout = (remaining) {
+      // Show checkout dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(2))),
+            child: Checkout(
+              remaining: remaining,
+              controller: controller,
+            ),
+          );
+        },
+      );
+    };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(

@@ -17,7 +17,6 @@ import 'bobs27_widget_test.mocks.dart';
 void main() {
   group('Bobs 27 Game Widget Tests', () {
     late ControllerBobs27 controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -62,8 +61,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
-
       // Assert: Verify initial state
       expect(controller.round, equals(1));
       expect(controller.currentTargetIndex, equals(0));
@@ -72,7 +69,7 @@ void main() {
       expect(controller.gameEnded, isFalse);
 
       // Act: Hit target 1 with score 3
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after first hit
@@ -85,7 +82,7 @@ void main() {
       expect(controller.targets[1], equals('2')); // Second target is 2
 
       // Act: Miss target 2 (score 0)
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
 
       // Assert: Verify progression after miss
@@ -106,7 +103,7 @@ void main() {
         3
       ]; // Mixed hits and misses (valid 0-3 range)
       for (int score in scores) {
-        controller.pressNumpadButton(testContext, score);
+        controller.pressNumpadButton(score);
         await tester.pumpAndSettle();
       }
 
@@ -119,14 +116,14 @@ void main() {
       // Skip to near end for efficiency, but check for game end
       while (controller.currentTargetIndex < 19 && !controller.gameEnded) {
         // Add gameEnded check
-        controller.pressNumpadButton(testContext, 0); // Miss remaining targets
+        controller.pressNumpadButton(0); // Miss remaining targets
         await tester.pumpAndSettle();
       }
 
       // Only continue if game hasn't ended
       if (!controller.gameEnded) {
         // Act: Hit target 20
-        controller.pressNumpadButton(testContext, 2);
+        controller.pressNumpadButton(2);
         await tester.pumpAndSettle();
 
         // Assert: Verify we're at Bull target (only if game hasn't ended)
@@ -135,7 +132,7 @@ void main() {
               controller.targets[controller.currentTargetIndex], equals('B'));
 
           // Act: Hit Bull to end game
-          controller.pressNumpadButton(testContext, 1);
+          controller.pressNumpadButton(1);
           await tester.pumpAndSettle();
         }
       }
@@ -162,14 +159,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 3); // Hit target 1 with 3
+      controller.pressNumpadButton(3); // Hit target 1 with 3
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Hit target 2 with 2
+      controller.pressNumpadButton(2); // Hit target 2 with 2
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Miss target 3
+      controller.pressNumpadButton(0); // Miss target 3
       await tester.pump();
 
       // Assert: Verify state before undo
@@ -179,7 +175,7 @@ void main() {
       expect(controller.roundScores.length, equals(4)); // Should be 4 rounds
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -190,7 +186,7 @@ void main() {
       expect(controller.currentTargetIndex, equals(2)); // Back to target 3
 
       // Act: Undo a successful round
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo of successful round
@@ -200,7 +196,7 @@ void main() {
       expect(controller.roundScores.length, equals(2));
 
       // Act: Continue game after undo
-      controller.pressNumpadButton(testContext, 2); // Valid hit count (0-3)
+      controller.pressNumpadButton(2); // Valid hit count (0-3)
       await tester.pump();
 
       // Assert: Game continues correctly after undo
@@ -223,10 +219,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Use return button (should work as miss)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as miss
@@ -253,7 +248,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Verify initial target
       expect(controller.targets.length, equals(1));
@@ -271,7 +265,7 @@ void main() {
       int expectedTotalScore = 27;
 
       for (int i = 0; i < testScores.length; i++) {
-        controller.pressNumpadButton(testContext, testScores[i]);
+        controller.pressNumpadButton(testScores[i]);
         await tester.pump();
 
         // Calculate expected score based on target and hits
@@ -304,11 +298,10 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Skip to Bull target quickly
       while (controller.currentTargetIndex < 20 && !controller.gameEnded) {
-        controller.pressNumpadButton(testContext, 0); // Miss all targets
+        controller.pressNumpadButton(0); // Miss all targets
         await tester.pumpAndSettle();
       }
 
@@ -320,7 +313,7 @@ void main() {
             controller.totalScore, equals(27)); // No hits, so score unchanged
 
         // Act: Hit Bull to win
-        controller.pressNumpadButton(testContext, 1);
+        controller.pressNumpadButton(1);
         await tester.pumpAndSettle();
 
         // Assert: Verify game won
@@ -350,14 +343,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Hit targets to reduce score to near zero
       // Start with 27, need to lose 27+ points through misses
       // Miss targets: 1(-2), 2(-4), 3(-6), 4(-8), 5(-10) = -30 total
       List<int> misses = [0, 0, 0, 0, 0]; // Miss first 5 targets
       for (int miss in misses) {
-        controller.pressNumpadButton(testContext, miss);
+        controller.pressNumpadButton(miss);
         await tester.pumpAndSettle();
       }
 
@@ -382,13 +374,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Try invalid inputs
-      controller.pressNumpadButton(testContext, -3); // Invalid negative
+      controller.pressNumpadButton(-3); // Invalid negative
       await tester.pump();
-      controller.pressNumpadButton(
-          testContext, 4); // Too high (only 0-3 allowed)
+      controller.pressNumpadButton(4); // Too high (only 0-3 allowed)
       await tester.pump();
 
       // Assert: Invalid inputs should be ignored
@@ -397,9 +387,9 @@ void main() {
           equals(1)); // Initial empty round exists
 
       // Act: Try valid inputs
-      controller.pressNumpadButton(testContext, 0); // Valid miss
+      controller.pressNumpadButton(0); // Valid miss
       await tester.pump();
-      controller.pressNumpadButton(testContext, 3); // Valid hit count
+      controller.pressNumpadButton(3); // Valid hit count
       await tester.pump();
 
       // Assert: Valid inputs should be processed
@@ -429,23 +419,22 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Play a game with 12 successful rounds
       for (int i = 0; i < 12; i++) {
-        controller.pressNumpadButton(testContext, 1); // Small hits
+        controller.pressNumpadButton(1); // Small hits
         await tester.pump();
       }
 
       // End game by reaching Bull
       while (controller.currentTargetIndex < 20 && !controller.gameEnded) {
-        controller.pressNumpadButton(testContext, 0); // Miss remaining
+        controller.pressNumpadButton(0); // Miss remaining
         await tester.pumpAndSettle();
       }
 
       // Only hit Bull if game hasn't ended
       if (!controller.gameEnded) {
-        controller.pressNumpadButton(testContext, 1); // Hit Bull
+        controller.pressNumpadButton(1); // Hit Bull
         await tester.pumpAndSettle();
       }
 
@@ -469,10 +458,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Try undo with no rounds played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -482,9 +470,9 @@ void main() {
           equals(1)); // Initial empty round exists
 
       // Act: Play one round and undo
-      controller.pressNumpadButton(testContext, 5); // Hit with 5
+      controller.pressNumpadButton(5); // Hit with 5
       await tester.pump();
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Back to initial state
@@ -511,14 +499,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewBobs27));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 3); // Hit
+      controller.pressNumpadButton(3); // Hit
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Miss
+      controller.pressNumpadButton(0); // Miss
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Hit
+      controller.pressNumpadButton(2); // Hit
       await tester.pump();
 
       // Assert: Verify current stats

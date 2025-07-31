@@ -5,10 +5,8 @@ import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
 class ControllerHalfit extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -69,12 +67,12 @@ class ControllerHalfit extends ControllerBase
   }
 
   @override
-  void initFromProvider(BuildContext context, MenuItem item) {
-    Provider.of<ControllerHalfit>(context, listen: false).init(item);
+  void initFromProvider(MenuItem item) {
+    init(item);
   }
 
   @override
-  void pressNumpadButton(BuildContext context, int value) {
+  void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
       if (input.isEmpty && scores.isNotEmpty) {
@@ -118,7 +116,7 @@ class ControllerHalfit extends ControllerBase
       if (round == 9) {
         // Use post-frame callback to avoid context across async gaps
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showSummaryDialog(context);
+          triggerGameEnd();
         });
       } else {
         round++;
@@ -138,9 +136,6 @@ class ControllerHalfit extends ControllerBase
   }
 
   // Helper method to create individual summary lines with separate symbols
-  void _showSummaryDialog(BuildContext context) {
-    showSummaryDialog(context);
-  }
 
   @override
   List<SummaryLine> createSummaryLines() {

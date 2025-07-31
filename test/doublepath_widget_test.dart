@@ -17,7 +17,6 @@ import 'doublepath_widget_test.mocks.dart';
 void main() {
   group('Double Path Game Widget Tests', () {
     late ControllerDoublePath controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUp(() {
@@ -61,7 +60,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Assert: Verify initial state
       expect(controller.currentRound, equals(0));
@@ -70,7 +68,7 @@ void main() {
       expect(controller.points.length, equals(0));
 
       // Act: Play Round 1 (16-8-4) - hit 2 targets
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pumpAndSettle();
 
       // Assert: Verify Round 1 results
@@ -80,7 +78,7 @@ void main() {
       expect(controller.totalPoints[0], equals(3));
 
       // Act: Play Round 2 (20-10-5) - hit 3 targets (perfect)
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pumpAndSettle();
 
       // Assert: Verify Round 2 results
@@ -90,7 +88,7 @@ void main() {
       expect(controller.totalPoints[1], equals(9)); // 3 + 6
 
       // Act: Play Round 3 (4-2-1) - hit 1 target
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pumpAndSettle();
 
       // Assert: Verify Round 3 results
@@ -100,7 +98,7 @@ void main() {
       expect(controller.totalPoints[2], equals(10)); // 9 + 1
 
       // Act: Play Round 4 (12-6-3) - hit 0 targets
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
 
       // Assert: Verify Round 4 results
@@ -110,7 +108,7 @@ void main() {
       expect(controller.totalPoints[3], equals(10)); // No change
 
       // Act: Play Round 5 (18-9-B) - hit 2 targets
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pumpAndSettle();
 
       // Assert: Verify game completion
@@ -142,14 +140,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 3); // Round 1: 3 hits
+      controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Round 2: 2 hits
+      controller.pressNumpadButton(2); // Round 2: 2 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, 1); // Round 3: 1 hit
+      controller.pressNumpadButton(1); // Round 3: 1 hit
       await tester.pump();
       
       // Assert: Verify state before undo
@@ -159,7 +156,7 @@ void main() {
       expect(controller.totalPoints.length, equals(3));
 
       // Act: Press undo button
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Verify undo worked correctly
@@ -169,7 +166,7 @@ void main() {
       expect(controller.totalPoints.length, equals(2));
 
       // Act: Continue game after undo with different choice
-      controller.pressNumpadButton(testContext, 0); // 0 hits instead of 1
+      controller.pressNumpadButton(0); // 0 hits instead of 1
       await tester.pump();
       
       // Assert: Game continues correctly after undo
@@ -192,7 +189,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Test point calculations for each round with perfect scores (3 hits)
       List<int> expectedPerfectScores = [
@@ -206,7 +202,7 @@ void main() {
       int cumulativeTotal = 0;
       for (int round = 0; round < 5; round++) {
         // Act: Hit all 3 targets in current round
-        controller.pressNumpadButton(testContext, 3);
+        controller.pressNumpadButton(3);
         await tester.pump();
         
         cumulativeTotal += expectedPerfectScores[round];
@@ -233,10 +229,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Use return button (should work as 0 hits)
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as 0 hits
@@ -260,14 +255,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Try invalid inputs
-      controller.pressNumpadButton(testContext, 4); // Too high
+      controller.pressNumpadButton(4); // Too high
       await tester.pump();
-      controller.pressNumpadButton(testContext, -3); // Invalid negative
+      controller.pressNumpadButton(-3); // Invalid negative
       await tester.pump();
-      controller.pressNumpadButton(testContext, 10); // Way too high
+      controller.pressNumpadButton(10); // Way too high
       await tester.pump();
 
       // Assert: Invalid inputs should be ignored
@@ -276,7 +270,7 @@ void main() {
 
       // Act: Try valid inputs
       for (int validInput in [0, 1, 2, 3]) {
-        controller.pressNumpadButton(testContext, validInput);
+        controller.pressNumpadButton(validInput);
         await tester.pump();
       }
 
@@ -306,12 +300,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Play a game scoring 180 points total
       List<int> hits = [3, 3, 2, 1, 2]; // Mixed performance
       for (int hitCount in hits) {
-        controller.pressNumpadButton(testContext, hitCount);
+        controller.pressNumpadButton(hitCount);
         await tester.pumpAndSettle();
       }
 
@@ -335,10 +328,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Try undo with no rounds played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -347,9 +339,9 @@ void main() {
       expect(controller.points.length, equals(0));
 
       // Act: Play one round and undo
-      controller.pressNumpadButton(testContext, 2); // 2 hits
+      controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
-      controller.pressNumpadButton(testContext, -2); // Undo
+      controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
       // Assert: Back to initial state
@@ -386,7 +378,7 @@ void main() {
       
       // Act: Play through some rounds
       for (int i = 0; i < 3; i++) {
-        controller.pressNumpadButton(testContext, 2);
+        controller.pressNumpadButton(2);
         await tester.pump();
       }
 
@@ -411,14 +403,13 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewDoublePath));
 
       // Act: Play a few rounds
-      controller.pressNumpadButton(testContext, 3); // Perfect round 1
+      controller.pressNumpadButton(3); // Perfect round 1
       await tester.pump();
-      controller.pressNumpadButton(testContext, 2); // Good round 2
+      controller.pressNumpadButton(2); // Good round 2
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0); // Miss round 3
+      controller.pressNumpadButton(0); // Miss round 3
       await tester.pump();
 
       // Assert: Verify current stats

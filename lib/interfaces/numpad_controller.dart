@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-
 /// Interface for NumpadButton
 abstract class NumpadController {
-  void pressNumpadButton(BuildContext context, int value);
+  void pressNumpadButton(int value);
   String getInput();
   void correctDarts(int value);
   bool isButtonDisabled(int value) => false; // default implementation

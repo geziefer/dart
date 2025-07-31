@@ -17,7 +17,6 @@ import 'killbull_widget_test.mocks.dart';
 void main() {
   group('Kill Bull Game Widget Tests', () {
     late ControllerKillBull controller;
-    late BuildContext testContext;
     late MockGetStorage mockStorage;
 
     setUpAll(() {
@@ -66,7 +65,6 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Assert: Verify initial state
       expect(controller.round, equals(1));
@@ -74,7 +72,7 @@ void main() {
       expect(controller.gameEnded, isFalse);
 
       // Act: Round 1 - Hit 3 bulls
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pumpAndSettle();
 
       // Assert: Verify round 1 results
@@ -85,7 +83,7 @@ void main() {
       expect(controller.gameEnded, isFalse);
 
       // Act: Round 2 - Hit 2 bulls  
-      controller.pressNumpadButton(testContext, 2);
+      controller.pressNumpadButton(2);
       await tester.pumpAndSettle();
 
       // Assert: Verify round 2 results
@@ -95,7 +93,7 @@ void main() {
       expect(controller.roundScores[1], equals(50));
 
       // Act: Round 3 - Hit 0 bulls (game should end)
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
       
       // Wait a bit more for the post-frame callback to execute
@@ -139,10 +137,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Round 1 - Hit 4 bulls
-      controller.pressNumpadButton(testContext, 4);
+      controller.pressNumpadButton(4);
       await tester.pumpAndSettle();
       
       // Assert: Verify first round
@@ -150,7 +147,7 @@ void main() {
       expect(controller.round, equals(2));
 
       // Act: Round 2 - Hit 3 bulls
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pumpAndSettle();
       
       // Assert: Verify second round
@@ -158,7 +155,7 @@ void main() {
       expect(controller.round, equals(3));
 
       // Act: Press undo button (value -2)
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pumpAndSettle();
 
       // Assert: Verify undo worked correctly
@@ -167,9 +164,9 @@ void main() {
       expect(controller.roundScores.length, equals(1));
 
       // Act: Continue and end game
-      controller.pressNumpadButton(testContext, 1);
+      controller.pressNumpadButton(1);
       await tester.pumpAndSettle();
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
       
       // Assert: Game ends properly
@@ -201,12 +198,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Play a simple game and end it
-      controller.pressNumpadButton(testContext, 6); // 150 points
+      controller.pressNumpadButton(6); // 150 points
       await tester.pumpAndSettle();
-      controller.pressNumpadButton(testContext, 0); // End game
+      controller.pressNumpadButton(0); // End game
       await tester.pumpAndSettle();
 
       // Assert: Verify storage operations that actually occur
@@ -231,12 +227,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Hit 5 bulls, then use return button
-      controller.pressNumpadButton(testContext, 5);
+      controller.pressNumpadButton(5);
       await tester.pumpAndSettle();
-      controller.pressNumpadButton(testContext, -1); // Return button
+      controller.pressNumpadButton(-1); // Return button
       await tester.pumpAndSettle();
 
       // Assert: Game ended with return button working as 0 bulls
@@ -260,10 +255,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Hit 0 bulls immediately
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pumpAndSettle();
 
       // Assert: Verify immediate game end
@@ -294,12 +288,11 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Play extended game
       List<int> bullsPerRound = [6, 5, 4, 3, 2, 1, 6, 0]; // 8 rounds, 675 points
       for (int bulls in bullsPerRound) {
-        controller.pressNumpadButton(testContext, bulls);
+        controller.pressNumpadButton(bulls);
         await tester.pumpAndSettle();
       }
 
@@ -327,10 +320,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Act: Try undo with no rounds played
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
@@ -339,9 +331,9 @@ void main() {
       expect(controller.roundScores.length, equals(0));
 
       // Act: Play and end game
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pump();
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pump();
       
       // Assert: Game ended
@@ -351,7 +343,7 @@ void main() {
       // Act: Try undo after game ended
       int scoreBeforeUndo = controller.totalScore;
       bool gameEndedBefore = controller.gameEnded;
-      controller.pressNumpadButton(testContext, -2);
+      controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Undo should not work after game ended
@@ -374,10 +366,9 @@ void main() {
         ),
       );
 
-      testContext = tester.element(find.byType(ViewKillBull));
 
       // Test a simple case: 3 bulls = 75 points
-      controller.pressNumpadButton(testContext, 3);
+      controller.pressNumpadButton(3);
       await tester.pump();
       
       // Assert: Verify score calculation
@@ -385,7 +376,7 @@ void main() {
       expect(controller.roundScores[0], equals(75));
       
       // End game and verify storage occurs
-      controller.pressNumpadButton(testContext, 0);
+      controller.pressNumpadButton(0);
       await tester.pump();
       
       // Assert: Just verify that storage operations occurred
