@@ -37,7 +37,8 @@ class ControllerTwoDarts extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     targets = <int>[61];
@@ -50,6 +51,7 @@ class ControllerTwoDarts extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerTwoDarts>(context, listen: false).init(item);
   }
+
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
@@ -95,7 +97,8 @@ class ControllerTwoDarts extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     return [
-      SummaryService.createValueLine('Erfolgreiche Versuche', successCount, emphasized: true),
+      SummaryService.createValueLine('Erfolgreiche Versuche', successCount,
+          emphasized: true),
     ];
   }
 
@@ -106,9 +109,10 @@ class ControllerTwoDarts extends ControllerBase
   void updateSpecificStats() {
     // Update records
     statsService.updateRecord<int>('recordSuccesses', successCount);
-    
+
     // Update long-term average
-    statsService.updateLongTermAverage('longtermSuccesses', successCount.toDouble());
+    statsService.updateLongTermAverage(
+        'longtermSuccesses', successCount.toDouble());
   }
 
   String getCurrentTargets() {
@@ -154,22 +158,26 @@ class ControllerTwoDarts extends ControllerBase
     return {
       'target': currentTargetIndex < 10 ? 61 + currentTargetIndex : 70,
       'checks': successCount,
-      'avgChecks': results.isEmpty ? 0.0 : (successCount / results.length * 100),
+      'avgChecks':
+          results.isEmpty ? 0.0 : (successCount / results.length * 100),
     };
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordSuccesses = statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
-    double longtermSuccesses = statsService.getStat<double>('longtermSuccesses', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordSuccesses =
+        statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
+    double longtermSuccesses =
+        statsService.getStat<double>('longtermSuccesses', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'C': recordSuccesses,      // Checks/Successes
+        'C': recordSuccesses, // Checks
       },
       averages: {
-        'C': longtermSuccesses,    // Durchschnittliche Checks
+        'C': longtermSuccesses, // Checks
       },
     );
   }

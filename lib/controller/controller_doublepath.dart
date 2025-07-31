@@ -47,7 +47,8 @@ class ControllerDoublePath extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     targets = List.from(targetSequences);
@@ -62,6 +63,7 @@ class ControllerDoublePath extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerDoublePath>(context, listen: false).init(item);
   }
+
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
@@ -129,7 +131,7 @@ class ControllerDoublePath extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     int totalScore = totalPoints.isNotEmpty ? totalPoints.last : 0;
     double averagePerRound = totalScore / 5.0;
-    
+
     return [
       SummaryService.createValueLine('Punkte', totalScore, emphasized: true),
       SummaryService.createAverageLine('Punkte pro Runde', averagePerRound),
@@ -143,16 +145,18 @@ class ControllerDoublePath extends ControllerBase
   void updateSpecificStats() {
     int gameTotal = totalPoints.isNotEmpty ? totalPoints.last : 0;
     double gameAverage = gameTotal / 5.0;
-    int maxRoundPoints = points.isNotEmpty ? points.reduce((a, b) => a > b ? a : b) : 0;
-    
+    int maxRoundPoints =
+        points.isNotEmpty ? points.reduce((a, b) => a > b ? a : b) : 0;
+
     // Update cumulative stats
-    int totalGamePoints = statsService.getStat<int>('totalPoints', defaultValue: 0)!;
+    int totalGamePoints =
+        statsService.getStat<int>('totalPoints', defaultValue: 0)!;
     statsService.updateStats({'totalPoints': totalGamePoints + gameTotal});
-    
+
     // Update records
     statsService.updateRecord<int>('recordRoundPoints', maxRoundPoints);
     statsService.updateRecord<double>('recordRoundAverage', gameAverage);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', gameAverage);
   }
@@ -231,19 +235,20 @@ class ControllerDoublePath extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordRoundPoints = statsService.getStat<int>('recordRoundPoints', defaultValue: 0)!;
-    double recordRoundAverage = statsService.getStat<double>('recordRoundAverage', defaultValue: 0.0)!;
-    double longtermAverage = statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordRoundPoints =
+        statsService.getStat<int>('recordRoundPoints', defaultValue: 0)!;
+    double longtermAverage =
+        statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
 
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'P': recordRoundPoints,    // Punkte
-        'Ø': recordRoundAverage,   // Durchschnitt
+        'P': recordRoundPoints, // Punkte
       },
       averages: {
-        'P': longtermAverage,      // Langzeit-Durchschnitt
+        'P': longtermAverage, // Langzeit-Durchschnitt
       },
     );
   }

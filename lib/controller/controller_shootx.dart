@@ -2,7 +2,8 @@ import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:dart/services/summary_service.dart';import 'package:dart/widget/menu.dart';
+import 'package:dart/services/summary_service.dart';
+import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -40,7 +41,8 @@ class ControllerShootx extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
     x = item.params['x'];
     max = item.params['max'];
@@ -56,6 +58,7 @@ class ControllerShootx extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerShootx>(context, listen: false).init(item);
   }
+
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
@@ -103,7 +106,8 @@ class ControllerShootx extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     return [
       SummaryService.createValueLine('Anzahl $x', number),
-      SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgBulls'], emphasized: true),
+      SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgBulls'],
+          emphasized: true),
     ];
   }
 
@@ -113,10 +117,10 @@ class ControllerShootx extends ControllerBase
   @override
   void updateSpecificStats() {
     double avgBulls = double.parse(getCurrentStats()['avgBulls']);
-    
+
     // Update records
     statsService.updateRecord<int>('recordNumbers', number);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermBulls', avgBulls);
   }
@@ -162,17 +166,20 @@ class ControllerShootx extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordNumbers = statsService.getStat<int>('recordNumbers', defaultValue: 0)!;
-    double longtermNumbers = statsService.getStat<double>('longtermNumbers', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordNumbers =
+        statsService.getStat<int>('recordNumbers', defaultValue: 0)!;
+    double longtermNumbers =
+        statsService.getStat<double>('longtermNumbers', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'N': recordNumbers,        // Numbers
+        'T': recordNumbers, // Treffer
       },
       averages: {
-        'H': longtermNumbers,      // Hits
+        'T': longtermNumbers, // Treffer
       },
     );
   }

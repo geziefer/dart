@@ -46,7 +46,8 @@ class ControllerSpeedBull extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     // Get duration from params, default to 60 seconds
@@ -70,6 +71,7 @@ class ControllerSpeedBull extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerSpeedBull>(context, listen: false).init(item);
   }
+
   void startGame() {
     if (gameStarted || gameEnded) return;
 
@@ -193,17 +195,19 @@ class ControllerSpeedBull extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
     int recordHits = statsService.getStat<int>('recordHits', defaultValue: 0)!;
-    double overallAverage = statsService.getStat<double>('overallAverage', defaultValue: 0.0)!;
+    double overallAverage =
+        statsService.getStat<double>('overallAverage', defaultValue: 0.0)!;
 
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'P': recordHits,        // Punkte/Hits
+        'T': recordHits, // Treffer
       },
       averages: {
-        'P': overallAverage,    // Durchschnittspunkte
+        'T': overallAverage, // Treffer
       },
     );
   }
@@ -219,11 +223,12 @@ class ControllerSpeedBull extends ControllerBase
     if (completedRounds > 0) {
       averageHitsPerRound = totalHits / completedRounds;
     }
-    
+
     return [
       SummaryService.createValueLine('Runden gespielt', completedRounds),
       SummaryService.createValueLine('Bull Treffer', totalHits),
-      SummaryService.createAverageLine('Ø Treffer/Runde', averageHitsPerRound, emphasized: true),
+      SummaryService.createAverageLine('Ø Treffer/Runde', averageHitsPerRound,
+          emphasized: true),
     ];
   }
 
@@ -233,19 +238,21 @@ class ControllerSpeedBull extends ControllerBase
   @override
   void updateSpecificStats() {
     int completedRounds = round - 1; // exclude current empty round
-    
+
     // Update cumulative stats
-    int totalHitsAllGames = statsService.getStat<int>('totalHitsAllGames', defaultValue: 0)!;
-    int totalRoundsAllGames = statsService.getStat<int>('totalRoundsAllGames', defaultValue: 0)!;
-    
+    int totalHitsAllGames =
+        statsService.getStat<int>('totalHitsAllGames', defaultValue: 0)!;
+    int totalRoundsAllGames =
+        statsService.getStat<int>('totalRoundsAllGames', defaultValue: 0)!;
+
     statsService.updateStats({
       'totalHitsAllGames': totalHitsAllGames + totalHits,
       'totalRoundsAllGames': totalRoundsAllGames + completedRounds,
     });
-    
+
     // Update records
     statsService.updateRecord<int>('recordHits', totalHits);
-    
+
     // Calculate and store overall average
     double overallAverage = 0.0;
     int newTotalRounds = totalRoundsAllGames + completedRounds;

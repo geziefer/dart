@@ -9,11 +9,3 @@
 ### **13. Tight Coupling**
 • **Issue**: Controllers directly reference UI components (BuildContext in pressNumpadButton)
 • **Recommendation**: Use events or callbacks to decouple
-
-### **17. No Configuration Management**
-• **Issue**: Game rules and settings scattered throughout code
-• **Recommendation**: Centralize game configuration
-
-### **18. Inconsistent Error States**
-• **Issue**: No consistent handling of error states in UI
-• **Recommendation**: Create standard error handling patterns

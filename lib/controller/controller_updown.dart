@@ -6,7 +6,8 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';
+import 'package:provider/provider.dart';
 
 class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -39,7 +40,8 @@ class ControllerUpDown extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     rounds = <int>[1];
@@ -56,6 +58,7 @@ class ControllerUpDown extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerUpDown>(context, listen: false).init(item);
   }
+
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
@@ -170,15 +173,16 @@ class ControllerUpDown extends ControllerBase
   @override
   void updateSpecificStats() {
     double averageSuccesses = successCount / 13.0;
-    
+
     // Update cumulative stats
-    int totalSuccesses = statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
+    int totalSuccesses =
+        statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
     statsService.updateStats({'totalSuccesses': totalSuccesses + successCount});
-    
+
     // Update records
     statsService.updateRecord<int>('recordSuccesses', successCount);
     statsService.updateRecord<int>('recordHighestTarget', highestTarget);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermSuccesses', averageSuccesses);
   }
@@ -202,7 +206,8 @@ class ControllerUpDown extends ControllerBase
     int targetsToShow =
         results.length < 13 ? results.length + 1 : results.length;
     // Safety check: don't exceed the actual targets list length
-    targetsToShow = targetsToShow > targets.length ? targets.length : targetsToShow;
+    targetsToShow =
+        targetsToShow > targets.length ? targets.length : targetsToShow;
     for (int i = 0; i < targetsToShow; i++) {
       displayTargets.add('${targets[i]}');
     }
@@ -259,22 +264,28 @@ class ControllerUpDown extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int totalSuccesses = statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
-    int recordTarget = statsService.getStat<int>('recordTarget', defaultValue: 50)!;
-    int recordSuccesses = statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
-    double recordAverage = statsService.getStat<double>('recordAverage', defaultValue: 0.0)!;
-    double longtermAverage = statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int totalSuccesses =
+        statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
+    int recordTarget =
+        statsService.getStat<int>('recordTarget', defaultValue: 50)!;
+    int recordSuccesses =
+        statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
+    double recordAverage =
+        statsService.getStat<double>('recordAverage', defaultValue: 0.0)!;
+    double longtermAverage =
+        statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
 
     String baseStats = formatStatsString(
       numberGames: numberGames,
       records: {
-        'Z': recordTarget,         // Ziel (Target)
-        'C': recordSuccesses,      // Checks
-        'S': recordAverage,        // Score/Average
+        'Z': recordTarget, // Ziel (Target)
+        'C': recordSuccesses, // Checks
+        'P': recordAverage, // Score/Average
       },
       averages: {
-        'C': longtermAverage,      // Checks
+        'C': longtermAverage, // Checks
       },
     );
     return '$baseStats  #C: $totalSuccesses';

@@ -45,7 +45,8 @@ class ControllerCheck121 extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     rounds = <int>[1]; // start with round 1
@@ -65,6 +66,7 @@ class ControllerCheck121 extends ControllerBase
   void initFromProvider(BuildContext context, MenuItem item) {
     Provider.of<ControllerCheck121>(context, listen: false).init(item);
   }
+
   @override
   void pressNumpadButton(BuildContext context, int value) {
     // undo button pressed
@@ -233,11 +235,16 @@ class ControllerCheck121 extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int totalSuccessfulRounds = statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
-    int totalRoundsPlayed = statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
-    int highestTarget = statsService.getStat<int>('highestTarget', defaultValue: 0)!;
-    int highestSavePoint = statsService.getStat<int>('highestSavePoint', defaultValue: 0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int totalSuccessfulRounds =
+        statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed =
+        statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
+    int highestTarget =
+        statsService.getStat<int>('highestTarget', defaultValue: 0)!;
+    int highestSavePoint =
+        statsService.getStat<int>('highestSavePoint', defaultValue: 0)!;
 
     // Calculate percentage of successful rounds across all games
     double averageSuccessPercentage = 0.0;
@@ -248,9 +255,9 @@ class ControllerCheck121 extends ControllerBase
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'E': totalSuccessfulRounds,  // Erfolgreiche Runden
-        'Z': highestTarget,          // Ziel
-        'S': highestSavePoint,       // Safepoint
+        'C': totalSuccessfulRounds, // Checks
+        'Z': highestTarget, // Ziel
+        'S': highestSavePoint, // Safepoint
       },
       averages: {
         'C': averageSuccessPercentage, // Checks
@@ -268,7 +275,9 @@ class ControllerCheck121 extends ControllerBase
       SummaryService.createValueLine('Gespielte Runden', round - 1),
       SummaryService.createValueLine('Höchstes Ziel', highestTarget),
       SummaryService.createValueLine('Letzter Safepoint', savePoint),
-      SummaryService.createValueLine('Ø Erfolgreiche Runden', _getAverageAttempts(), emphasized: true),
+      SummaryService.createValueLine(
+          'Ø Erfolgreiche Runden', _getAverageAttempts(),
+          emphasized: true),
     ];
   }
 
@@ -278,16 +287,18 @@ class ControllerCheck121 extends ControllerBase
   @override
   void updateSpecificStats() {
     int currentRoundsPlayed = round - 1; // exclude current empty round
-    
+
     // Update cumulative stats
-    int totalSuccessfulRounds = statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
-    int totalRoundsPlayed = statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
-    
+    int totalSuccessfulRounds =
+        statsService.getStat<int>('totalSuccessfulRounds', defaultValue: 0)!;
+    int totalRoundsPlayed =
+        statsService.getStat<int>('totalRoundsPlayed', defaultValue: 0)!;
+
     statsService.updateStats({
       'totalSuccessfulRounds': totalSuccessfulRounds + successfulRounds,
       'totalRoundsPlayed': totalRoundsPlayed + currentRoundsPlayed,
     });
-    
+
     // Update records
     statsService.updateRecord<int>('highestTarget', highestTarget);
     statsService.updateRecord<int>('highestSavePoint', savePoint);

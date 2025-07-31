@@ -7,7 +7,8 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
-import 'package:dart/services/summary_service.dart';import 'package:provider/provider.dart';
+import 'package:dart/services/summary_service.dart';
+import 'package:provider/provider.dart';
 
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -56,7 +57,8 @@ class ControllerXXXCheckout extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
     xxx = item.params['xxx'];
     max = item.params['max'];
@@ -92,7 +94,7 @@ class ControllerXXXCheckout extends ControllerBase
   void pressNumpadButton(BuildContext context, int value) {
     // Prevent operation before initialization
     if (xxx == 0) return;
-    
+
     // undo button pressed
     if (value == -2) {
       if (input.isEmpty && rounds.isNotEmpty) {
@@ -238,19 +240,24 @@ class ControllerXXXCheckout extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
-    
+
     // Add individual lines for each leg result with check symbols
     for (int i = 0; i < results.length && i < finishes.length; i++) {
       String checkSymbol = finishes[i] ? "✅" : "❌";
-      lines.add(SummaryLine('Leg ${i + 1}', '${results[i]} Darts', checkSymbol: checkSymbol));
+      lines.add(SummaryLine('Leg ${i + 1}', '${results[i]} Darts',
+          checkSymbol: checkSymbol));
     }
-    
+
     // Add average score line
-    lines.add(SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
-    
+    lines.add(SummaryService.createValueLine(
+        'ØPunkte', getCurrentStats()['avgScore'],
+        emphasized: true));
+
     // Add average darts line
-    lines.add(SummaryService.createValueLine('ØDarts', getCurrentStats()['avgDarts'], emphasized: true));
-    
+    lines.add(SummaryService.createValueLine(
+        'ØDarts', getCurrentStats()['avgDarts'],
+        emphasized: true));
+
     return lines;
   }
 
@@ -262,12 +269,12 @@ class ControllerXXXCheckout extends ControllerBase
     double avgScore = _getAvgScore();
     double avgDarts = _getAvgDarts();
     int finishCount = finishes.where((f) => f).length;
-    
+
     // Update records
     statsService.updateRecord<int>('recordFinishes', finishCount);
     statsService.updateRecord<double>('recordScore', avgScore);
     statsService.updateRecord<double>('recordDarts', avgDarts);
-    
+
     // Update long-term averages
     statsService.updateLongTermAverage('longtermScore', avgScore);
     statsService.updateLongTermAverage('longtermDarts', avgDarts);
@@ -324,23 +331,29 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordFinishes = statsService.getStat<int>('recordFinishes', defaultValue: 0)!;
-    double recordScore = statsService.getStat<double>('recordScore', defaultValue: 0.0)!;
-    double recordDarts = statsService.getStat<double>('recordDarts', defaultValue: 0.0)!;
-    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
-    double longtermDarts = statsService.getStat<double>('longtermDarts', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordFinishes =
+        statsService.getStat<int>('recordFinishes', defaultValue: 0)!;
+    double recordScore =
+        statsService.getStat<double>('recordScore', defaultValue: 0.0)!;
+    double recordDarts =
+        statsService.getStat<double>('recordDarts', defaultValue: 0.0)!;
+    double longtermScore =
+        statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+    double longtermDarts =
+        statsService.getStat<double>('longtermDarts', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'G': recordFinishes,       // Games/Finishes
-        'P': recordScore,          // Punkte
-        'D': recordDarts,          // Darts
+        'C': recordFinishes, // Checks
+        'P': recordScore, // Punkte
+        'D': recordDarts, // Darts
       },
       averages: {
-        'P': longtermScore,        // Durchschnittspunkte
-        'D': longtermDarts,        // Durchschnittsdarts
+        'P': longtermScore, // Durchschnittspunkte
+        'D': longtermDarts, // Durchschnittsdarts
       },
     );
   }
