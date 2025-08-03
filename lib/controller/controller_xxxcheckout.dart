@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerXXXCheckout extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -155,13 +156,14 @@ class ControllerXXXCheckout extends ControllerBase
       scores.add(score);
       remainings.add(remaining);
       input = "";
+      int lastScore = score;
       score = 0;
 
       // check for checkout or limit of rounds
       if (remaining == 0 || (max != -1 && round > max)) {
-        // Use callback to trigger checkout dialog
-        onShowCheckout?.call(0);
-        
+        // Use callback to trigger checkout dialog - pass remaining and the score that was just thrown
+        onShowCheckout?.call(remaining, lastScore);
+
         // Process checkout results (logic moved from dialog callback)
         results.add(dart);
         if (remaining == 0) {

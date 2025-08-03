@@ -8,14 +8,51 @@ class Checkout extends StatelessWidget {
     super.key,
     required this.remaining,
     required this.controller,
+    required this.score,
   });
 
   final int remaining;
   final NumpadController controller;
+  final int score;
+
+  /// Determines the maximum number of darts possible for a given score
+  /// Returns -1 for invalid or bogey numbers (not finishable with 1-3 darts)
+  int getMaxDartsForScore(int score) {
+    if (isBogeyNumber(score) || score < 2 || score > 170) {
+      return -1; // Not finishable with 1-3 darts
+    }
+
+    // 1 dart finishes: even numbers 2-40 and 50
+    if ((score >= 2 && score <= 40 && score % 2 == 0) || score == 50) {
+      return 1;
+    }
+
+    // 2 dart finishes: odd numbers 3-41, numbers 42-98, 100, 101, 104, 107, 110
+    if ((score >= 3 && score <= 41 && score % 2 == 1) ||
+        (score >= 42 && score <= 98) ||
+        score == 100 ||
+        score == 101 ||
+        score == 104 ||
+        score == 107 ||
+        score == 110) {
+      return 2;
+    }
+
+    // 3 dart finishes: 99, 102, 103, 105, 106, 108, 109 and all others except bogey numbers
+    return 3;
+  }
+
+  bool isBogeyNumber(int score) {
+    const bogeyNumbers = {159, 162, 163, 165, 166, 168, 169};
+    return bogeyNumbers.contains(score);
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (remaining > 0) {
+    // Calculate the maximum darts for the score that was just thrown
+    int maxDarts = getMaxDartsForScore(score);
+
+    if (remaining > 0 || maxDarts == -1) {
       return SizedBox(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -50,6 +87,8 @@ class Checkout extends StatelessWidget {
         ),
       );
     }
+
+    // here we are if finish happened and was possible with 1 to 3 darts
     return SizedBox(
       height: 250,
       width: 550,
@@ -66,44 +105,49 @@ class Checkout extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    child: TextButton(
-                      onPressed: () {
-                        // correct previously counted 3 darts to 1
-                        controller.correctDarts(2);
-                        Navigator.pop(context);
-                      },
-                      style: finishButtonStyle,
-                      child: const Text(
-                        "1",
-                        style: finishButtonTextStyle,
-                        textAlign: TextAlign.center,
+                // 1 dart button - only show if finishable with 1 dart
+                if (maxDarts == 1)
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: TextButton(
+                        onPressed: () {
+                          // correct previously counted 3 darts to 1
+                          controller.correctDarts(2);
+                          Navigator.pop(context);
+                        },
+                        style: finishButtonStyle,
+                        child: const Text(
+                          "1",
+                          style: finishButtonTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    child: TextButton(
-                      onPressed: () {
-                        // correct previously counted 3 darts to 2
-                        controller.correctDarts(1);
-                        Navigator.pop(context);
-                      },
-                      style: finishButtonStyle,
-                      child: const Text(
-                        "2",
-                        style: finishButtonTextStyle,
-                        textAlign: TextAlign.center,
+                // 2 dart button - if finishable with less than 3
+                if (maxDarts <= 2)
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: TextButton(
+                        onPressed: () {
+                          // correct previously counted 3 darts to 2
+                          controller.correctDarts(1);
+                          Navigator.pop(context);
+                        },
+                        style: finishButtonStyle,
+                        child: const Text(
+                          "2",
+                          style: finishButtonTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                // 3 dart button - always show
                 Expanded(
                   flex: 1,
                   child: Container(

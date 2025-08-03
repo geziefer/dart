@@ -79,15 +79,9 @@ class ControllerRTCX extends ControllerBase
 
         // check for last number reached or limit of rounds
         if (currentNumber > 20 || (max != -1 && round == max)) {
-          // remaining is dfferent here, 20 means finished game,
-          // so set to current number if not
-          int remaining = (currentNumber < 21) ? currentNumber : 0;
           finished = currentNumber > 20 ? true : false;
-          if (finished) {
-            onShowCheckout?.call(remaining);
-          } else {
-            triggerGameEnd();
-          }
+          // Game ends directly without checkout dialog
+          triggerGameEnd();
         } else {
           round++;
         }

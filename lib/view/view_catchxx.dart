@@ -5,7 +5,6 @@ import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
-import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
 
 class ViewCatchXX extends StatelessWidget {
@@ -19,35 +18,19 @@ class ViewCatchXX extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the MenuItem from route arguments
-    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
-    
+    final MenuItem? menuItem =
+        ModalRoute.of(context)?.settings.arguments as MenuItem?;
+
     ControllerCatchXX controller = Provider.of<ControllerCatchXX>(context);
-    
+
     // Initialize the controller if not already initialized
     if (controller.item == null && menuItem != null) {
       controller.init(menuItem);
     }
-    
+
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
-    };
-    controller.onShowCheckout = (remaining) {
-      // Show checkout dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(2))),
-            child: Checkout(
-              remaining: remaining,
-              controller: controller,
-            ),
-          );
-        },
-      );
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();

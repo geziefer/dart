@@ -3,7 +3,6 @@ import 'package:dart/styles.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:flutter/material.dart';
-import 'package:dart/widget/checkout.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/menu.dart';
 
@@ -18,10 +17,11 @@ class ViewSpeedBull extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the MenuItem from route arguments
-    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
-    
+    final MenuItem? menuItem =
+        ModalRoute.of(context)?.settings.arguments as MenuItem?;
+
     ControllerSpeedBull controller = Provider.of<ControllerSpeedBull>(context);
-    
+
     // Initialize the controller if not already initialized
     if (controller.item == null && menuItem != null) {
       controller.init(menuItem);
@@ -29,23 +29,6 @@ class ViewSpeedBull extends StatelessWidget {
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
-    };
-    controller.onShowCheckout = (remaining) {
-      // Show checkout dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(2))),
-            child: Checkout(
-              remaining: remaining,
-              controller: controller,
-            ),
-          );
-        },
-      );
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
@@ -85,17 +68,22 @@ class ViewSpeedBull extends StatelessWidget {
                                     style: timerTextStyle,
                                   ),
                                   const SizedBox(height: 20),
-                                  if (!controller.gameStarted && !controller.gameEnded)
+                                  if (!controller.gameStarted &&
+                                      !controller.gameEnded)
                                     ElevatedButton(
                                       onPressed: () => controller.startGame(),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(255, 215, 198, 132),
+                                        backgroundColor: const Color.fromARGB(
+                                            255, 215, 198, 132),
                                         foregroundColor: Colors.black,
-                                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 30, vertical: 15),
                                       ),
                                       child: const Text(
                                         'START',
-                                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                 ],

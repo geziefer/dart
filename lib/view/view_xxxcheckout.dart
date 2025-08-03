@@ -33,7 +33,7 @@ class ViewXXXCheckout extends StatelessWidget {
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
     };
-    controller.onShowCheckout = (remaining) {
+    controller.onShowCheckout = (remaining, score) {
       // Show checkout dialog
       showDialog(
         context: context,
@@ -45,6 +45,7 @@ class ViewXXXCheckout extends StatelessWidget {
             child: Checkout(
               remaining: remaining,
               controller: controller,
+              score: score,
             ),
           );
         },
