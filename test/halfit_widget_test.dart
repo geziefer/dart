@@ -34,7 +34,7 @@ void main() {
         id: 'test_halfit',
         name: 'HalfIt Test',
         view: const ViewHalfit(title: 'HalfIt Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

@@ -35,7 +35,7 @@ void main() {
         id: 'test_shoot20',
         name: 'Shoot 20s Test',
         view: const ViewShootx(title: 'Shoot 20s Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'x': 20, 'max': 10}, // Target 20s, 10 rounds max
       ));
     });

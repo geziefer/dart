@@ -39,7 +39,7 @@ void main() {
         id: 'test_speedbull',
         name: 'Speed Bull Test',
         view: const ViewSpeedBull(title: 'Speed Bull Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'duration': 60},
       ));
     });
@@ -367,7 +367,7 @@ void main() {
         id: 'test_speedbull_custom',
         name: 'Speed Bull Custom',
         view: const ViewSpeedBull(title: 'Speed Bull Custom'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'duration': 30}, // 30 seconds instead of 60
       ));
 

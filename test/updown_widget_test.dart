@@ -43,7 +43,7 @@ void main() {
         id: 'test_10up1down',
         name: '10 Up 1 Down Test',
         view: const ViewUpDown(title: '10 Up 1 Down Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

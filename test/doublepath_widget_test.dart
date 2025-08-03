@@ -39,7 +39,7 @@ void main() {
         id: 'test_doublepath',
         name: 'Double Path Test',
         view: const ViewDoublePath(title: 'Double Path Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

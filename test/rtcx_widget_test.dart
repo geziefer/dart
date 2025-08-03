@@ -36,7 +36,7 @@ void main() {
         id: 'test_rtcx',
         name: 'RTCX Test',
         view: const ViewRTCX(title: 'RTCX Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'max': -1}, // Unlimited rounds
       ));
     });
@@ -287,7 +287,7 @@ void main() {
         id: 'test_rtcx_limited',
         name: 'RTCX Limited Test',
         view: const ViewRTCX(title: 'RTCX Limited Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'max': 3}, // Limit to 3 rounds
       ));
 

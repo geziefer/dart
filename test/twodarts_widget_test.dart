@@ -37,7 +37,7 @@ void main() {
         id: 'test_twodarts',
         name: 'Two Darts Test',
         view: const ViewTwoDarts(title: 'Two Darts Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

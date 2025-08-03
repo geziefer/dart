@@ -39,7 +39,7 @@ void main() {
         id: 'test_finishes',
         name: 'Finishes Test',
         view: const ViewFinishes(title: 'Finishes Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'from': 100, 'to': 170},
       ));
     });
@@ -204,7 +204,7 @@ void main() {
         id: 'test_finishes_narrow',
         name: 'Finishes Narrow Test',
         view: const ViewFinishes(title: 'Finishes Narrow Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'from': 150, 'to': 160}, // Narrow range
       ));
 

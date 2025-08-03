@@ -37,7 +37,7 @@ void main() {
         id: 'test_501',
         name: '501 Test',
         view: const ViewXXXCheckout(title: '501 Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {'xxx': 501, 'max': -1, 'end': 100},
       ));
     });

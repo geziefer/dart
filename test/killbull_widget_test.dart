@@ -43,7 +43,7 @@ void main() {
         id: 'test_killbull',
         name: 'Kill Bull Test',
         view: const ViewKillBull(title: 'Kill Bull Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

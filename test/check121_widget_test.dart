@@ -39,7 +39,7 @@ void main() {
         id: 'test_check121',
         name: 'Check 121 Test',
         view: const ViewCheck121(title: 'Check 121 Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {},
       ));
     });

@@ -27,6 +27,7 @@ import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({
@@ -39,126 +40,126 @@ class Menu extends StatelessWidget {
       id: '170m3',
       name: '170 x 10\nmax 3',
       view: const ViewXXXCheckout(title: '170 x 10 in 3 Aufnahmen'),
-      controller: ControllerXXXCheckout(),
+      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 170, 'max': 3, 'end': 10},
     ),
     MenuItem(
       id: '501x5',
       name: '501 x 5',
       view: const ViewXXXCheckout(title: '501 x 5 regulär'),
-      controller: ControllerXXXCheckout(),
+      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 501, 'max': -1, 'end': 5},
     ),
     MenuItem(
       id: '501m7',
       name: '501 x 5\nmax 7',
       view: const ViewXXXCheckout(title: '501 x 5 in 7 Aufnahmen'),
-      controller: ControllerXXXCheckout(),
+      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
       id: 'FQ1',
       name: 'FinishQuest\n61-82',
       view: const ViewFinishes(title: 'Finishes wissen 61-82'),
-      controller: ControllerFinishes(),
+      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 61, 'to': 82},
     ),
     MenuItem(
       id: 'RTCS',
       name: 'RTC Single\nmax 10',
       view: const ViewRTCX(title: 'Round the Clock Single in 10 Aufnahmen'),
-      controller: ControllerRTCX(),
+      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 10},
     ),
     MenuItem(
       id: 'RTCD',
       name: 'RTC Double\nmax 20',
       view: const ViewRTCX(title: 'Round the Clock Double in 20 Aufnahmen'),
-      controller: ControllerRTCX(),
+      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
     ),
     MenuItem(
       id: 'RTCT',
       name: 'RTC Triple\nmax 20',
       view: const ViewRTCX(title: 'Round the Clock Triple in 20 Aufnahmen'),
-      controller: ControllerRTCX(),
+      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
     ),
     MenuItem(
       id: 'FQ2',
       name: 'FinishQuest\n83-104',
       view: const ViewFinishes(title: 'Finishes wissen 63-104'),
-      controller: ControllerFinishes(),
+      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 83, 'to': 104},
     ),
     MenuItem(
       id: 'C40',
       name: 'Catch 40',
       view: const ViewCatchXX(title: 'Catch 40 - Finish 61-100'),
-      controller: ControllerCatchXX(),
+      getController: (context) => Provider.of<ControllerCatchXX>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: '10U1D',
       name: '10 Up\n1 Down',
       view: const ViewUpDown(title: '10 Up 1 Down - Finish ab 50'),
-      controller: ControllerUpDown(),
+      getController: (context) => Provider.of<ControllerUpDown>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'C121',
       name: 'Check 121',
       view: const ViewCheck121(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
-      controller: ControllerCheck121(),
+      getController: (context) => Provider.of<ControllerCheck121>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'FQ3',
       name: 'FinishQuest\n105-126',
       view: const ViewFinishes(title: 'Finishes wissen 105-126'),
-      controller: ControllerFinishes(),
+      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 105, 'to': 126},
     ),
     MenuItem(
       id: 'B27',
       name: 'Bob\'s 27',
       view: const ViewBobs27(title: 'Bob\'s 27 - Double Round the Clock'),
-      controller: ControllerBobs27(),
+      getController: (context) => Provider.of<ControllerBobs27>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'DPath',
       name: 'Double Path',
       view: const ViewDoublePath(title: 'Double Path - Typische Double Pfade'),
-      controller: ControllerDoublePath(),
+      getController: (context) => Provider.of<ControllerDoublePath>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'KB',
       name: 'Kill Bull',
       view: const ViewKillBull(title: 'Kill Bull - Bull ohne Unterbrechung'),
-      controller: ControllerKillBull.create(),
+      getController: (context) => Provider.of<ControllerKillBull>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'FQ4',
       name: 'FinishQuest\n127-170',
       view: const ViewFinishes(title: 'Finishes wissen 127-170'),
-      controller: ControllerFinishes(),
+      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 127, 'to': 170},
     ),
     MenuItem(
       id: 'HI',
       name: 'Half it',
       view: const ViewHalfit(title: 'Half it'),
-      controller: ControllerHalfit(),
+      getController: (context) => Provider.of<ControllerHalfit>(context, listen: false),
       params: const {'max': -1},
     ),
     MenuItem(
       id: '99x20',
       name: '99 x 20',
       view: const ViewShootx(title: '99 x auf 20 scoren'),
-      controller: ControllerShootx(),
+      getController: (context) => Provider.of<ControllerShootx>(context, listen: false),
       params: const {'x': 20, 'max': 33},
     ),
     MenuItem(
@@ -166,14 +167,14 @@ class Menu extends StatelessWidget {
       name: '2 Darts',
       view:
           const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
-      controller: ControllerTwoDarts(),
+      getController: (context) => Provider.of<ControllerTwoDarts>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'SB',
       name: 'Speed Bull',
       view: const ViewSpeedBull(title: 'Speed Bull - 1 Minute Bulls'),
-      controller: ControllerSpeedBull(),
+      getController: (context) => Provider.of<ControllerSpeedBull>(context, listen: false),
       params: const {'duration': 60},
     ),
   ];
@@ -232,14 +233,14 @@ class MenuItem {
     required this.id,
     required this.name,
     required this.view,
-    required this.controller,
+    required this.getController,
     required this.params,
   });
 
   final String id;
   final String name;
   final Widget view;
-  final MenuitemController controller;
+  final MenuitemController Function(BuildContext) getController;
   final Map<String, dynamic> params;
 }
 
@@ -257,6 +258,10 @@ class MenuItemButton extends StatelessWidget {
       margin: const EdgeInsets.all(2),
       child: OutlinedButton(
         onPressed: () {
+          // Initialize the controller from Provider before navigation to ensure fresh game state
+          final controller = menuItem.getController(context);
+          controller.init(menuItem);
+          
           Navigator.push(
             context,
             MaterialPageRoute(

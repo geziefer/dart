@@ -36,7 +36,7 @@ void main() {
         id: 'test_catchxx',
         name: 'CatchXX Test',
         view: const ViewCatchXX(title: 'CatchXX Test'),
-        controller: controller,
+        getController: (_) => controller,
         params: {}, // No specific parameters needed
       ));
     });
