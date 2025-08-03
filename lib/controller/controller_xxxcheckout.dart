@@ -216,12 +216,21 @@ class ControllerXXXCheckout extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
 
-    // Add individual lines for each leg result with check symbols
+    // Collect dart counts for finished rounds only
+    List<int> finishedDarts = [];
+    
     for (int i = 0; i < results.length && i < finishes.length; i++) {
-      String checkSymbol = finishes[i] ? "✅" : "❌";
-      lines.add(SummaryLine('Leg ${i + 1}', '${results[i]} Darts',
-          checkSymbol: checkSymbol));
+      if (finishes[i]) {
+        finishedDarts.add(results[i]);
+      }
     }
+
+    // Create condensed summary line
+    String dartsText = finishedDarts.isEmpty ? "" : " (${finishedDarts.join(', ')})";
+    lines.add(SummaryLine(
+      'Finished', 
+      '${finishedDarts.length}/$end$dartsText'
+    ));
 
     // Add average score line
     lines.add(SummaryService.createValueLine(
@@ -294,8 +303,14 @@ class ControllerXXXCheckout extends ControllerBase
 
   @override
   void correctDarts(int value) {
-    dart -= value;
+    // Update total darts count
     totalDarts -= value;
+
+    // Update the results array for the most recent leg (last entry)
+    // Subtract the correction from the stored result
+    if (results.isNotEmpty) {
+      results[results.length - 1] -= value;
+    }
 
     notifyListeners();
   }
