@@ -184,15 +184,7 @@ class ControllerXXXCheckout extends ControllerBase
 
         notifyListeners();
 
-        // Check if we need to show the summary dialog
-        if (leg == end) {
-          // Use a separate method to show the summary dialog
-          // This avoids using the original context across async gaps
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            triggerGameEnd();
-          });
-        }
-
+        // Don't trigger game end here - let it be triggered by checkout dialog callback
         leg++;
         return; // Return early to prevent further processing
       }
@@ -306,6 +298,18 @@ class ControllerXXXCheckout extends ControllerBase
     totalDarts -= value;
 
     notifyListeners();
+  }
+
+  /// Handle checkout dialog being closed - check if game should end
+  void handleCheckoutClosed() {
+    // Check if the previous leg (before increment) was the final leg
+    // leg has already been incremented, so we check leg - 1
+    if (leg - 1 == end) {
+      // Use post frame callback to ensure dialog is fully closed before showing summary
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        triggerGameEnd();
+      });
+    }
   }
 
   @override

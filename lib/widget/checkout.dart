@@ -9,11 +9,13 @@ class Checkout extends StatelessWidget {
     required this.remaining,
     required this.controller,
     required this.score,
+    this.onClosed,
   });
 
   final int remaining;
   final NumpadController controller;
   final int score;
+  final VoidCallback? onClosed;
 
   /// Determines the maximum number of darts possible for a given score
   /// Returns -1 for numbers out of range - Note: no bogey number check, will be done in controller
@@ -66,6 +68,7 @@ class Checkout extends StatelessWidget {
                 duration: const Duration(seconds: 3),
                 onPressed: () {
                   Navigator.pop(context);
+                  onClosed?.call();
                 },
                 coverColor: Colors.black,
                 backgroundColor: Colors.grey[800],
@@ -111,6 +114,7 @@ class Checkout extends StatelessWidget {
                           // correct previously counted 3 darts to 1
                           controller.correctDarts(2);
                           Navigator.pop(context);
+                          onClosed?.call();
                         },
                         style: finishButtonStyle,
                         child: const Text(
@@ -132,6 +136,7 @@ class Checkout extends StatelessWidget {
                           // correct previously counted 3 darts to 2
                           controller.correctDarts(1);
                           Navigator.pop(context);
+                          onClosed?.call();
                         },
                         style: finishButtonStyle,
                         child: const Text(
@@ -152,6 +157,7 @@ class Checkout extends StatelessWidget {
                         // nothing to correct, but call for update
                         controller.correctDarts(0);
                         Navigator.pop(context);
+                        onClosed?.call();
                       },
                       style: finishButtonStyle,
                       child: const Text(

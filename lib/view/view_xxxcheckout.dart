@@ -37,10 +37,16 @@ class ViewXXXCheckout extends StatelessWidget {
               remaining: remaining,
               controller: controller,
               score: score,
+              onClosed: () => controller.onCheckoutClosed?.call(),
             ),
           );
         },
       );
+    };
+    controller.onCheckoutClosed = () {
+      // Simply notify controller that checkout dialog is closed
+      // Controller will handle any game end logic internally
+      controller.handleCheckoutClosed();
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();

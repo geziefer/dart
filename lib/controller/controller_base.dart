@@ -13,6 +13,7 @@ abstract class ControllerBase extends ChangeNotifier {
   VoidCallback? onGameEnded;
   Function(String message)? onShowMessage;
   Function(int remaining, int score)? onShowCheckout; // For games with checkout dialogs
+  VoidCallback? onCheckoutClosed; // Called when checkout dialog is closed
   
   /// Initialize common services (should be called by concrete controllers)
   void initializeServices(StorageService storageService) {
