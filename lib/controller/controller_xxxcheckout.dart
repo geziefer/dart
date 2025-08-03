@@ -202,6 +202,7 @@ class ControllerXXXCheckout extends ControllerBase
       String newInput = input + value.toString();
       int parsedNewInput = int.tryParse(newInput) ?? 181;
       if (parsedNewInput <= 180 &&
+          !isBogeyNumber(parsedNewInput) &&
           parsedNewInput <= remaining &&
           newInput.length <= 3 &&
           remaining - parsedNewInput != 1) {
@@ -210,6 +211,11 @@ class ControllerXXXCheckout extends ControllerBase
     }
 
     notifyListeners();
+  }
+
+  bool isBogeyNumber(int score) {
+    const bogeyNumbers = {159, 162, 163, 165, 166, 168, 169};
+    return bogeyNumbers.contains(score);
   }
 
   // Checkout and summary dialogs are now handled by the view via callbacks

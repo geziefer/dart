@@ -16,9 +16,9 @@ class Checkout extends StatelessWidget {
   final int score;
 
   /// Determines the maximum number of darts possible for a given score
-  /// Returns -1 for invalid or bogey numbers (not finishable with 1-3 darts)
+  /// Returns -1 for numbers out of range - Note: no bogey number check, will be done in controller
   int getMaxDartsForScore(int score) {
-    if (isBogeyNumber(score) || score < 2 || score > 170) {
+    if (score < 2 || score > 170) {
       return -1; // Not finishable with 1-3 darts
     }
 
@@ -40,11 +40,6 @@ class Checkout extends StatelessWidget {
 
     // 3 dart finishes: 99, 102, 103, 105, 106, 108, 109 and all others except bogey numbers
     return 3;
-  }
-
-  bool isBogeyNumber(int score) {
-    const bogeyNumbers = {159, 162, 163, 165, 166, 168, 169};
-    return bogeyNumbers.contains(score);
   }
 
   @override
