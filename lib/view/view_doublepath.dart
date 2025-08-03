@@ -96,7 +96,7 @@ class ViewDoublePath extends StatelessWidget {
                           showUpper: false,
                           showMiddle: false,
                           showLower: true, // shows 1, 2, 3
-                          showExtraButtons: true, // shows 0, back, enter
+                          showExtraButtons: false,
                           showYesNo: false,
                         ),
                       ),
