@@ -456,6 +456,7 @@ class ControllerFinishes extends ControllerBase
   String stoppedTime = "";
   FinishesState currentState = FinishesState.inputPreferred;
   Stopwatch stopwatch = Stopwatch();
+  bool waitingForNextRound = false; // Flag to show overlay button
 
   // Session tracking variables
   int currentRound = 1;
@@ -505,6 +506,7 @@ class ControllerFinishes extends ControllerBase
     currentState = FinishesState.inputPreferred;
     stopwatch.reset();
     stopwatch.start();
+    waitingForNextRound = false;
   }
 
   String getPreferredText() {
@@ -557,6 +559,7 @@ class ControllerFinishes extends ControllerBase
           currentState = FinishesState.inputAlternative;
           if (alternative.isEmpty) {
             currentState = FinishesState.solution;
+            waitingForNextRound = true; // Show overlay for next round
             _checkCorrect();
           }
         }
@@ -567,20 +570,30 @@ class ControllerFinishes extends ControllerBase
           stopwatch.stop();
           _checkCorrect();
           currentState = FinishesState.solution;
+          waitingForNextRound = true; // Show overlay for next round
         }
       case FinishesState.solution:
-        // Check if session is complete
-        if (currentRound >= maxRounds) {
-          // Use post-frame callback to avoid context across async gaps
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            triggerGameEnd();
-          });
-        } else {
-          // Continue to next round
-          currentRound++;
-          _createRandomFinish();
-          currentState = FinishesState.inputPreferred;
-        }
+        // This case is now handled by startNextRound() method
+        // Don't process dartboard clicks when waiting for next round
+        break;
+    }
+    notifyListeners();
+  }
+
+  /// Start the next round - called by overlay button
+  void startNextRound() {
+    // Check if session is complete
+    if (currentRound >= maxRounds) {
+      // Use post-frame callback to avoid context across async gaps
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        triggerGameEnd();
+      });
+    } else {
+      // Continue to next round
+      currentRound++;
+      _createRandomFinish();
+      currentState = FinishesState.inputPreferred;
+      waitingForNextRound = false; // Hide overlay
     }
     notifyListeners();
   }

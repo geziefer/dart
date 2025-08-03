@@ -139,14 +139,42 @@ class ViewFinishes extends StatelessWidget {
                             radius = radius.clamp(200.0, 280.0);
 
                             return Center(
-                              child: FullCircle(
-                                controller: controller,
-                                radius: radius,
-                                arcSections: [
-                                  ArcSection(startPercent: 0.2),
-                                  ArcSection(startPercent: 0.4),
-                                  ArcSection(startPercent: 0.6),
-                                  ArcSection(startPercent: 0.8),
+                              child: Stack(
+                                children: [
+                                  // Dartboard
+                                  FullCircle(
+                                    controller: controller,
+                                    radius: radius,
+                                    arcSections: [
+                                      ArcSection(startPercent: 0.2),
+                                      ArcSection(startPercent: 0.4),
+                                      ArcSection(startPercent: 0.6),
+                                      ArcSection(startPercent: 0.8),
+                                    ],
+                                  ),
+                                  // Full dartboard overlay button when waiting for next round
+                                  if (controller.waitingForNextRound)
+                                    Positioned.fill(
+                                      child: GestureDetector(
+                                        onTap: () => controller.startNextRound(),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(alpha: 0.6),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "Nächste Runde",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             );
