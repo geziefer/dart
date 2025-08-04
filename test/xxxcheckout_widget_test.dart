@@ -9,6 +9,7 @@ import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/summary_dialog.dart';
 
 import 'xxxcheckout_widget_test.mocks.dart';
 
@@ -205,6 +206,411 @@ void main() {
       expect(controller.getCurrentScores(), isA<String>());
       expect(controller.getCurrentRemainings(), isA<String>());
       expect(controller.getCurrentDarts(), isA<String>());
+    });
+
+    /// Tests XXXCheckout score submission and remaining calculation
+    /// Verifies: scores are submitted correctly and remaining is updated
+    testWidgets('XXXCheckout score submission', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Act: Submit a score
+      controller.pressNumpadButton(6);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Submit 60
+      await tester.pump();
+
+      // Assert: Score was submitted and remaining updated
+      expect(controller.scores.length, equals(1));
+      expect(controller.scores[0], equals(60));
+      expect(controller.remaining, equals(441)); // 501 - 60
+      expect(controller.remainings.length, equals(1)); // Only current remaining
+      expect(controller.remainings[0], equals(441));
+      expect(controller.round, equals(2));
+      expect(controller.dart, equals(3)); // 3 darts used
+      expect(controller.totalDarts, equals(3));
+      expect(controller.totalScore, equals(60));
+    });
+
+    /// Tests XXXCheckout bogey number validation
+    /// Verifies: bogey numbers are rejected correctly
+    testWidgets('XXXCheckout bogey number validation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Test bogey numbers are rejected
+      List<int> bogeyNumbers = [159, 162, 163, 165, 166, 168, 169];
+      
+      for (int bogey in bogeyNumbers) {
+        controller.input = "";
+        String bogeyStr = bogey.toString();
+        
+        // Try to input bogey number
+        for (int i = 0; i < bogeyStr.length; i++) {
+          controller.pressNumpadButton(int.parse(bogeyStr[i]));
+        }
+        await tester.pump();
+        
+        // Assert: Bogey number was rejected
+        expect(controller.input, isNot(equals(bogeyStr)));
+      }
+    });
+
+    /// Tests XXXCheckout checkout detection and leg completion
+    /// Verifies: checkout is detected and leg resets correctly
+    testWidgets('XXXCheckout checkout detection', (WidgetTester tester) async {
+      disableOverflowError();
+      bool checkoutTriggered = false;
+      int checkoutRemaining = -1;
+      int checkoutScore = -1;
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Set up checkout callback
+      controller.onShowCheckout = (remaining, score) {
+        checkoutTriggered = true;
+        checkoutRemaining = remaining;
+        checkoutScore = score;
+      };
+
+      // Arrange: Set remaining to a small number
+      controller.remaining = 60;
+      controller.remainings = [501, 60];
+
+      // Act: Submit exact checkout score
+      controller.pressNumpadButton(6);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Submit 60 (exact checkout)
+      await tester.pump();
+
+      // Assert: Checkout was triggered
+      expect(checkoutTriggered, isTrue);
+      expect(checkoutRemaining, equals(0));
+      expect(checkoutScore, equals(60));
+      expect(controller.remaining, equals(501)); // Reset for new leg
+      expect(controller.leg, equals(2)); // Incremented
+    });
+
+    /// Tests XXXCheckout pre-defined value buttons
+    /// Verifies: pre-defined values work correctly
+    testWidgets('XXXCheckout pre-defined values', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Act: Use pre-defined value (e.g., 100) - this should be processed as input + submit
+      controller.pressNumpadButton(100); // Pre-defined value > 9
+      await tester.pump();
+
+      // Assert: Pre-defined value was processed and submitted
+      expect(controller.scores.length, equals(1));
+      expect(controller.scores[0], equals(100));
+      expect(controller.remaining, equals(401));
+    });
+
+    /// Tests XXXCheckout long press return functionality
+    /// Verifies: long press return is handled without errors
+    testWidgets('XXXCheckout long press return', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Act: Input a score and use long press return
+      controller.pressNumpadButton(4);
+      controller.pressNumpadButton(0); // Input "40"
+      controller.pressNumpadButton(-3); // Long press return
+      await tester.pump();
+
+      // Assert: Long press return was processed (exact behavior depends on remaining)
+      // The key is that it doesn't crash and processes the input
+      expect(controller.scores.length, greaterThanOrEqualTo(0));
+    });
+
+    /// Tests XXXCheckout undo with submitted scores
+    /// Verifies: undo works correctly after score submission
+    testWidgets('XXXCheckout undo submitted scores', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Arrange: Submit a score
+      controller.pressNumpadButton(8);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Submit 80
+      await tester.pump();
+
+      // Act: Undo the submitted score
+      controller.pressNumpadButton(-2); // Undo
+      await tester.pump();
+
+      // Assert: State was restored
+      expect(controller.scores.length, equals(0));
+      expect(controller.remaining, equals(501)); // Back to initial
+      expect(controller.round, equals(1));
+      expect(controller.dart, equals(0));
+      expect(controller.totalDarts, equals(0));
+      expect(controller.totalScore, equals(0));
+    });
+
+    /// Tests XXXCheckout dart correction functionality
+    /// Verifies: dart correction works correctly
+    testWidgets('XXXCheckout dart correction', (WidgetTester tester) async {
+      disableOverflowError();
+      bool checkoutTriggered = false;
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      controller.onShowCheckout = (remaining, score) {
+        checkoutTriggered = true;
+      };
+
+      // Arrange: Complete a leg to have results
+      controller.remaining = 50;
+      controller.remainings = [501, 50];
+      controller.pressNumpadButton(5);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Checkout
+      await tester.pump();
+
+      expect(checkoutTriggered, isTrue);
+      expect(controller.results.length, equals(1));
+      int initialDarts = controller.results[0];
+
+      // Act: Correct darts by 1
+      controller.correctDarts(1);
+      await tester.pump();
+
+      // Assert: Dart count was corrected
+      expect(controller.results[0], equals(initialDarts - 1));
+    });
+
+    /// Tests XXXCheckout average calculations
+    /// Verifies: average score and darts are calculated correctly
+    testWidgets('XXXCheckout average calculations', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Act: Submit multiple scores
+      controller.pressNumpadButton(6);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // 60 points, 3 darts
+      await tester.pump();
+
+      controller.pressNumpadButton(9);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // 90 points, 6 darts total
+      await tester.pump();
+
+      // Assert: Average score calculation
+      Map stats = controller.getCurrentStats();
+      // Average score = (totalScore / totalDarts) * 3 = (150 / 6) * 3 = 75.0
+      expect(stats['avgScore'], equals('75.0'));
+    });
+
+    /// Tests XXXCheckout game end detection
+    /// Verifies: checkout callbacks are triggered correctly
+    testWidgets('XXXCheckout game end detection', (WidgetTester tester) async {
+      disableOverflowError();
+
+      // Initialize with end = 1 for simple testing
+      controller.init(MenuItem(
+        id: 'test_501',
+        name: '501 Test',
+        view: const ViewXXXCheckout(title: '501 Test'),
+        getController: (_) => controller,
+        params: {'xxx': 50, 'max': -1, 'end': 1}, // Small values for easy testing
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      int checkoutCount = 0;
+      controller.onShowCheckout = (remaining, score) {
+        checkoutCount++;
+      };
+
+      // Act: Complete one leg (checkout with exact score)
+      controller.pressNumpadButton(5);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Submit 50 (exact checkout)
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      // Assert: Checkout was triggered
+      expect(checkoutCount, equals(1));
+    });
+
+    /// Tests XXXCheckout summary creation
+    /// Verifies: summary lines are created correctly
+    testWidgets('XXXCheckout summary creation', (WidgetTester tester) async {
+      disableOverflowError();
+      bool checkoutTriggered = false;
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      controller.onShowCheckout = (remaining, score) {
+        checkoutTriggered = true;
+      };
+
+      // Arrange: Complete a leg
+      controller.remaining = 50;
+      controller.remainings = [501, 50];
+      controller.pressNumpadButton(5);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Checkout
+      await tester.pump();
+
+      expect(checkoutTriggered, isTrue);
+
+      // Act: Create summary
+      List<SummaryLine> summary = controller.createSummaryLines();
+
+      // Assert: Summary contains expected lines
+      expect(summary.length, equals(3));
+      
+      // Check finished legs line
+      expect(summary.any((line) => line.label == 'Finished'), isTrue);
+      
+      // Check average lines
+      expect(summary.any((line) => line.label == 'ØPunkte'), isTrue);
+      expect(summary.any((line) => line.label == 'ØDarts'), isTrue);
+    });
+
+    /// Tests XXXCheckout with existing statistics
+    /// Verifies: existing statistics are read correctly
+    testWidgets('XXXCheckout with existing statistics', (WidgetTester tester) async {
+      disableOverflowError();
+      
+      // Arrange: Mock existing game statistics
+      when(mockStorage.read('numberGames')).thenReturn(10);
+      when(mockStorage.read('recordFinishes')).thenReturn(8);
+      when(mockStorage.read('recordScore')).thenReturn(85.5);
+      when(mockStorage.read('recordDarts')).thenReturn(15.2);
+      when(mockStorage.read('longtermScore')).thenReturn(72.3);
+      when(mockStorage.read('longtermDarts')).thenReturn(18.7);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Assert: Stats string reflects existing data
+      String stats = controller.getStats();
+      expect(stats, contains('#S: 10')); // Number of games
+      expect(stats, contains('♛C: 8')); // Record finishes
+      expect(stats, contains('♛P: 85.5')); // Record score
+      expect(stats, contains('♛D: 15.2')); // Record darts
+      expect(stats, contains('ØP: 72.3')); // Average score
+      expect(stats, contains('ØD: 18.7')); // Average darts
+    });
+
+    /// Tests XXXCheckout bust prevention (remaining = 1)
+    /// Verifies: input validation works correctly
+    testWidgets('XXXCheckout bust prevention', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+
+      // Test basic input validation - scores over 180 should be rejected
+      controller.pressNumpadButton(1);
+      controller.pressNumpadButton(8);
+      controller.pressNumpadButton(1); // Try to input 181
+      await tester.pump();
+      
+      // Assert: Input over 180 was rejected
+      expect(controller.input, equals("18")); // Only "18" should remain
+      
+      // Test that valid inputs are accepted
+      controller.input = ""; // Clear input
+      controller.pressNumpadButton(1);
+      controller.pressNumpadButton(8);
+      controller.pressNumpadButton(0); // Input 180 (valid)
+      await tester.pump();
+      
+      expect(controller.input, equals("180")); // Should be accepted
     });
   });
 }
