@@ -40,126 +40,144 @@ class Menu extends StatelessWidget {
       id: '170m3',
       name: '170 x 10\nmax 3',
       view: const ViewXXXCheckout(title: '170 x 10 in 3 Aufnahmen'),
-      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 170, 'max': 3, 'end': 10},
     ),
     MenuItem(
       id: '501x5',
       name: '501 x 5',
       view: const ViewXXXCheckout(title: '501 x 5 regulär'),
-      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 501, 'max': -1, 'end': 5},
     ),
     MenuItem(
       id: '501m7',
       name: '501 x 5\nmax 7',
       view: const ViewXXXCheckout(title: '501 x 5 in 7 Aufnahmen'),
-      getController: (context) => Provider.of<ControllerXXXCheckout>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
       id: 'FQ1',
-      name: 'FinishQuest\n61-82',
-      view: const ViewFinishes(title: 'Finishes wissen 61-82'),
-      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 61, 'to': 82},
+      name: 'FinishQuest\n61-80',
+      view: const ViewFinishes(title: 'Finishes wissen 61-80'),
+      getController: (context) =>
+          Provider.of<ControllerFinishes>(context, listen: false),
+      params: const {'from': 61, 'to': 80},
     ),
     MenuItem(
       id: 'RTCS',
       name: 'RTC Single\nmax 10',
       view: const ViewRTCX(title: 'Round the Clock Single in 10 Aufnahmen'),
-      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 10},
     ),
     MenuItem(
       id: 'RTCD',
       name: 'RTC Double\nmax 20',
       view: const ViewRTCX(title: 'Round the Clock Double in 20 Aufnahmen'),
-      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
     ),
     MenuItem(
       id: 'RTCT',
       name: 'RTC Triple\nmax 20',
       view: const ViewRTCX(title: 'Round the Clock Triple in 20 Aufnahmen'),
-      getController: (context) => Provider.of<ControllerRTCX>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
     ),
     MenuItem(
       id: 'FQ2',
-      name: 'FinishQuest\n83-104',
-      view: const ViewFinishes(title: 'Finishes wissen 63-104'),
-      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 83, 'to': 104},
+      name: 'FinishQuest\n81-104',
+      view: const ViewFinishes(title: 'Finishes wissen 81-104'),
+      getController: (context) =>
+          Provider.of<ControllerFinishes>(context, listen: false),
+      params: const {'from': 81, 'to': 104},
     ),
     MenuItem(
       id: 'C40',
       name: 'Catch 40',
       view: const ViewCatchXX(title: 'Catch 40 - Finish 61-100'),
-      getController: (context) => Provider.of<ControllerCatchXX>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerCatchXX>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: '10U1D',
       name: '10 Up\n1 Down',
       view: const ViewUpDown(title: '10 Up 1 Down - Finish ab 50'),
-      getController: (context) => Provider.of<ControllerUpDown>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerUpDown>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'C121',
       name: 'Check 121',
       view: const ViewCheck121(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
-      getController: (context) => Provider.of<ControllerCheck121>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerCheck121>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'FQ3',
       name: 'FinishQuest\n105-126',
       view: const ViewFinishes(title: 'Finishes wissen 105-126'),
-      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 105, 'to': 126},
     ),
     MenuItem(
       id: 'B27',
       name: 'Bob\'s 27',
       view: const ViewBobs27(title: 'Bob\'s 27 - Double Round the Clock'),
-      getController: (context) => Provider.of<ControllerBobs27>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerBobs27>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'DPath',
       name: 'Double Path',
       view: const ViewDoublePath(title: 'Double Path - Typische Double Pfade'),
-      getController: (context) => Provider.of<ControllerDoublePath>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerDoublePath>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'KB',
       name: 'Kill Bull',
       view: const ViewKillBull(title: 'Kill Bull - Bull ohne Unterbrechung'),
-      getController: (context) => Provider.of<ControllerKillBull>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerKillBull>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'FQ4',
       name: 'FinishQuest\n127-170',
       view: const ViewFinishes(title: 'Finishes wissen 127-170'),
-      getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerFinishes>(context, listen: false),
       params: const {'from': 127, 'to': 170},
     ),
     MenuItem(
       id: 'HI',
       name: 'Half it',
       view: const ViewHalfit(title: 'Half it'),
-      getController: (context) => Provider.of<ControllerHalfit>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerHalfit>(context, listen: false),
       params: const {'max': -1},
     ),
     MenuItem(
       id: '99x20',
       name: '99 x 20',
       view: const ViewShootx(title: '99 x auf 20 scoren'),
-      getController: (context) => Provider.of<ControllerShootx>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerShootx>(context, listen: false),
       params: const {'x': 20, 'max': 33},
     ),
     MenuItem(
@@ -167,14 +185,16 @@ class Menu extends StatelessWidget {
       name: '2 Darts',
       view:
           const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
-      getController: (context) => Provider.of<ControllerTwoDarts>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerTwoDarts>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'SB',
       name: 'Speed Bull',
       view: const ViewSpeedBull(title: 'Speed Bull - 1 Minute Bulls'),
-      getController: (context) => Provider.of<ControllerSpeedBull>(context, listen: false),
+      getController: (context) =>
+          Provider.of<ControllerSpeedBull>(context, listen: false),
       params: const {'duration': 60},
     ),
   ];
@@ -261,7 +281,7 @@ class MenuItemButton extends StatelessWidget {
           // Initialize the controller from Provider before navigation to ensure fresh game state
           final controller = menuItem.getController(context);
           controller.init(menuItem);
-          
+
           Navigator.push(
             context,
             MaterialPageRoute(

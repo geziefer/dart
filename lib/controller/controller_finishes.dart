@@ -438,8 +438,8 @@ class ControllerFinishes extends ControllerBase
       ["S10", "S20", "D16"]
     ],
     61: [
-      ["T15", "D8"],
-      ["S15", "S14", "D16"]
+      ["SB", "D18"],
+      ["DB", "S3", "D4"]
     ],
   };
 
@@ -467,7 +467,8 @@ class ControllerFinishes extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
     from = item.params['from'];
     to = item.params['to'];
@@ -606,9 +607,12 @@ class ControllerFinishes extends ControllerBase
     double averageTime = _getAverageTime();
 
     return [
-      SummaryService.createValueLine('Richtige Runden', '$correctRounds/$maxRounds'),
-      SummaryService.createAverageLine('Korrektheit', correctnessPercentage, emphasized: true),
-      SummaryService.createAverageLine('ØZeit/Runde', averageTime, emphasized: true),
+      SummaryService.createValueLine(
+          'Richtige Runden', '$correctRounds/$maxRounds'),
+      SummaryService.createAverageLine('Korrektheit', correctnessPercentage,
+          emphasized: true),
+      SummaryService.createAverageLine('ØZeit/Runde', averageTime,
+          emphasized: true),
     ];
   }
 
@@ -619,35 +623,41 @@ class ControllerFinishes extends ControllerBase
   void updateSpecificStats() {
     double correctnessPercentage = (correctRounds / maxRounds) * 100;
     double averageTime = _getAverageTime();
-    
+
     // Update cumulative stats
-    int totalCorrectRounds = statsService.getStat<int>('totalCorrectRounds', defaultValue: 0)!;
-    int totalRounds = statsService.getStat<int>('totalRounds', defaultValue: 0)!;
-    int totalTimeAllGames = statsService.getStat<int>('totalTimeAllGames', defaultValue: 0)!;
-    
+    int totalCorrectRounds =
+        statsService.getStat<int>('totalCorrectRounds', defaultValue: 0)!;
+    int totalRounds =
+        statsService.getStat<int>('totalRounds', defaultValue: 0)!;
+    int totalTimeAllGames =
+        statsService.getStat<int>('totalTimeAllGames', defaultValue: 0)!;
+
     statsService.updateStats({
       'totalCorrectRounds': totalCorrectRounds + correctRounds,
       'totalRounds': totalRounds + maxRounds,
       'totalTimeAllGames': totalTimeAllGames + totalTimeSeconds,
     });
-    
+
     // Calculate overall stats
     double overallPercentage = (totalRounds + maxRounds) > 0
-        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) * 100
+        ? ((totalCorrectRounds + correctRounds) / (totalRounds + maxRounds)) *
+            100
         : correctnessPercentage;
     double overallAverageTime = (totalRounds + maxRounds) > 0
         ? ((totalTimeAllGames + totalTimeSeconds) / (totalRounds + maxRounds))
         : averageTime;
-    
+
     statsService.updateStats({
       'overallPercentage': overallPercentage,
       'overallAverageTime': overallAverageTime,
     });
-    
+
     // Update records
-    statsService.updateRecord<double>('recordPercentage', correctnessPercentage);
+    statsService.updateRecord<double>(
+        'recordPercentage', correctnessPercentage);
     // For time, lower is better
-    double recordAverageTime = statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
+    double recordAverageTime =
+        statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
     if (recordAverageTime == 0.0 || averageTime < recordAverageTime) {
       statsService.updateStats({'recordAverageTime': averageTime});
     }
@@ -675,22 +685,27 @@ class ControllerFinishes extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    double recordPercentage = statsService.getStat<double>('recordPercentage', defaultValue: 0.0)!;
-    double recordAverageTime = statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
-    double overallPercentage = statsService.getStat<double>('overallPercentage', defaultValue: 0.0)!;
-    double overallAverageTime = statsService.getStat<double>('overallAverageTime', defaultValue: 0.0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    double recordPercentage =
+        statsService.getStat<double>('recordPercentage', defaultValue: 0.0)!;
+    double recordAverageTime =
+        statsService.getStat<double>('recordAverageTime', defaultValue: 0.0)!;
+    double overallPercentage =
+        statsService.getStat<double>('overallPercentage', defaultValue: 0.0)!;
+    double overallAverageTime =
+        statsService.getStat<double>('overallAverageTime', defaultValue: 0.0)!;
 
     // Format percentages with % symbol and times with s suffix
     String baseStats = formatStatsString(
       numberGames: numberGames,
       records: {
-        'P': '${recordPercentage.toStringAsFixed(1)}%',      // Prozent
-        'Z': '${recordAverageTime.toStringAsFixed(1)}s',     // Zeit
+        'P': '${recordPercentage.toStringAsFixed(1)}%', // Prozent
+        'Z': '${recordAverageTime.toStringAsFixed(1)}s', // Zeit
       },
       averages: {
-        'P': '${overallPercentage.toStringAsFixed(1)}%',     // Durchschnittsprozent
-        'Z': '${overallAverageTime.toStringAsFixed(1)}s',    // Durchschnittszeit
+        'P': '${overallPercentage.toStringAsFixed(1)}%', // Durchschnittsprozent
+        'Z': '${overallAverageTime.toStringAsFixed(1)}s', // Durchschnittszeit
       },
     );
     return baseStats;
