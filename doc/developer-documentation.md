@@ -19,7 +19,9 @@ lib/
 ├── widget/             # Reusable UI components (9 files)
 ├── interfaces/         # Abstract interfaces and contracts (3 files)
 ├── services/           # Business logic services (3 files)
-├── utils/              # Utility functions (1 file)
+├── utils/              # Utility functions (2 files)
+│   ├── responsive.dart # Responsive design utilities
+│   └── [other utils]
 ├── main.dart          # Application entry point
 └── styles.dart        # Global styling definitions
 
@@ -387,23 +389,49 @@ flutter packages pub run build_runner build
 - **Storage**: Local device storage only
 - **Build**: `flutter build apk` or `flutter build ios`
 
-## Recent Architecture Changes
+## Responsive Design Implementation
 
-### Service-Oriented Refactoring
-- **Service Layer**: Extracted business logic into dedicated services
-- **Dependency Injection**: Services injected into controllers via base class
-- **Separation of Concerns**: Clear boundaries between UI, logic, and data
+### Overview
+The app implements responsive design to ensure usability across different screen sizes, from tablets to phones, while maintaining the original tablet-optimized experience.
 
-### Navigation Improvements
-- **Route-Based Initialization**: MenuItem passed through navigation arguments
-- **Test Compatibility**: Views handle null MenuItem for test scenarios
-- **Provider Integration**: Proper controller initialization from Provider
+### Core Components
 
-### Code Quality Improvements
-- **Zero Warnings**: All compile warnings resolved
-- **Unused Code Removal**: Cleaned up unused imports and variables
-- **Test Coverage**: Comprehensive test suite with 118 passing tests
+#### ResponsiveUtils (`lib/utils/responsive.dart`)
+- **Purpose**: Centralized responsive scaling calculations
+- **Key Functions**:
+  - `getTextScaleFactor(context)`: Base scaling factor based on screen dimensions
+  - `isPhoneSize(context)`: Device type detection (< 600px = phone)
+  - Element-specific scaling functions for different UI components
+  - `getButtonMargin(context)`: Responsive spacing for UI elements
 
----
+#### Text Scaling Strategy
+- **Base Calculation**: Scale factor = screen dimension / 800px (tablet baseline)
+- **Aggressive Phone Scaling**: Additional reduction for screens < 600px
+- **Element-Specific Scaling**: Different scale factors for different UI components
+- **Context-Dependent Styles**: All text styles converted from const to functions
 
-*This documentation reflects the current architecture as of the latest refactoring. The app now features a clean service-oriented architecture with comprehensive testing and zero compile warnings.*
+#### Key Responsive Features
+- **Menu Buttons**: Single-line text on phones (newlines → spaces), larger text
+- **Numpad**: Reduced margins (10px → 3px) for more usable space
+- **Table Text**: Optimized scaling to fit content while remaining readable
+- **Icons**: Responsive sizing for better visibility (e.g., back arrow)
+- **Button Sizes**: Preserved for touch interaction, only text scales
+- **Dartboard**: Responsive radius bounds (120-180px on phones vs 200-280px on tablets)
+
+### Implementation Pattern
+```dart
+// Text styles use context for responsive scaling
+TextStyle exampleTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 42),
+    // ... other properties
+  );
+}
+
+// UI elements check screen size for adaptive behavior
+Widget build(BuildContext context) {
+  final isPhone = ResponsiveUtils.isPhoneSize(context);
+  final margin = ResponsiveUtils.getButtonMargin(context);
+  // ... adaptive UI logic
+}
+```

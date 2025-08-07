@@ -56,9 +56,9 @@ class Checkout extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.all(10),
-              child: const Text(
+              child: Text(
                 "Maximale Dart-Anzahl erreicht",
-                style: endSummaryHeaderTextStyle,
+                style: endSummaryHeaderTextStyle(context),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -74,9 +74,9 @@ class Checkout extends StatelessWidget {
                 backgroundColor: Colors.grey[800],
                 width: 150,
                 height: 80,
-                child: const Text(
+                child: Text(
                   'OK',
-                  style: okButtonTextStyle,
+                  style: okButtonTextStyle(context),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -92,9 +92,9 @@ class Checkout extends StatelessWidget {
       width: 550,
       child: Column(
         children: [
-          const Text(
+          Text(
             "Wie viele Darts zum Checkout?",
-            style: endSummaryHeaderTextStyle,
+            style: endSummaryHeaderTextStyle(context),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
@@ -117,9 +117,9 @@ class Checkout extends StatelessWidget {
                           onClosed?.call();
                         },
                         style: finishButtonStyle,
-                        child: const Text(
+                        child: Text(
                           "1",
-                          style: finishButtonTextStyle,
+                          style: finishButtonTextStyle(context),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -139,9 +139,9 @@ class Checkout extends StatelessWidget {
                           onClosed?.call();
                         },
                         style: finishButtonStyle,
-                        child: const Text(
+                        child: Text(
                           "2",
-                          style: finishButtonTextStyle,
+                          style: finishButtonTextStyle(context),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -160,9 +160,9 @@ class Checkout extends StatelessWidget {
                         onClosed?.call();
                       },
                       style: finishButtonStyle,
-                      child: const Text(
+                      child: Text(
                         "3",
-                        style: finishButtonTextStyle,
+                        style: finishButtonTextStyle(context),
                         textAlign: TextAlign.center,
                       ),
                     ),

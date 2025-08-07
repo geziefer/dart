@@ -149,29 +149,29 @@ class ViewXXXCheckout extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Runde: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['round']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "   ØPunkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['avgScore']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "   ØDarts: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['avgDarts']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -180,7 +180,7 @@ class ViewXXXCheckout extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

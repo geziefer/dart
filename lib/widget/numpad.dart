@@ -1,4 +1,5 @@
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class Numpad extends StatelessWidget {
                   children: [
                     Text(
                       controller.getInput(),
-                      style: numpadInputTextStyle,
+                      style: numpadInputTextStyle(context),
                     ),
                     const Divider(color: Colors.white, thickness: 3),
                   ],
@@ -121,10 +122,14 @@ class Numpad extends StatelessWidget {
       String label, int value, bool large) {
     bool isDisabled = controller.isButtonDisabled(value);
     bool isEmoji = label == '❌' || label == '✅';
+    
+    // Use smaller margins on phone screens to save space
+    final buttonMargin = ResponsiveUtils.getButtonMargin(context);
+    
     return Expanded(
       flex: 1,
       child: Container(
-        margin: const EdgeInsets.all(10),
+        margin: EdgeInsets.all(buttonMargin),
         child: TextButton(
           onPressed: isDisabled ? null : () {
             // call interface method from controller
@@ -140,10 +145,10 @@ class Numpad extends StatelessWidget {
           child: Text(
             label,
             style: isEmoji 
-                ? emojiTextStyle
+                ? emojiTextStyle(context)
                 : isDisabled 
-                    ? (large ? numpadScoreButtonLargeDisabledTextStyle : numpadScoreButtonSmallDisabledTextStyle)
-                    : (large ? numpadScoreButtonLargeTextStyle : numpadScoreButtonSmallTextStyle),
+                    ? (large ? numpadScoreButtonLargeDisabledTextStyle(context) : numpadScoreButtonSmallDisabledTextStyle(context))
+                    : (large ? numpadScoreButtonLargeTextStyle(context) : numpadScoreButtonSmallTextStyle(context)),
             textAlign: TextAlign.center,
           ),
         ),

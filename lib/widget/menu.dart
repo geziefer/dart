@@ -26,6 +26,7 @@ import 'package:dart/view/view_speedbull.dart';
 import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -295,8 +296,10 @@ class MenuItemButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              menuItem.name,
-              style: menuButtonTextStyle,
+              ResponsiveUtils.isPhoneSize(context) 
+                  ? menuItem.name.replaceAll('\n', ' ')  // Single line on phones
+                  : menuItem.name,                       // Keep newlines on tablets
+              style: menuButtonTextStyle(context),
               textAlign: TextAlign.center,
             ),
           ],

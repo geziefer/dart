@@ -125,21 +125,21 @@ class ViewShootx extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Runde: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['round']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                     Text(
                       "   Ø$x: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['avgBulls']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -148,7 +148,7 @@ class ViewShootx extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

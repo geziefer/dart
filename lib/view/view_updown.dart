@@ -125,38 +125,38 @@ class ViewUpDown extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Runde: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       currentStats['round'].toString(),
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  Ziel: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       currentStats['target'].toString(),
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  Checks: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       currentStats['successes'].toString(),
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  ØChecks: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       (currentStats['averageSuccess'] as double)
                           .toStringAsFixed(1),
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -165,7 +165,7 @@ class ViewUpDown extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

@@ -1,4 +1,5 @@
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
@@ -22,10 +23,10 @@ class Header extends StatelessWidget {
           flex: 75,
           child: Text(
             gameName,
-            style: const TextStyle(
-              fontSize: 50,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 215, 198, 132),
+              color: const Color.fromARGB(255, 215, 198, 132),
             ),
             textAlign: TextAlign.center,
           ),
@@ -36,10 +37,11 @@ class Header extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            style: headerButtonStyle,
-            child: const Icon(
+            style: headerButtonStyle(context),
+            child: Icon(
               Icons.arrow_back,
-              color: Color.fromARGB(255, 215, 198, 132),
+              color: const Color.fromARGB(255, 215, 198, 132),
+              size: ResponsiveUtils.getResponsiveFontSize(context, 40), // Make it larger and responsive
             ),
           ),
         ),

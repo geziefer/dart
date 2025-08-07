@@ -116,31 +116,31 @@ class ViewDoublePath extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Ziel: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       controller.currentRound < 5
                           ? ControllerDoublePath
                               .targetSequences[controller.currentRound]
                           : ControllerDoublePath.targetSequences[4],
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  Punkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       (controller.totalPoints.isNotEmpty
                               ? controller.totalPoints.last
                               : 0)
                           .toString(),
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  ØPunkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       controller.currentRound > 0
@@ -150,7 +150,7 @@ class ViewDoublePath extends StatelessWidget {
                                   controller.currentRound)
                               .toStringAsFixed(1)
                           : '0.0',
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -159,7 +159,7 @@ class ViewDoublePath extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

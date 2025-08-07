@@ -124,29 +124,29 @@ class ViewKillBull extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Runde: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['round']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  Punkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['totalScore']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "   ØPunkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['avgScore']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -155,7 +155,7 @@ class ViewKillBull extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

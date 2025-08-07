@@ -1,4 +1,5 @@
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class CheckNumber extends StatelessWidget {
@@ -14,6 +15,10 @@ class CheckNumber extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool showCheck = currentNumber > number;
+    final isPhone = ResponsiveUtils.isPhoneSize(context);
+    final numberWidth = isPhone ? 60.0 : 100.0;
+    final checkWidth = isPhone ? 60.0 : 100.0;
+    
     // exclude numbers > 20
     if (number > 20) {
       return const Text('');
@@ -21,28 +26,28 @@ class CheckNumber extends StatelessWidget {
       return Row(
         children: [
           SizedBox(
-            width: 100,
+            width: numberWidth,
             child: Text(
               '$number:',
-              style: checkNumberStyle,
+              style: checkNumberStyle(context),
               textAlign: TextAlign.right,
             ),
           ),
           SizedBox(
-            width: 100,
+            width: checkWidth,
             child: Row(
               children: [
                 if (showCheck)
                   Text(
                     '✅',
-                    style: emojiTextStyle,
+                    style: emojiTextStyle(context),
                   )
                 else
                   Text(
                     '\u{00A0}', // non-breaking space
-                    style: checkNumberStyle,
+                    style: checkNumberStyle(context),
                   ),
-                const Text('  ', style: checkNumberStyle), // spacing
+                Text('  ', style: checkNumberStyle(context)), // spacing
               ],
             ),
           ),

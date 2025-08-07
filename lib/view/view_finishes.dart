@@ -1,5 +1,6 @@
 import 'package:dart/controller/controller_finishes.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:dart/widget/fullcircle.dart';
 import 'package:dart/widget/header.dart';
@@ -67,16 +68,16 @@ class ViewFinishes extends StatelessWidget {
                                     // Round counter
                                     Text(
                                       '${controller.getRoundCounterText()} ',
-                                      style: outputTextStyle,
+                                      style: outputTextStyle(context),
                                     ),
                                     Text(
                                       controller.getResultSymbol(),
-                                      style: emojiTextStyle,
+                                      style: emojiTextStyle(context),
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
                                       ' ${controller.getResultTime()}',
-                                      style: outputTextStyle,
+                                      style: outputTextStyle(context),
                                     ),
                                   ],
                                 ),
@@ -85,22 +86,22 @@ class ViewFinishes extends StatelessWidget {
                                 // Preferred finish question
                                 Text(
                                   controller.getPreferredText(),
-                                  style: outputTextStyle,
+                                  style: outputTextStyle(context),
                                 ),
                                 // Preferred finish input
                                 Text(
                                   controller.getPreferredInput(),
-                                  style: inputTextStyle,
+                                  style: inputTextStyle(context),
                                 ),
                                 // Alternative finish question
                                 Text(
                                   controller.getAlternativeText(),
-                                  style: outputTextStyle,
+                                  style: outputTextStyle(context),
                                 ),
                                 // Alternative finish input
                                 Text(
                                   controller.getAlternativeInput(),
-                                  style: inputTextStyle,
+                                  style: inputTextStyle(context),
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -109,7 +110,7 @@ class ViewFinishes extends StatelessWidget {
                                 // Solution text when incorrect
                                 Text(
                                   controller.getSolutionText(),
-                                  style: outputTextStyle,
+                                  style: outputTextStyle(context),
                                 ),
                               ]),
                         ),
@@ -135,8 +136,13 @@ class ViewFinishes extends StatelessWidget {
                             double radius =
                                 (maxSize - 60) / 2; // 60px for number labels
 
-                            // Ensure minimum and maximum bounds
-                            radius = radius.clamp(200.0, 280.0);
+                            // Make radius bounds responsive to screen size
+                            final isPhone = ResponsiveUtils.isPhoneSize(context);
+                            final minRadius = isPhone ? 120.0 : 200.0;
+                            final maxRadius = isPhone ? 180.0 : 280.0;
+                            
+                            // Ensure minimum and maximum bounds based on device type
+                            radius = radius.clamp(minRadius, maxRadius);
 
                             return Center(
                               child: Stack(
@@ -162,12 +168,12 @@ class ViewFinishes extends StatelessWidget {
                                             color: Colors.black.withValues(alpha: 0.6),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Center(
+                                          child: Center(
                                             child: Text(
                                               "Nächste Runde",
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 28,
+                                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -197,29 +203,29 @@ class ViewFinishes extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Richtig: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['correct']} (${currentStats['percentage']}%)",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "   Zeit: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['totalTime']}s",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "   ØZeit: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['averageTime']}s",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -228,7 +234,7 @@ class ViewFinishes extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

@@ -23,13 +23,13 @@ class ScoreColumn extends StatelessWidget {
       children: [
         Text(
           label,
-          style: scoreLabelTextStyle,
+          style: scoreLabelTextStyle(context),
         ),
         Text(
           content,
           style: _containsEmoji(content) 
-              ? emojiLargeTextStyle.copyWith(color: color)
-              : scoreTextStyle.copyWith(color: color),
+              ? emojiLargeTextStyle(context).copyWith(color: color)
+              : scoreTextStyle(context).copyWith(color: color),
           textAlign: TextAlign.right,
         ),
       ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 
 class SummaryDialog extends StatelessWidget {
   final List<SummaryLine> lines;
@@ -25,7 +26,7 @@ class SummaryDialog extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Text(
                 "Zusammenfassung",
-                style: endSummaryHeaderTextStyle,
+                style: endSummaryHeaderTextStyle(context),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -41,14 +42,14 @@ class SummaryDialog extends StatelessWidget {
                                   ? line.value
                                   : '${line.label}: ${line.value}',
                               style: line.emphasized
-                                  ? endSummaryEmphasizedTextStyle
-                                  : endSummaryTextStyle,
+                                  ? endSummaryEmphasizedTextStyle(context)
+                                  : endSummaryTextStyle(context),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               line.checkSymbol!,
-                              style: const TextStyle(
-                                fontSize: 32,
+                              style: TextStyle(
+                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
                                 fontFamily: "NotoColorEmoji",
                               ),
                             ),
@@ -59,8 +60,8 @@ class SummaryDialog extends StatelessWidget {
                               ? line.value
                               : '${line.label}: ${line.value}',
                           style: line.emphasized
-                              ? endSummaryEmphasizedTextStyle
-                              : endSummaryTextStyle,
+                              ? endSummaryEmphasizedTextStyle(context)
+                              : endSummaryTextStyle(context),
                           textAlign: TextAlign.center,
                         ),
                 )),
@@ -72,10 +73,10 @@ class SummaryDialog extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
-                style: okButtonStyle,
-                child: const Text(
+                style: okButtonStyle(context),
+                child: Text(
                   'OK',
-                  style: okButtonTextStyle,
+                  style: okButtonTextStyle(context),
                   textAlign: TextAlign.center,
                 ),
               ),

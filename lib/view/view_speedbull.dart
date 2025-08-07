@@ -1,5 +1,6 @@
 import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class ViewSpeedBull extends StatelessWidget {
                                 children: [
                                   Text(
                                     controller.getTimerDisplay(),
-                                    style: timerTextStyle,
+                                    style: timerTextStyle(context),
                                   ),
                                   const SizedBox(height: 20),
                                   if (!controller.gameStarted &&
@@ -79,10 +80,10 @@ class ViewSpeedBull extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 30, vertical: 15),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         'START',
                                         style: TextStyle(
-                                            fontSize: 24,
+                                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -99,13 +100,13 @@ class ViewSpeedBull extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Runde: ",
-                                        style: statsTextStyle,
+                                        style: statsTextStyle(context),
                                       ),
                                       Text(
                                         "${currentStats['rounds']}",
-                                        style: statsNumberTextStyle,
+                                        style: statsNumberTextStyle(context),
                                       ),
                                     ],
                                   ),
@@ -113,13 +114,13 @@ class ViewSpeedBull extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Punkte: ",
-                                        style: statsTextStyle,
+                                        style: statsTextStyle(context),
                                       ),
                                       Text(
                                         "${currentStats['totalHits']}",
-                                        style: statsNumberTextStyle,
+                                        style: statsNumberTextStyle(context),
                                       ),
                                     ],
                                   ),
@@ -159,29 +160,29 @@ class ViewSpeedBull extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Runde: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['rounds']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  Punkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['totalHits']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
-                    const Text(
+                    Text(
                       "  ØPunkte: ",
-                      style: statsTextStyle,
+                      style: statsTextStyle(context),
                     ),
                     Text(
                       "${currentStats['average']}",
-                      style: statsNumberTextStyle,
+                      style: statsNumberTextStyle(context),
                     ),
                   ],
                 ),
@@ -190,7 +191,7 @@ class ViewSpeedBull extends StatelessWidget {
                   children: [
                     Text(
                       stats,
-                      style: statsSummaryTextStyle,
+                      style: statsSummaryTextStyle(context),
                     ),
                   ],
                 )

@@ -1,91 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:dart/utils/responsive.dart';
 
-final headerButtonStyle = OutlinedButton.styleFrom(
+// Button styles that need responsive sizing
+ButtonStyle headerButtonStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.getTextScaleFactor(context);
+  return OutlinedButton.styleFrom(
     side: const BorderSide(width: 3.0, color: Colors.white),
-    minimumSize: const Size(40, 70),
-    shape: const CircleBorder());
+    minimumSize: Size(40 * scaleFactor, 70 * scaleFactor),
+    shape: const CircleBorder(),
+  );
+}
 
-const menuButtonTextStyle = TextStyle(
-  fontSize: 42,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle menuButtonTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 42 * ResponsiveUtils.getMenuButtonTextScale(context),
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
 final menuButtonStyle = OutlinedButton.styleFrom(
   side: const BorderSide(width: 1.0, color: Colors.white),
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
 );
 
-final okButtonStyle = TextButton.styleFrom(
-  backgroundColor: Colors.black,
-  minimumSize: const Size(150, 80),
-  shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(2))),
-);
+ButtonStyle okButtonStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.getTextScaleFactor(context);
+  return TextButton.styleFrom(
+    backgroundColor: Colors.black,
+    minimumSize: Size(150 * scaleFactor, 80 * scaleFactor),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2))),
+  );
+}
 
-const okButtonTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.white,
-);
+TextStyle okButtonTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+    color: Colors.white,
+  );
+}
 
 final finishButtonStyle = TextButton.styleFrom(
   backgroundColor: Colors.black,
   shape: const BeveledRectangleBorder(),
 );
 
-const finishButtonTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.white,
-);
+TextStyle finishButtonTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+    color: Colors.white,
+  );
+}
 
-const statsTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.white,
-);
+TextStyle statsTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 50 * ResponsiveUtils.getStatsScale(context),
+    color: Colors.white,
+  );
+}
 
-const statsNumberTextStyle = TextStyle(
-  fontSize: 50,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle statsNumberTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 50 * ResponsiveUtils.getStatsScale(context),
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
-const statsSummaryTextStyle = TextStyle(
-  fontSize: 40,
-  color: Colors.white,
-);
+TextStyle statsSummaryTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 40 * ResponsiveUtils.getStatsScale(context),
+    color: Colors.white,
+  );
+}
 
-const endSummaryHeaderTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.black,
-);
+TextStyle endSummaryHeaderTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+    color: Colors.black,
+  );
+}
 
-const endSummaryTextStyle = TextStyle(
-  fontSize: 32,
-  color: Colors.black,
-);
+TextStyle endSummaryTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
+    color: Colors.black,
+  );
+}
 
-const endSummaryEmphasizedTextStyle = TextStyle(
-  fontSize: 35,
-  color: Colors.red,
-);
+TextStyle endSummaryEmphasizedTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 35),
+    color: Colors.red,
+  );
+}
 
-const checkNumberStyle = TextStyle(
-  fontSize: 50,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle checkNumberStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      : ResponsiveUtils.getTextScaleFactor(context);
+  return TextStyle(
+    fontSize: 50 * scaleFactor,
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
-const numpadInputTextStyle = TextStyle(
-  fontSize: 70,
-  color: Colors.white,
-);
+TextStyle numpadInputTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 70),
+    color: Colors.white,
+  );
+}
 
-const numpadScoreButtonLargeTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.white,
-);
+TextStyle numpadScoreButtonLargeTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 50 * ResponsiveUtils.getNumpadLargeButtonScale(context),
+    color: Colors.white,
+  );
+}
 
-const numpadScoreButtonSmallTextStyle = TextStyle(
-  fontSize: 35,
-  color: Colors.white,
-);
+TextStyle numpadScoreButtonSmallTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 35 * ResponsiveUtils.getNumpadSmallButtonScale(context),
+    color: Colors.white,
+  );
+}
 
 final numpadTextStyle = TextButton.styleFrom(
   backgroundColor: Colors.white24,
@@ -97,57 +135,86 @@ final numpadDisabledTextStyle = TextButton.styleFrom(
   shape: const BeveledRectangleBorder(),
 );
 
-const numpadScoreButtonLargeDisabledTextStyle = TextStyle(
-  fontSize: 50,
-  color: Colors.grey,
-);
+TextStyle numpadScoreButtonLargeDisabledTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 50 * ResponsiveUtils.getNumpadLargeButtonScale(context),
+    color: Colors.grey,
+  );
+}
 
-const numpadScoreButtonSmallDisabledTextStyle = TextStyle(
-  fontSize: 32,
-  color: Colors.grey,
-);
+TextStyle numpadScoreButtonSmallDisabledTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: 32 * ResponsiveUtils.getNumpadSmallButtonScale(context),
+    color: Colors.grey,
+  );
+}
 
-const scoreLabelTextStyle = TextStyle(
-  fontSize: 68,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle scoreLabelTextStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      : ResponsiveUtils.getTextScaleFactor(context);
+  return TextStyle(
+    fontSize: 68 * scaleFactor,
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
-const scoreTextStyle = TextStyle(
-  fontSize: 68,
-  fontFeatures: <FontFeature>[
-    FontFeature.tabularFigures(),
-  ],
-  color: Colors.white,
-);
+TextStyle scoreTextStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      : ResponsiveUtils.getTextScaleFactor(context);
+  return TextStyle(
+    fontSize: 68 * scaleFactor,
+    fontFeatures: const <FontFeature>[
+      FontFeature.tabularFigures(),
+    ],
+    color: Colors.white,
+  );
+}
 
-const boardTextStyle = TextStyle(
-  color: Colors.white,
-  fontWeight: FontWeight.bold,
-  fontSize: 30,
-);
+TextStyle boardTextStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.7  // Smaller for phone screens
+      : ResponsiveUtils.getTextScaleFactor(context);
+  return TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    fontSize: 30 * scaleFactor,
+  );
+}
 
-const outputTextStyle = TextStyle(
-  fontSize: 45,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle outputTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
-const inputTextStyle = TextStyle(
-  fontSize: 45,
-  color: Colors.white,
-);
+TextStyle inputTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    color: Colors.white,
+  );
+}
 
-const emojiTextStyle = TextStyle(
-  fontSize: 45,
-  fontFamily: "NotoColorEmoji",
-);
+TextStyle emojiTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    fontFamily: "NotoColorEmoji",
+  );
+}
 
-const timerTextStyle = TextStyle(
-  fontSize: 100,
-  fontWeight: FontWeight.bold,
-  color: Color.fromARGB(255, 215, 198, 132),
-);
+TextStyle timerTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 100),
+    fontWeight: FontWeight.bold,
+    color: const Color.fromARGB(255, 215, 198, 132),
+  );
+}
 
-const emojiLargeTextStyle = TextStyle(
-  fontSize: 68,
-  fontFamily: "NotoColorEmoji",
-);
+TextStyle emojiLargeTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 68),
+    fontFamily: "NotoColorEmoji",
+  );
+}
