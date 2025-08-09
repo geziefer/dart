@@ -39,6 +39,7 @@ class ControllerXXXCheckout extends ControllerBase
   List<int> darts = <int>[]; // list of used darts in leg
   List<int> results = <int>[]; // list of used darts per leg
   int leg = 1; // leg number
+  int completedLegs = 0; // number of completed legs for average calculations
   int round = 1; // round number in leg
   int wins = 0; // number of finished legs
   int score = 0; // current score in leg
@@ -69,6 +70,7 @@ class ControllerXXXCheckout extends ControllerBase
     darts = <int>[];
     results = <int>[];
     leg = 1;
+    completedLegs = 0;
     round = 1;
     wins = 0;
     score = 0;
@@ -130,8 +132,11 @@ class ControllerXXXCheckout extends ControllerBase
       // this includes finishing
       if (value == -3) {
         int parsedInput = int.tryParse(input) ?? 0;
-        if (parsedInput != 1 && remaining - parsedInput <= 180) {
-          input = (remaining - parsedInput).toString();
+        int finishScore = remaining - parsedInput;
+        if (parsedInput != 1 && 
+            finishScore <= 170 && 
+            !isBogeyNumber(finishScore)) {
+          input = finishScore.toString();
         } else {
           return;
         }
@@ -184,8 +189,14 @@ class ControllerXXXCheckout extends ControllerBase
 
         notifyListeners();
 
+        // Always increment completed legs counter
+        completedLegs++;
+
         // Don't trigger game end here - let it be triggered by checkout dialog callback
-        leg++;
+        // Only increment leg if this is not the final leg
+        if (leg < end) {
+          leg++;
+        }
         return; // Return early to prevent further processing
       }
       // number button pressed
@@ -290,7 +301,7 @@ class ControllerXXXCheckout extends ControllerBase
   }
 
   double _getAvgDarts() {
-    return leg == 1 ? 0 : (lastTotalDarts / (leg - 1));
+    return completedLegs == 0 ? 0 : (lastTotalDarts / completedLegs);
   }
 
   Map getCurrentStats() {
@@ -317,9 +328,8 @@ class ControllerXXXCheckout extends ControllerBase
 
   /// Handle checkout dialog being closed - check if game should end
   void handleCheckoutClosed() {
-    // Check if the previous leg (before increment) was the final leg
-    // leg has already been incremented, so we check leg - 1
-    if (leg - 1 == end) {
+    // Check if this was the final leg
+    if (leg == end) {
       // Use post frame callback to ensure dialog is fully closed before showing summary
       WidgetsBinding.instance.addPostFrameCallback((_) {
         triggerGameEnd();

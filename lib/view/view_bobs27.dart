@@ -84,7 +84,7 @@ class ViewBobs27 extends StatelessWidget {
 
                             // ########## Total score
                             ScoreColumn(
-                              label: 'T',
+                              label: 'P',
                               content: controller.getCurrentTotalScores(),
                               color: Colors.white,
                             ),

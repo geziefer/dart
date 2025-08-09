@@ -62,7 +62,7 @@ class ViewHalfit extends StatelessWidget {
                           children: [
                             // ########## Round goal
                             ScoreColumn(
-                                label: 'A',
+                                label: 'Z',
                                 content: controller.getCurrentRounds(),
                                 color:
                                     const Color.fromARGB(255, 215, 198, 132)),
@@ -73,7 +73,7 @@ class ViewHalfit extends StatelessWidget {
 
                             // ########## Thrown score in round
                             ScoreColumn(
-                              label: 'W',
+                              label: 'T',
                               content: controller.getCurrentScores(),
                               color: Colors.white,
                             ),
@@ -84,7 +84,7 @@ class ViewHalfit extends StatelessWidget {
 
                             // ########## Score total
                             ScoreColumn(
-                              label: 'T',
+                              label: 'P',
                               content: controller.getCurrentTotals(),
                               color: Colors.white,
                             ),

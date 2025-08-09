@@ -7,6 +7,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+
 class ControllerShootx extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -64,8 +65,8 @@ class ControllerShootx extends ControllerBase
       if (rounds.isNotEmpty) {
         round--;
 
-        int lastBulls = thrownNumbers.removeLast();
-        number -= lastBulls;
+        int lastHits = thrownNumbers.removeLast();
+        number -= lastHits;
         rounds.removeLast();
         totalNumbers.removeLast();
       }
@@ -101,7 +102,7 @@ class ControllerShootx extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     return [
       SummaryService.createValueLine('Anzahl $x', number),
-      SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgBulls'],
+      SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgHits'],
           emphasized: true),
     ];
   }
@@ -111,13 +112,13 @@ class ControllerShootx extends ControllerBase
 
   @override
   void updateSpecificStats() {
-    double avgBulls = double.parse(getCurrentStats()['avgBulls']);
+    double avgHits = double.parse(getCurrentStats()['avgHits']);
 
     // Update records
     statsService.updateRecord<int>('recordNumbers', number);
 
     // Update long-term average
-    statsService.updateLongTermAverage('longtermBulls', avgBulls);
+    statsService.updateLongTermAverage('longtermHits', avgHits);
   }
 
   double _getAvgNumbers() {
@@ -155,8 +156,8 @@ class ControllerShootx extends ControllerBase
   Map getCurrentStats() {
     return {
       'round': round,
-      'bulls': number,
-      'avgBulls': _getAvgNumbers().toStringAsFixed(1),
+      'hits': number,
+      'avgHits': _getAvgNumbers().toStringAsFixed(1),
     };
   }
 
@@ -166,7 +167,7 @@ class ControllerShootx extends ControllerBase
     int recordNumbers =
         statsService.getStat<int>('recordNumbers', defaultValue: 0)!;
     double longtermNumbers =
-        statsService.getStat<double>('longtermNumbers', defaultValue: 0.0)!;
+        statsService.getStat<double>('longtermHits', defaultValue: 0.0)!;
 
     return formatStatsString(
       numberGames: numberGames,

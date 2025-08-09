@@ -57,7 +57,7 @@ class ControllerHalfit extends ControllerBase
 
     rounds = <String>[labels.first];
     scores = <int>[];
-    totals = <int>[];
+    totals = <int>[40]; // start with initial score of 40
     hit = <bool>[];
     round = 1;
     score = 40;
@@ -82,6 +82,12 @@ class ControllerHalfit extends ControllerBase
         hit.removeLast();
         round--;
         totalScore -= lastscore;
+        
+        // If we're back to round 1, restore the initial score of 40 in totals
+        if (round == 1) {
+          totals = <int>[40];
+        }
+        
         score = 0;
       }
       input = "";
@@ -98,7 +104,14 @@ class ControllerHalfit extends ControllerBase
       }
       scores.add(score);
       totalScore += score;
-      totals.add(totalScore);
+      
+      // For first round, replace the initial 40; for subsequent rounds, add new total
+      if (round == 1) {
+        totals[0] = totalScore; // replace initial score
+      } else {
+        totals.add(totalScore); // add new total for subsequent rounds
+      }
+      
       if (score > 0) {
         hit.add(true);
       } else {
@@ -139,21 +152,11 @@ class ControllerHalfit extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    List<SummaryLine> lines = [];
-    
-    // Add the total score line
-    lines.add(SummaryService.createValueLine('Punkte', totalScore));
-    
-    // Add individual lines for each label/score with check symbols
-    for (int i = 0; i < labels.length && i < scores.length; i++) {
-      String checkSymbol = hit[i] ? "✅" : "❌";
-      lines.add(SummaryLine(labels[i], '${scores[i]}', checkSymbol: checkSymbol));
-    }
-    
-    // Add average score line
-    lines.add(SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true));
-    
-    return lines;
+    return [
+      SummaryService.createValueLine('Anzahl Checks', hit.where((h) => h).length),
+      SummaryService.createValueLine('Punkte', totalScore),
+      SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true),
+    ];
   }
 
   @override
@@ -192,7 +195,13 @@ class ControllerHalfit extends ControllerBase
   }
 
   double _getAvgScore() {
-    return round == 1 ? 0 : ((totalScore - 40) / (round - 1));
+    if (round == 1) return 0;
+    
+    // Sum only positive scores (Option C)
+    int positiveScoreSum = scores.where((score) => score > 0).fold(0, (sum, score) => sum + score);
+    
+    // Divide by total rounds played
+    return positiveScoreSum / (round - 1);
   }
 
   Map getCurrentStats() {

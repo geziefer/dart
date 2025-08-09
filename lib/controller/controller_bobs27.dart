@@ -75,7 +75,13 @@ class ControllerBobs27 extends ControllerBase
         int previousRoundScore = roundScores[roundScores.length - 1];
         totalScore -= previousRoundScore; // undo previous calculation
         roundScores[roundScores.length - 1] = 0; // make current row empty again
-        totalScores[totalScores.length - 1] = 0; // make current total empty again
+        
+        // If we're back to round 1, restore the initial score of 27; otherwise set to 0
+        if (round == 1) {
+          totalScores[totalScores.length - 1] = 27; // restore initial score
+        } else {
+          totalScores[totalScores.length - 1] = 0; // make current total empty again
+        }
         
         // adjust successful rounds if previous round was successful
         if (previousRoundScore > 0) {

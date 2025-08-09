@@ -84,7 +84,7 @@ class ViewCatchXX extends StatelessWidget {
 
                             // ########## Score total
                             ScoreColumn(
-                              label: 'T',
+                              label: 'P',
                               content: controller.getCurrentTotalPoints(),
                               color: Colors.white,
                             ),

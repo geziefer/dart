@@ -31,7 +31,6 @@ class ViewShootx extends StatelessWidget {
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
     };
-    int x = controller.x;
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(
@@ -73,7 +72,7 @@ class ViewShootx extends StatelessWidget {
 
                             // ########## Thrown numbers in round
                             ScoreColumn(
-                              label: 'N',
+                              label: 'T',
                               content: controller.getCurrentThrownNumbers(),
                               color: Colors.white,
                             ),
@@ -84,7 +83,7 @@ class ViewShootx extends StatelessWidget {
 
                             // ########## Score total
                             ScoreColumn(
-                              label: 'T',
+                              label: 'P',
                               content: controller.getCurrentTotalNumbers(),
                               color: Colors.white,
                             ),
@@ -134,11 +133,11 @@ class ViewShootx extends StatelessWidget {
                       style: statsNumberTextStyle(context),
                     ),
                     Text(
-                      "   Ø$x: ",
+                      "   ØT: ",
                       style: statsTextStyle(context),
                     ),
                     Text(
-                      "${currentStats['avgBulls']}",
+                      "${currentStats['avgHits']}",
                       style: statsNumberTextStyle(context),
                     ),
                   ],

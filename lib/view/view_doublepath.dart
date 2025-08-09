@@ -64,7 +64,7 @@ class ViewDoublePath extends StatelessWidget {
 
                             // ########## Points per round
                             ScoreColumn(
-                              label: 'P',
+                              label: 'C',
                               content: controller.getCurrentPoints(),
                               color: Colors.white,
                             ),
@@ -75,9 +75,9 @@ class ViewDoublePath extends StatelessWidget {
 
                             // ########## Total points
                             ScoreColumn(
-                              label: 'G',
+                              label: 'P',
                               content: controller.getCurrentTotalPoints(),
-                              color: const Color.fromARGB(255, 132, 215, 132),
+                              color: Colors.white,
                             ),
                             const SizedBox(width: 10),
                             const VerticalDivider(

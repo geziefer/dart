@@ -84,7 +84,7 @@ class ViewUpDown extends StatelessWidget {
 
                             // ########## Results (success/failure emojis)
                             ScoreColumn(
-                              label: 'E',
+                              label: 'C',
                               content: controller.getCurrentResults(),
                               color: const Color.fromARGB(255, 132, 215, 132),
                             ),
