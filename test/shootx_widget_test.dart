@@ -218,8 +218,8 @@ void main() {
       // Assert: Verify statistics calculation
       Map stats = controller.getCurrentStats();
       expect(stats['round'], equals(3)); // Current round
-      expect(stats['bulls'], equals(10)); // Total hits (6+4)
-      expect(stats['avgBulls'], equals('5.0')); // 10 hits / 2 rounds = 5.0
+      expect(stats['hits'], equals(10)); // Total hits (6+4) - Fixed key name
+      expect(stats['avgHits'], equals('5.0')); // 10 hits / 2 rounds = 5.0 - Fixed key name
 
       // Act: Play one more round
       controller.pressNumpadButton(2); // 2 hits in round 3
@@ -228,8 +228,8 @@ void main() {
       // Assert: Verify updated statistics
       stats = controller.getCurrentStats();
       expect(stats['round'], equals(4)); // Current round
-      expect(stats['bulls'], equals(12)); // Total hits (6+4+2)
-      expect(stats['avgBulls'], equals('4.0')); // 12 hits / 3 rounds = 4.0
+      expect(stats['hits'], equals(12)); // Total hits (6+4+2) - Fixed key name
+      expect(stats['avgHits'], equals('4.0')); // 12 hits / 3 rounds = 4.0 - Fixed key name
     });
 
     /// Tests ShootX string generation methods
@@ -337,7 +337,7 @@ void main() {
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('recordNumbers')).thenReturn(25);
-      when(mockStorage.read('longtermNumbers')).thenReturn(4.2);
+      when(mockStorage.read('longtermHits')).thenReturn(4.2); // Fixed key name
 
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerShootx>(

@@ -403,17 +403,12 @@ void main() {
       // Act: Create summary
       List<SummaryLine> summary = controller.createSummaryLines();
 
-      // Assert: Summary contains expected lines
-      expect(summary.length, greaterThan(2));
+      // Assert: Summary contains expected lines (condensed format)
+      expect(summary.length, equals(3)); // Should have exactly 3 lines now
       
-      // Check total score line
+      // Check for condensed summary lines
+      expect(summary.any((line) => line.label == 'Anzahl Checks'), isTrue);
       expect(summary.any((line) => line.label == 'Punkte'), isTrue);
-      
-      // Check individual target lines with symbols
-      expect(summary.any((line) => line.checkSymbol == "✅"), isTrue); // Hit
-      expect(summary.any((line) => line.checkSymbol == "❌"), isTrue); // Miss
-      
-      // Check average line
       expect(summary.any((line) => line.label == 'ØPunkte'), isTrue);
     });
 
