@@ -138,8 +138,8 @@ class ViewFinishes extends StatelessWidget {
 
                             // Make radius bounds responsive to screen size
                             final isPhone = ResponsiveUtils.isPhoneSize(context);
-                            final minRadius = isPhone ? 120.0 : 200.0;
-                            final maxRadius = isPhone ? 180.0 : 280.0;
+                            final minRadius = isPhone ? 110.0 : 200.0; // Slightly reduced from 120 to 110
+                            final maxRadius = isPhone ? 170.0 : 280.0; // Slightly reduced from 180 to 170
                             
                             // Ensure minimum and maximum bounds based on device type
                             radius = radius.clamp(minRadius, maxRadius);

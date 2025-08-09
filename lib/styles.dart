@@ -4,9 +4,12 @@ import 'package:dart/utils/responsive.dart';
 // Button styles that need responsive sizing
 ButtonStyle headerButtonStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.getTextScaleFactor(context);
+  // Make button larger on phones to ensure arrow is fully visible
+  final phoneScale = ResponsiveUtils.isPhoneSize(context) ? 1.2 : 1.0;
   return OutlinedButton.styleFrom(
     side: const BorderSide(width: 3.0, color: Colors.white),
-    minimumSize: Size(40 * scaleFactor, 70 * scaleFactor),
+    minimumSize: Size(50 * scaleFactor * phoneScale, 80 * scaleFactor * phoneScale),
+    padding: EdgeInsets.all(8 * scaleFactor), // Add padding for better icon visibility
     shape: const CircleBorder(),
   );
 }
@@ -28,6 +31,7 @@ ButtonStyle okButtonStyle(BuildContext context) {
   return TextButton.styleFrom(
     backgroundColor: Colors.black,
     minimumSize: Size(150 * scaleFactor, 80 * scaleFactor),
+    alignment: Alignment.center, // Ensure text is centered vertically
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2))),
   );
@@ -40,10 +44,17 @@ TextStyle okButtonTextStyle(BuildContext context) {
   );
 }
 
-final finishButtonStyle = TextButton.styleFrom(
-  backgroundColor: Colors.black,
-  shape: const BeveledRectangleBorder(),
-);
+ButtonStyle finishButtonStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.getTextScaleFactor(context);
+  // Make buttons much smaller on phones to reduce dialog size
+  final phoneScale = ResponsiveUtils.isPhoneSize(context) ? 0.5 : 1.0; // Reduced from 0.7 to 0.5
+  return TextButton.styleFrom(
+    backgroundColor: Colors.black,
+    minimumSize: Size(60 * scaleFactor * phoneScale, 50 * scaleFactor * phoneScale), // Reduced base sizes
+    padding: EdgeInsets.all(4 * scaleFactor * phoneScale), // Reduced padding
+    shape: const BeveledRectangleBorder(),
+  );
+}
 
 TextStyle finishButtonTextStyle(BuildContext context) {
   return TextStyle(
@@ -96,7 +107,7 @@ TextStyle endSummaryEmphasizedTextStyle(BuildContext context) {
 
 TextStyle checkNumberStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 50 * scaleFactor,
@@ -151,7 +162,7 @@ TextStyle numpadScoreButtonSmallDisabledTextStyle(BuildContext context) {
 
 TextStyle scoreLabelTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 68 * scaleFactor,
@@ -161,7 +172,7 @@ TextStyle scoreLabelTextStyle(BuildContext context) {
 
 TextStyle scoreTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.75  // Increased from 0.6 to 0.75
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 68 * scaleFactor,
@@ -198,8 +209,12 @@ TextStyle inputTextStyle(BuildContext context) {
 }
 
 TextStyle emojiTextStyle(BuildContext context) {
+  // Use same scaling as checkNumberStyle for consistent alignment in RTCX
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Updated to match checkNumberStyle
+      : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    fontSize: 50 * scaleFactor, // Match checkNumberStyle font size
     fontFamily: "NotoColorEmoji",
   );
 }

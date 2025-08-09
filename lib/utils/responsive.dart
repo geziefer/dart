@@ -53,14 +53,14 @@ class ResponsiveUtils {
   
   static double getNumpadLargeButtonScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
-    // Fixed number buttons need slight reduction
-    return isPhoneSize(context) ? baseScale * 0.85 : baseScale;
+    // Increase scaling for better readability - there's space on buttons
+    return isPhoneSize(context) ? baseScale * 0.95 : baseScale; // Increased from 0.85
   }
   
   static double getNumpadSmallButtonScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
-    // Regular number buttons need significant reduction, but extra buttons need less reduction
-    return isPhoneSize(context) ? baseScale * 0.75 : baseScale;
+    // Increase scaling for better readability - there's space on buttons  
+    return isPhoneSize(context) ? baseScale * 0.85 : baseScale; // Increased from 0.75
   }
   
   static double getStatsScale(BuildContext context) {

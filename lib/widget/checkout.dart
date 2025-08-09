@@ -1,5 +1,6 @@
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:duration_button/duration_button.dart';
 import 'package:flutter/material.dart';
 
@@ -74,10 +75,12 @@ class Checkout extends StatelessWidget {
                 backgroundColor: Colors.grey[800],
                 width: 150,
                 height: 80,
-                child: Text(
-                  'OK',
-                  style: okButtonTextStyle(context),
-                  textAlign: TextAlign.center,
+                child: Center(
+                  child: Text(
+                    'OK',
+                    style: okButtonTextStyle(context),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
@@ -87,9 +90,13 @@ class Checkout extends StatelessWidget {
     }
 
     // here we are if finish happened and was possible with 1 to 3 darts
+    final isPhone = ResponsiveUtils.isPhoneSize(context);
+    final dialogWidth = isPhone ? 300.0 : 550.0; // Much smaller width on phones
+    final dialogHeight = isPhone ? 200.0 : 250.0; // Slightly smaller height on phones
+    
     return SizedBox(
-      height: 250,
-      width: 550,
+      height: dialogHeight,
+      width: dialogWidth,
       child: Column(
         children: [
           Text(
@@ -116,7 +123,7 @@ class Checkout extends StatelessWidget {
                           Navigator.pop(context);
                           onClosed?.call();
                         },
-                        style: finishButtonStyle,
+                        style: finishButtonStyle(context),
                         child: Text(
                           "1",
                           style: finishButtonTextStyle(context),
@@ -138,7 +145,7 @@ class Checkout extends StatelessWidget {
                           Navigator.pop(context);
                           onClosed?.call();
                         },
-                        style: finishButtonStyle,
+                        style: finishButtonStyle(context),
                         child: Text(
                           "2",
                           style: finishButtonTextStyle(context),
@@ -159,7 +166,7 @@ class Checkout extends StatelessWidget {
                         Navigator.pop(context);
                         onClosed?.call();
                       },
-                      style: finishButtonStyle,
+                      style: finishButtonStyle(context),
                       child: Text(
                         "3",
                         style: finishButtonTextStyle(context),
