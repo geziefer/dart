@@ -95,11 +95,11 @@ class Menu extends StatelessWidget {
     ),
     MenuItem(
       id: 'FQ2',
-      name: 'FinishQuest\n81-104',
-      view: const ViewFinishes(title: 'Finishes wissen 81-104'),
+      name: 'FinishQuest\n81-107',
+      view: const ViewFinishes(title: 'Finishes wissen 81-107'),
       getController: (context) =>
           Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 81, 'to': 104},
+      params: const {'from': 81, 'to': 107},
     ),
     MenuItem(
       id: 'C40',
@@ -120,18 +120,18 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'C121',
       name: 'Check 121',
-      view: const ViewCheck121(title: 'Check 121 in 3 Aufnahmen mit Safepoint'),
+      view: const ViewCheck121(title: 'Check 121 - 3 Aufnahmen mit Safepoint'),
       getController: (context) =>
           Provider.of<ControllerCheck121>(context, listen: false),
       params: const {},
     ),
     MenuItem(
       id: 'FQ3',
-      name: 'FinishQuest\n105-126',
-      view: const ViewFinishes(title: 'Finishes wissen 105-126'),
+      name: 'FinishQuest\n108-135',
+      view: const ViewFinishes(title: 'Finishes wissen 108-135'),
       getController: (context) =>
           Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 105, 'to': 126},
+      params: const {'from': 108, 'to': 135},
     ),
     MenuItem(
       id: 'B27',
@@ -159,11 +159,11 @@ class Menu extends StatelessWidget {
     ),
     MenuItem(
       id: 'FQ4',
-      name: 'FinishQuest\n127-170',
-      view: const ViewFinishes(title: 'Finishes wissen 127-170'),
+      name: 'FinishQuest\n136-170',
+      view: const ViewFinishes(title: 'Finishes wissen 136-170'),
       getController: (context) =>
           Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 127, 'to': 170},
+      params: const {'from': 136, 'to': 170},
     ),
     MenuItem(
       id: 'HI',
@@ -296,9 +296,9 @@ class MenuItemButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              ResponsiveUtils.isPhoneSize(context) 
-                  ? menuItem.name.replaceAll('\n', ' ')  // Single line on phones
-                  : menuItem.name,                       // Keep newlines on tablets
+              ResponsiveUtils.isPhoneSize(context)
+                  ? menuItem.name.replaceAll('\n', ' ') // Single line on phones
+                  : menuItem.name, // Keep newlines on tablets
               style: menuButtonTextStyle(context),
               textAlign: TextAlign.center,
             ),
