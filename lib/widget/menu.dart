@@ -72,7 +72,7 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'RTCS',
       name: 'RTC Single\nmax 10',
-      view: const ViewRTCX(title: 'Round the Clock Single in 10 Aufnahmen'),
+      view: const ViewRTCX(title: 'Round the Clock Single'),
       getController: (context) =>
           Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 10},
@@ -80,7 +80,7 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'RTCD',
       name: 'RTC Double\nmax 20',
-      view: const ViewRTCX(title: 'Round the Clock Double in 20 Aufnahmen'),
+      view: const ViewRTCX(title: 'Round the Clock Double'),
       getController: (context) =>
           Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
@@ -88,7 +88,7 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'RTCT',
       name: 'RTC Triple\nmax 20',
-      view: const ViewRTCX(title: 'Round the Clock Triple in 20 Aufnahmen'),
+      view: const ViewRTCX(title: 'Round the Clock Triple'),
       getController: (context) =>
           Provider.of<ControllerRTCX>(context, listen: false),
       params: const {'max': 20},
@@ -120,7 +120,7 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: 'C121',
       name: 'Check 121',
-      view: const ViewCheck121(title: 'Check 121 - 3 Aufnahmen mit Safepoint'),
+      view: const ViewCheck121(title: 'Check 121 - 3 Aufnahmen + Safepoint'),
       getController: (context) =>
           Provider.of<ControllerCheck121>(context, listen: false),
       params: const {},
@@ -184,8 +184,7 @@ class Menu extends StatelessWidget {
     MenuItem(
       id: '2D',
       name: '2 Darts',
-      view:
-          const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Double Bull'),
+      view: const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Bull'),
       getController: (context) =>
           Provider.of<ControllerTwoDarts>(context, listen: false),
       params: const {},
