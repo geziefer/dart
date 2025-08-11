@@ -166,7 +166,6 @@ TextStyle scoreLabelTextStyle(BuildContext context) {
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
-    height: 1.1, // Tighter line spacing (default is ~1.2)
     color: const Color.fromARGB(255, 215, 198, 132),
   );
 }
@@ -177,7 +176,6 @@ TextStyle scoreTextStyle(BuildContext context) {
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
-    height: 1.1, // Tighter line spacing (default is ~1.2)
     fontFeatures: const <FontFeature>[
       FontFeature.tabularFigures(),
     ],
