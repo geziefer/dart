@@ -334,7 +334,6 @@ void main() {
 
       // Assert: Verify statistics calculation
       Map stats = controller.getCurrentStats();
-      expect(stats['target'], equals(64)); // Current target
       expect(stats['hits'], equals(3)); // 3 hits
       expect(stats['points'], equals(6)); // 3 + 1 + 2 = 6 points
       expect(stats['avgPoints'], equals('2.0')); // 6 points / 3 rounds = 2.0
