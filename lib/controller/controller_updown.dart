@@ -179,7 +179,7 @@ class ControllerUpDown extends ControllerBase
     statsService.updateRecord<int>('recordHighestTarget', highestTarget);
 
     // Update long-term average
-    statsService.updateLongTermAverage('longtermSuccesses', averageSuccesses);
+    statsService.updateLongTermAverage('longtermAverage', averageSuccesses);
   }
 
   String getCurrentRounds() {
@@ -261,28 +261,23 @@ class ControllerUpDown extends ControllerBase
   String getStats() {
     int numberGames =
         statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int totalSuccesses =
-        statsService.getStat<int>('totalSuccesses', defaultValue: 0)!;
-    int recordTarget =
-        statsService.getStat<int>('recordTarget', defaultValue: 50)!;
+    int recordHighestTarget =
+        statsService.getStat<int>('recordHighestTarget', defaultValue: 50)!;
     int recordSuccesses =
         statsService.getStat<int>('recordSuccesses', defaultValue: 0)!;
-    double recordAverage =
-        statsService.getStat<double>('recordAverage', defaultValue: 0.0)!;
     double longtermAverage =
         statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
 
     String baseStats = formatStatsString(
       numberGames: numberGames,
       records: {
-        'Z': recordTarget, // Ziel (Target)
-        'C': recordSuccesses, // Checks
-        'P': recordAverage, // Score/Average
+        'Z': recordHighestTarget, // Record: Highest target
+        'C': recordSuccesses, // Record: Checks
       },
       averages: {
-        'C': longtermAverage, // Checks
+        'C': longtermAverage, // Average: Checks
       },
     );
-    return '$baseStats  #C: $totalSuccesses';
+    return baseStats;
   }
 }
