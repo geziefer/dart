@@ -20,7 +20,7 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('totalCorrectRounds')).thenReturn(0);
@@ -31,9 +31,9 @@ void main() {
       when(mockStorage.read('overallPercentage')).thenReturn(0.0);
       when(mockStorage.read('overallAverageTime')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       controller = ControllerFinishes.forTesting(mockStorage);
-      
+
       // Initialize with safe parameters
       controller.init(MenuItem(
         id: 'test_finishes',
@@ -46,7 +46,8 @@ void main() {
 
     /// Tests Finishes widget creation and initial state
     /// Verifies: widget can be created and displays correctly
-    testWidgets('Finishes widget creation and initial state', (WidgetTester tester) async {
+    testWidgets('Finishes widget creation and initial state',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -61,7 +62,7 @@ void main() {
       // Assert: Widget was created successfully
       expect(find.byType(ViewFinishes), findsOneWidget);
       expect(find.text('Finishes Test'), findsOneWidget);
-      
+
       // Assert: Initial controller state
       expect(controller.currentRound, equals(1));
       expect(controller.correctRounds, equals(0));
@@ -86,7 +87,7 @@ void main() {
       // Assert: Current finish is within specified range
       expect(controller.currentFinish, greaterThanOrEqualTo(100));
       expect(controller.currentFinish, lessThanOrEqualTo(170));
-      
+
       // Assert: Finish has valid preferred solution
       expect(controller.preferred, isNotEmpty);
       expect(controller.preferred, isA<List<String>>());
@@ -94,7 +95,8 @@ void main() {
 
     /// Tests Finishes text generation methods
     /// Verifies: text methods return correct information
-    testWidgets('Finishes text generation methods', (WidgetTester tester) async {
+    testWidgets('Finishes text generation methods',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -108,10 +110,12 @@ void main() {
 
       // Assert: Text methods return expected formats
       expect(controller.getPreferredText(), contains('Finish'));
-      expect(controller.getPreferredText(), contains(controller.currentFinish.toString()));
+      expect(controller.getPreferredText(),
+          contains(controller.currentFinish.toString()));
       expect(controller.getRoundCounterText(), equals('Runde 1'));
       expect(controller.getPreferredInput(), equals('')); // Initially empty
-      expect(controller.getAlternativeText(), equals('')); // Initially empty in preferred state
+      expect(controller.getAlternativeText(),
+          equals('')); // Initially empty in preferred state
       expect(controller.getAlternativeInput(), equals('')); // Initially empty
       expect(controller.getResultSymbol(), equals('')); // Initially empty
       expect(controller.getResultTime(), equals('')); // Initially empty
@@ -166,9 +170,10 @@ void main() {
 
     /// Tests Finishes with existing statistics
     /// Verifies: existing statistics are read correctly
-    testWidgets('Finishes with existing statistics', (WidgetTester tester) async {
+    testWidgets('Finishes with existing statistics',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('recordPercentage')).thenReturn(92.5);
@@ -220,9 +225,10 @@ void main() {
       // Assert: Current finish is within narrow range
       expect(controller.currentFinish, greaterThanOrEqualTo(150));
       expect(controller.currentFinish, lessThanOrEqualTo(160));
-      
+
       // Assert: Text reflects the new finish
-      expect(controller.getPreferredText(), contains(controller.currentFinish.toString()));
+      expect(controller.getPreferredText(),
+          contains(controller.currentFinish.toString()));
     });
 
     /// Tests Finishes state enum
@@ -243,14 +249,15 @@ void main() {
       expect(FinishesState.inputPreferred, isA<FinishesState>());
       expect(FinishesState.inputAlternative, isA<FinishesState>());
       expect(FinishesState.solution, isA<FinishesState>());
-      
+
       // Assert: Initial state is correct
       expect(controller.currentState, equals(FinishesState.inputPreferred));
     });
 
     /// Tests Finishes finish data structure
     /// Verifies: finish data is properly structured
-    testWidgets('Finishes data structure validation', (WidgetTester tester) async {
+    testWidgets('Finishes data structure validation',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -265,12 +272,13 @@ void main() {
       // Assert: Preferred finish is valid
       expect(controller.preferred, isA<List<String>>());
       expect(controller.preferred.isNotEmpty, isTrue);
-      
+
       // Assert: Alternative finish is valid (can be empty)
       expect(controller.alternative, isA<List<String>>());
-      
+
       // Assert: Finish exists in static data
-      expect(ControllerFinishes.finishes.containsKey(controller.currentFinish), isTrue);
+      expect(ControllerFinishes.finishes.containsKey(controller.currentFinish),
+          isTrue);
     });
   });
 }

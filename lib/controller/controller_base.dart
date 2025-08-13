@@ -8,44 +8,46 @@ import 'package:dart/utils/stats_formatter.dart';
 abstract class ControllerBase extends ChangeNotifier {
   // Common services that all controllers can use
   StatsService? _statsService;
-  
+
   // Callback functions for UI interactions (to decouple from BuildContext)
   VoidCallback? onGameEnded;
   Function(String message)? onShowMessage;
-  Function(int remaining, int score)? onShowCheckout; // For games with checkout dialogs
+  Function(int remaining, int score)?
+      onShowCheckout; // For games with checkout dialogs
   VoidCallback? onCheckoutClosed; // Called when checkout dialog is closed
-  
+
   /// Initialize common services (should be called by concrete controllers)
   void initializeServices(StorageService storageService) {
     _statsService = StatsService(storageService);
   }
-  
+
   /// Get the stats service (protected access for subclasses)
   StatsService get statsService {
     if (_statsService == null) {
-      throw StateError('StatsService not initialized. Call initializeServices() first.');
+      throw StateError(
+          'StatsService not initialized. Call initializeServices() first.');
     }
     return _statsService!;
   }
-  
+
   /// Common method to update game statistics
   void updateGameStats() {
     statsService.incrementGameCount();
     updateSpecificStats();
   }
-  
+
   /// Common method to trigger game end (calls callback instead of showing dialog directly)
   void triggerGameEnd() {
     updateGameStats();
     onGameEnded?.call();
   }
-  
+
   /// Common method to show summary dialog
   void showSummaryDialog(BuildContext context) {
     List<SummaryLine> summaryLines = createSummaryLines();
     SummaryService.showGameSummary(context, summaryLines: summaryLines);
   }
-  
+
   /// Format stats string using consistent formatting
   String formatStatsString({
     required int numberGames,
@@ -58,28 +60,28 @@ abstract class ControllerBase extends ChangeNotifier {
       averages: averages,
     );
   }
-  
+
   // Virtual methods that concrete controllers can override
-  
+
   /// Update game-specific statistics (called after common stats update)
   /// Override this method in concrete controllers
   void updateSpecificStats() {
     // Default implementation does nothing
   }
-  
+
   /// Create summary lines for the game summary dialog
   /// Override this method in concrete controllers
   List<SummaryLine> createSummaryLines() {
     // Default implementation returns empty list
     return [];
   }
-  
+
   /// Get the game title for display purposes
   /// Override this method in concrete controllers
   String getGameTitle() {
     return 'Game';
   }
-  
+
   // Existing utility method
   String createMultilineString(List list1, List list2, String prefix,
       String postfix, List optional, int limit, bool enumerate) {

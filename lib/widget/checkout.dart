@@ -18,7 +18,8 @@ class Checkout extends StatelessWidget {
   final NumpadController controller;
   final int score;
   final VoidCallback? onClosed;
-  final bool isCheckoutMode; // true for score-based checkout (default), false for target-based mode
+  final bool
+      isCheckoutMode; // true for score-based checkout (default), false for target-based mode
 
   /// Determines the maximum number of darts possible for a given score
   /// Returns -1 for numbers out of range - Note: no bogey number check, will be done in controller
@@ -50,11 +51,11 @@ class Checkout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int maxDarts;
-    
+
     if (isCheckoutMode) {
       // Calculate the maximum darts for the score that was just thrown (original behavior)
       maxDarts = getMaxDartsForScore(score);
-      
+
       if (remaining > 0 || maxDarts == -1) {
         return SizedBox(
           child: Column(
@@ -122,7 +123,7 @@ class Checkout extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 1 dart button - only show if remaining is exactly 1
-                if ((isCheckoutMode && maxDarts == 1) || 
+                if ((isCheckoutMode && maxDarts == 1) ||
                     (!isCheckoutMode && remaining == 1))
                   Expanded(
                     flex: 1,
@@ -145,7 +146,7 @@ class Checkout extends StatelessWidget {
                     ),
                   ),
                 // 2 dart button - show if remaining is 1 or 2
-                if ((isCheckoutMode && maxDarts <= 2) || 
+                if ((isCheckoutMode && maxDarts <= 2) ||
                     (!isCheckoutMode && (remaining == 1 || remaining == 2)))
                   Expanded(
                     flex: 1,

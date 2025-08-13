@@ -748,6 +748,7 @@ class ControllerFinishes extends ControllerBase
         return false;
     }
   }
+
   void _checkCorrect() {
     const listEquality = ListEquality();
     bool isCorrect = listEquality.equals(preferred, preferredInput) &&

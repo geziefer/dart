@@ -21,7 +21,7 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordFinishes')).thenReturn(0);
@@ -30,9 +30,9 @@ void main() {
       when(mockStorage.read('longtermScore')).thenReturn(0.0);
       when(mockStorage.read('longtermDarts')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       controller = ControllerXXXCheckout.forTesting(mockStorage);
-      
+
       // Initialize with safe parameters
       controller.init(MenuItem(
         id: 'test_501',
@@ -45,7 +45,8 @@ void main() {
 
     /// Tests XXXCheckout widget creation and initial state
     /// Verifies: widget can be created and displays correctly
-    testWidgets('XXXCheckout widget creation and initial state', (WidgetTester tester) async {
+    testWidgets('XXXCheckout widget creation and initial state',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -60,7 +61,7 @@ void main() {
       // Assert: Widget was created successfully
       expect(find.byType(ViewXXXCheckout), findsOneWidget);
       expect(find.text('501 Test'), findsOneWidget);
-      
+
       // Assert: Initial controller state
       expect(controller.remaining, equals(501));
       expect(controller.leg, equals(1));
@@ -71,7 +72,8 @@ void main() {
 
     /// Tests XXXCheckout basic input building (no submission)
     /// Verifies: input can be built without triggering any actions
-    testWidgets('XXXCheckout basic input building', (WidgetTester tester) async {
+    testWidgets('XXXCheckout basic input building',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -82,7 +84,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Build input digit by digit (no submission)
       controller.pressNumpadButton(1);
@@ -113,13 +114,12 @@ void main() {
         ),
       );
 
-
       // Test: Score > 180 should be rejected
       controller.pressNumpadButton(1);
       controller.pressNumpadButton(8);
       controller.pressNumpadButton(1); // "181" - should be rejected
       await tester.pump();
-      
+
       expect(controller.input, equals("18")); // Only "18" remains
       expect(controller.remaining, equals(501)); // No change
     });
@@ -137,7 +137,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Build some input
       controller.pressNumpadButton(1);
@@ -165,7 +164,6 @@ void main() {
           ),
         ),
       );
-
 
       // Test getInput method
       controller.pressNumpadButton(4);
@@ -242,7 +240,8 @@ void main() {
 
     /// Tests XXXCheckout bogey number validation
     /// Verifies: bogey numbers are rejected correctly
-    testWidgets('XXXCheckout bogey number validation', (WidgetTester tester) async {
+    testWidgets('XXXCheckout bogey number validation',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -256,17 +255,17 @@ void main() {
 
       // Test bogey numbers are rejected
       List<int> bogeyNumbers = [159, 162, 163, 165, 166, 168, 169];
-      
+
       for (int bogey in bogeyNumbers) {
         controller.input = "";
         String bogeyStr = bogey.toString();
-        
+
         // Try to input bogey number
         for (int i = 0; i < bogeyStr.length; i++) {
           controller.pressNumpadButton(int.parse(bogeyStr[i]));
         }
         await tester.pump();
-        
+
         // Assert: Bogey number was rejected
         expect(controller.input, isNot(equals(bogeyStr)));
       }
@@ -365,7 +364,8 @@ void main() {
 
     /// Tests XXXCheckout undo with submitted scores
     /// Verifies: undo works correctly after score submission
-    testWidgets('XXXCheckout undo submitted scores', (WidgetTester tester) async {
+    testWidgets('XXXCheckout undo submitted scores',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -437,7 +437,8 @@ void main() {
 
     /// Tests XXXCheckout average calculations
     /// Verifies: average score and darts are calculated correctly
-    testWidgets('XXXCheckout average calculations', (WidgetTester tester) async {
+    testWidgets('XXXCheckout average calculations',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -477,7 +478,11 @@ void main() {
         name: '501 Test',
         view: const ViewXXXCheckout(title: '501 Test'),
         getController: (_) => controller,
-        params: {'xxx': 50, 'max': -1, 'end': 1}, // Small values for easy testing
+        params: {
+          'xxx': 50,
+          'max': -1,
+          'end': 1
+        }, // Small values for easy testing
       ));
 
       await tester.pumpWidget(
@@ -539,10 +544,10 @@ void main() {
 
       // Assert: Summary contains expected lines
       expect(summary.length, equals(3));
-      
+
       // Check finished legs line
       expect(summary.any((line) => line.label == 'Finished'), isTrue);
-      
+
       // Check average lines
       expect(summary.any((line) => line.label == 'ØPunkte'), isTrue);
       expect(summary.any((line) => line.label == 'ØDarts'), isTrue);
@@ -550,9 +555,10 @@ void main() {
 
     /// Tests XXXCheckout with existing statistics
     /// Verifies: existing statistics are read correctly
-    testWidgets('XXXCheckout with existing statistics', (WidgetTester tester) async {
+    testWidgets('XXXCheckout with existing statistics',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(10);
       when(mockStorage.read('recordFinishes')).thenReturn(8);
@@ -599,17 +605,17 @@ void main() {
       controller.pressNumpadButton(8);
       controller.pressNumpadButton(1); // Try to input 181
       await tester.pump();
-      
+
       // Assert: Input over 180 was rejected
       expect(controller.input, equals("18")); // Only "18" should remain
-      
+
       // Test that valid inputs are accepted
       controller.input = ""; // Clear input
       controller.pressNumpadButton(1);
       controller.pressNumpadButton(8);
       controller.pressNumpadButton(0); // Input 180 (valid)
       await tester.pump();
-      
+
       expect(controller.input, equals("180")); // Should be accepted
     });
   });

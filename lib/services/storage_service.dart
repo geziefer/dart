@@ -30,7 +30,7 @@ class StorageService {
     try {
       final storage = _storageInstance;
       if (storage == null) return defaultValue;
-      
+
       return storage.read(key) ?? defaultValue;
     } catch (e) {
       developer.log(
@@ -48,7 +48,7 @@ class StorageService {
     try {
       final storage = _storageInstance;
       if (storage == null) return false;
-      
+
       storage.write(key, value);
       return true;
     } catch (e) {

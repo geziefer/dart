@@ -20,17 +20,17 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordHits')).thenReturn(0);
       when(mockStorage.read('recordPoints')).thenReturn(0);
       when(mockStorage.read('longtermPoints')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerCatchXX.forTesting(mockStorage);
-      
+
       // Initialize controller
       controller.init(MenuItem(
         id: 'test_catchxx',
@@ -43,7 +43,8 @@ void main() {
 
     /// Tests CatchXX widget creation and initial state
     /// Verifies: widget can be created and displays correctly
-    testWidgets('CatchXX widget creation and initial state', (WidgetTester tester) async {
+    testWidgets('CatchXX widget creation and initial state',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -55,11 +56,10 @@ void main() {
         ),
       );
 
-
       // Assert: Widget was created successfully
       expect(find.byType(ViewCatchXX), findsOneWidget);
       expect(find.text('CatchXX Test'), findsOneWidget);
-      
+
       // Assert: Initial controller state
       expect(controller.target, equals(61)); // Starting target
       expect(controller.round, equals(1)); // First round
@@ -71,7 +71,8 @@ void main() {
 
     /// Tests CatchXX basic scoring functionality
     /// Verifies: points are calculated correctly based on darts used
-    testWidgets('CatchXX basic scoring functionality', (WidgetTester tester) async {
+    testWidgets('CatchXX basic scoring functionality',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -82,7 +83,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Finish target 61 in 2 darts (should get 3 points)
       controller.pressNumpadButton(2); // 2 darts
@@ -108,7 +108,8 @@ void main() {
 
     /// Tests CatchXX different dart counts scoring
     /// Verifies: all dart count scenarios score correctly
-    testWidgets('CatchXX different dart counts scoring', (WidgetTester tester) async {
+    testWidgets('CatchXX different dart counts scoring',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -119,7 +120,6 @@ void main() {
           ),
         ),
       );
-
 
       // Test different dart counts
       final testCases = [
@@ -136,13 +136,13 @@ void main() {
       for (int i = 0; i < testCases.length; i++) {
         int darts = testCases[i]['darts'] as int;
         int expectedPoints = testCases[i]['expectedPoints'] as int;
-        
+
         controller.pressNumpadButton(darts);
         await tester.pump();
-        
+
         totalPoints += expectedPoints;
         totalHits += 1;
-        
+
         expect(controller.points, equals(totalPoints));
         expect(controller.hits, equals(totalHits));
         expect(controller.target, equals(61 + i + 1)); // Target advances
@@ -162,7 +162,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Use return button (no score)
       controller.pressNumpadButton(-1); // Return button
@@ -199,7 +198,6 @@ void main() {
         ),
       );
 
-
       // Act: Try to use button 1 (should be ignored)
       controller.pressNumpadButton(1); // Button 1
       await tester.pump();
@@ -228,7 +226,6 @@ void main() {
           ),
         ),
       );
-
 
       // Advance to target 99 (skip many targets to avoid long test)
       // Set target directly for testing purposes
@@ -262,7 +259,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(2); // 3 points
@@ -302,7 +298,6 @@ void main() {
         ),
       );
 
-
       // Act: Try to undo when no rounds have been played
       controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
@@ -329,7 +324,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(2); // 3 points
       await tester.pump();
@@ -348,7 +342,8 @@ void main() {
 
     /// Tests CatchXX string generation methods
     /// Verifies: string methods return properly formatted data
-    testWidgets('CatchXX string generation methods', (WidgetTester tester) async {
+    testWidgets('CatchXX string generation methods',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -360,7 +355,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds to generate data
       controller.pressNumpadButton(2); // Target 61: 3 points
       controller.pressNumpadButton(3); // Target 62: 2 points
@@ -370,12 +364,12 @@ void main() {
       expect(controller.getCurrentTargets(), isA<String>());
       expect(controller.getCurrentThrownPoints(), isA<String>());
       expect(controller.getCurrentTotalPoints(), isA<String>());
-      
+
       // Assert: String methods contain expected data patterns
       String targets = controller.getCurrentTargets();
       String thrownPoints = controller.getCurrentThrownPoints();
       String totalPoints = controller.getCurrentTotalPoints();
-      
+
       expect(targets, contains('61')); // Starting target
       expect(targets, contains('62')); // Second target
       expect(thrownPoints, contains('3')); // 3 points from first round
@@ -401,9 +395,12 @@ void main() {
       expect(controller.getInput(), equals(""));
 
       // Test isButtonDisabled method
-      expect(controller.isButtonDisabled(1), isTrue); // Button 1 always disabled
-      expect(controller.isButtonDisabled(2), isFalse); // Button 2 normally enabled
-      expect(controller.isButtonDisabled(3), isFalse); // Button 3 always enabled
+      expect(
+          controller.isButtonDisabled(1), isTrue); // Button 1 always disabled
+      expect(
+          controller.isButtonDisabled(2), isFalse); // Button 2 normally enabled
+      expect(
+          controller.isButtonDisabled(3), isFalse); // Button 3 always enabled
 
       // Test correctDarts method (not used in CatchXX, should not crash)
       controller.correctDarts(1); // Should do nothing
@@ -430,7 +427,6 @@ void main() {
         ),
       );
 
-
       // Act: Play through many targets (but not to 100 to avoid dialog)
       for (int i = 0; i < 30; i++) {
         controller.pressNumpadButton(2 + (i % 4)); // Varying darts (2-5)
@@ -442,16 +438,17 @@ void main() {
       expect(controller.round, equals(31)); // Should be at round 31
       expect(controller.hits, equals(30)); // 30 hits recorded
       expect(controller.points, greaterThan(0)); // Some points recorded
-      
+
       // Assert: No dialogs appeared (game not completed)
       expect(find.byType(Dialog), findsNothing);
     });
 
     /// Tests CatchXX statistics with existing data
     /// Verifies: statistics are read correctly from storage
-    testWidgets('CatchXX statistics with existing data', (WidgetTester tester) async {
+    testWidgets('CatchXX statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(4);
       when(mockStorage.read('recordHits')).thenReturn(35);

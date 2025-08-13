@@ -8,6 +8,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerSpeedBull extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -209,7 +210,6 @@ class ControllerSpeedBull extends ControllerBase
       },
     );
   }
-
 
   @override
   List<SummaryLine> createSummaryLines() {

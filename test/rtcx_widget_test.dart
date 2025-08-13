@@ -20,17 +20,17 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('numberFinishes')).thenReturn(0);
       when(mockStorage.read('recordDarts')).thenReturn(0);
       when(mockStorage.read('longtermChecks')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerRTCX.forTesting(mockStorage);
-      
+
       // Initialize with a proper MenuItem
       controller.init(MenuItem(
         id: 'test_rtcx',
@@ -43,7 +43,8 @@ void main() {
 
     /// Tests complete RTCX game workflow - hitting numbers 1-20 in sequence
     /// Verifies: number progression, dart counting, game completion
-    testWidgets('Complete RTCX game workflow - number progression', (WidgetTester tester) async {
+    testWidgets('Complete RTCX game workflow - number progression',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -55,7 +56,6 @@ void main() {
         ),
       );
 
-
       // Assert: Verify initial state
       expect(controller.currentNumber, equals(1));
       expect(controller.round, equals(1));
@@ -66,7 +66,7 @@ void main() {
       for (int i = 1; i <= 5; i++) {
         controller.pressNumpadButton(1); // Hit current number
         await tester.pump();
-        
+
         expect(controller.currentNumber, equals(i + 1));
         expect(controller.round, equals(i + 1));
         expect(controller.dart, equals(i * 3)); // 3 darts per round
@@ -91,7 +91,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(2); // Hit 1 and 2
@@ -130,7 +129,6 @@ void main() {
         ),
       );
 
-
       // Act: Use return button (should work as 0 hits)
       controller.pressNumpadButton(-1); // Return button
       await tester.pump();
@@ -144,7 +142,8 @@ void main() {
 
     /// Tests RTCX input validation and limits
     /// Verifies: numbers beyond remaining targets are ignored
-    testWidgets('RTCX input validation and limits', (WidgetTester tester) async {
+    testWidgets('RTCX input validation and limits',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -155,7 +154,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try to hit more numbers than remaining (should be ignored)
       controller.pressNumpadButton(25); // Too many hits
@@ -190,13 +188,12 @@ void main() {
         ),
       );
 
-
       // Act: Play game step by step to near completion
       controller.pressNumpadButton(10); // Hit numbers 1-10
       await tester.pump();
       controller.pressNumpadButton(9); // Hit numbers 11-19
       await tester.pump();
-      
+
       // Assert: Verify near completion state
       expect(controller.currentNumber, equals(20)); // At number 20
       expect(controller.finished, isFalse);
@@ -216,7 +213,7 @@ void main() {
     /// Verifies: statistics are calculated correctly during gameplay
     testWidgets('RTCX statistics calculation', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('numberFinishes')).thenReturn(3);
@@ -232,17 +229,16 @@ void main() {
         ),
       );
 
-
       // Act: Play some rounds and check current stats
       controller.pressNumpadButton(5); // Hit numbers 1-5
       await tester.pump();
-      
+
       // Assert: Verify current stats calculation
       Map stats = controller.getCurrentStats();
       expect(stats['throw'], equals(2)); // Current round
       expect(stats['darts'], equals(3)); // Total darts
       expect(stats['avgChecks'], equals('0.6')); // 3 darts / 5 numbers = 0.6
-      
+
       // Assert: Verify stats string format
       String statsString = controller.getStats();
       expect(statsString, contains('#S: 5')); // Number of games
@@ -264,7 +260,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try to undo when no throws have been made
       controller.pressNumpadButton(-2); // Undo button
@@ -300,18 +295,17 @@ void main() {
         ),
       );
 
-
       // Act: Play exactly 3 rounds (without completing the game)
       controller.pressNumpadButton(1); // Round 1
       await tester.pump();
       controller.pressNumpadButton(1); // Round 2
       await tester.pump();
-      
+
       // Assert: Verify state before final round
       expect(controller.round, equals(3));
       expect(controller.currentNumber, equals(3));
       expect(controller.finished, isFalse);
-      
+
       // Act: Play final round
       controller.pressNumpadButton(1); // Round 3
       await tester.pump();

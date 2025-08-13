@@ -25,7 +25,7 @@ void main() {
     setUp(() {
       mockStorage = MockGetStorage();
       mockContext = MockBuildContext();
-      
+
       // Set up default mock responses
       when(mockStorage.read(any)).thenReturn(null);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
@@ -126,7 +126,8 @@ void main() {
       );
 
       // Simulate menu button press logic: get controller and initialize
-      final retrievedHalfitController = halfitMenuItem.getController(mockContext) as ControllerHalfit;
+      final retrievedHalfitController =
+          halfitMenuItem.getController(mockContext) as ControllerHalfit;
       retrievedHalfitController.init(halfitMenuItem);
 
       // Assert: HalfIt controller initialized correctly
@@ -145,7 +146,8 @@ void main() {
         params: {'xxx': 501, 'max': -1, 'end': 5},
       );
 
-      final retrievedCheckoutController = checkoutMenuItem.getController(mockContext) as ControllerXXXCheckout;
+      final retrievedCheckoutController =
+          checkoutMenuItem.getController(mockContext) as ControllerXXXCheckout;
       retrievedCheckoutController.init(checkoutMenuItem);
 
       // Assert: XXXCheckout controller initialized with correct parameters
@@ -230,7 +232,7 @@ void main() {
     test('Menu grid layout business logic', () {
       // Test that Menu.games list has expected structure (from menu.dart)
       // This tests the business logic of game organization, not UI rendering
-      
+
       // Verify games list exists and has reasonable size
       expect(Menu.games, isA<List<MenuItem>>());
       expect(Menu.games.length, greaterThan(0));
@@ -292,20 +294,22 @@ void main() {
       }
 
       // Test parameter structures for different game types
-      final xxxCheckoutGames = Menu.games.where((game) => 
-        game.params.containsKey('xxx')).toList();
+      final xxxCheckoutGames =
+          Menu.games.where((game) => game.params.containsKey('xxx')).toList();
       expect(xxxCheckoutGames.length, greaterThan(0));
-      
+
       for (final game in xxxCheckoutGames) {
         expect(game.params['xxx'], isA<int>());
         expect(game.params['max'], isA<int>());
         expect(game.params['end'], isA<int>());
       }
 
-      final finishQuestGames = Menu.games.where((game) => 
-        game.params.containsKey('from') && game.params.containsKey('to')).toList();
+      final finishQuestGames = Menu.games
+          .where((game) =>
+              game.params.containsKey('from') && game.params.containsKey('to'))
+          .toList();
       expect(finishQuestGames.length, greaterThan(0));
-      
+
       for (final game in finishQuestGames) {
         expect(game.params['from'], isA<int>());
         expect(game.params['to'], isA<int>());
@@ -326,13 +330,13 @@ void main() {
           'params': <String, dynamic>{},
         },
         {
-          'id': 'test2', 
+          'id': 'test2',
           'name': 'Test 2',
           'params': {'xxx': 501, 'max': -1, 'end': 5},
         },
         {
           'id': 'test3',
-          'name': 'Test 3', 
+          'name': 'Test 3',
           'params': {'from': 61, 'to': 82},
         },
         {
@@ -363,11 +367,11 @@ void main() {
     /// Verifies: Menu widget can be instantiated
     test('Menu widget constructor business logic', () {
       const menu = Menu();
-      
+
       // Verify Menu widget can be created
       expect(menu, isA<Menu>());
       expect(menu, isA<StatelessWidget>());
-      
+
       // Verify Menu.games static list is accessible
       expect(Menu.games, isA<List<MenuItem>>());
       expect(Menu.games.isNotEmpty, isTrue);
@@ -381,28 +385,30 @@ void main() {
       const double crossAxisSpacing = 8.0;
       const double mainAxisSpacing = 8.0;
       const double padding = 8.0;
-      
+
       // Test that games fit in 4x5 grid
       final totalGames = Menu.games.length;
       const maxGridItems = 4 * 5; // 4 columns × 5 rows
       expect(totalGames, lessThanOrEqualTo(maxGridItems));
-      
+
       // Test grid calculations for different screen sizes
       final testCases = [
         {'width': 400.0, 'height': 600.0},
         {'width': 800.0, 'height': 1000.0},
         {'width': 1200.0, 'height': 800.0},
       ];
-      
+
       for (final testCase in testCases) {
         final availableWidth = testCase['width']! - (padding * 2);
         final availableHeight = testCase['height']! - (padding * 2);
-        
+
         // Calculate item dimensions (from build method logic)
-        final itemWidth = (availableWidth - (3 * crossAxisSpacing)) / crossAxisCount;
-        final itemHeight = (availableHeight - (4 * mainAxisSpacing)) / 5; // 5 rows
+        final itemWidth =
+            (availableWidth - (3 * crossAxisSpacing)) / crossAxisCount;
+        final itemHeight =
+            (availableHeight - (4 * mainAxisSpacing)) / 5; // 5 rows
         final aspectRatio = itemWidth / itemHeight;
-        
+
         expect(itemWidth, greaterThan(0));
         expect(itemHeight, greaterThan(0));
         expect(aspectRatio, greaterThan(0));
@@ -413,7 +419,7 @@ void main() {
     /// Verifies: Navigation logic when menu items are pressed
     test('Menu navigation business logic', () {
       final controller = ControllerHalfit.forTesting(mockStorage);
-      
+
       final menuItem = MenuItem(
         id: 'nav_test',
         name: 'Navigation Test',
@@ -426,10 +432,10 @@ void main() {
       // 1. Get controller from provider
       final retrievedController = menuItem.getController(mockContext);
       expect(retrievedController, equals(controller));
-      
+
       // 2. Initialize controller with fresh game state
       retrievedController.init(menuItem);
-      
+
       // 3. Verify controller is ready for navigation (cast to specific type for testing)
       final halfitController = retrievedController as ControllerHalfit;
       expect(halfitController.round, equals(1));
@@ -445,11 +451,12 @@ void main() {
       final finishQuestGames = <MenuItem>[];
       final rtcGames = <MenuItem>[];
       final specialGames = <MenuItem>[];
-      
+
       for (final game in Menu.games) {
         if (game.params.containsKey('xxx')) {
           xxxCheckoutGames.add(game);
-        } else if (game.params.containsKey('from') && game.params.containsKey('to')) {
+        } else if (game.params.containsKey('from') &&
+            game.params.containsKey('to')) {
           finishQuestGames.add(game);
         } else if (game.id.startsWith('RTC')) {
           rtcGames.add(game);
@@ -457,12 +464,12 @@ void main() {
           specialGames.add(game);
         }
       }
-      
+
       // Verify categorization results
       expect(xxxCheckoutGames.length, greaterThan(0));
       expect(finishQuestGames.length, greaterThan(0));
       expect(specialGames.length, greaterThan(0));
-      
+
       // Test XXXCheckout games have valid parameters
       for (final game in xxxCheckoutGames) {
         expect(game.params['xxx'], isA<int>());
@@ -471,7 +478,7 @@ void main() {
         expect(game.params['end'], isA<int>());
         expect(game.params['end'], greaterThan(0));
       }
-      
+
       // Test FinishQuest games have valid ranges
       for (final game in finishQuestGames) {
         expect(game.params['from'], isA<int>());
@@ -486,30 +493,37 @@ void main() {
     /// Verifies: Games are arranged with logical difficulty progression
     test('Menu game difficulty progression logic', () {
       // Test XXXCheckout difficulty progression
-      final checkoutGames = Menu.games.where((game) => 
-        game.params.containsKey('xxx')).toList();
-      
+      final checkoutGames =
+          Menu.games.where((game) => game.params.containsKey('xxx')).toList();
+
       // Find specific difficulty levels
-      final game170 = checkoutGames.firstWhere((game) => game.params['xxx'] == 170);
-      final game501 = checkoutGames.firstWhere((game) => game.params['xxx'] == 501);
-      
+      final game170 =
+          checkoutGames.firstWhere((game) => game.params['xxx'] == 170);
+      final game501 =
+          checkoutGames.firstWhere((game) => game.params['xxx'] == 501);
+
       expect(game170.params['xxx'], lessThan(game501.params['xxx']));
-      
+
       // Test FinishQuest range progression
-      final finishGames = Menu.games.where((game) => 
-        game.params.containsKey('from') && game.params.containsKey('to')).toList();
-      
+      final finishGames = Menu.games
+          .where((game) =>
+              game.params.containsKey('from') && game.params.containsKey('to'))
+          .toList();
+
       if (finishGames.length >= 2) {
         // Sort by 'from' value to check progression
-        finishGames.sort((a, b) => (a.params['from'] as int).compareTo(b.params['to'] as int));
-        
+        finishGames.sort((a, b) =>
+            (a.params['from'] as int).compareTo(b.params['to'] as int));
+
         for (int i = 0; i < finishGames.length - 1; i++) {
           final currentGame = finishGames[i];
           final nextGame = finishGames[i + 1];
-          
+
           // Verify ranges don't overlap inappropriately
-          expect(currentGame.params['from'], lessThanOrEqualTo(currentGame.params['to']));
-          expect(nextGame.params['from'], lessThanOrEqualTo(nextGame.params['to']));
+          expect(currentGame.params['from'],
+              lessThanOrEqualTo(currentGame.params['to']));
+          expect(nextGame.params['from'],
+              lessThanOrEqualTo(nextGame.params['to']));
         }
       }
     });
@@ -523,29 +537,29 @@ void main() {
           final xxx = game.params['xxx'] as int;
           final max = game.params['max'] as int;
           final end = game.params['end'] as int;
-          
+
           expect(xxx, greaterThan(0));
           expect(xxx, lessThanOrEqualTo(701)); // Reasonable upper limit
           expect(end, greaterThan(0));
           expect(end, lessThanOrEqualTo(10)); // Reasonable game count
-          
+
           if (max > 0) {
             expect(max, greaterThan(0));
             expect(max, lessThanOrEqualTo(20)); // Reasonable attempt limit
           }
         }
-        
+
         // Test FinishQuest parameter ranges
         if (game.params.containsKey('from') && game.params.containsKey('to')) {
           final from = game.params['from'] as int;
           final to = game.params['to'] as int;
-          
+
           expect(from, greaterThanOrEqualTo(61)); // Minimum finish
           expect(to, lessThanOrEqualTo(170)); // Maximum finish
           expect(from, lessThan(to)); // Valid range
           expect(to - from, greaterThanOrEqualTo(10)); // Reasonable range size
         }
-        
+
         // Test duration parameters
         if (game.params.containsKey('duration')) {
           final duration = game.params['duration'] as int;

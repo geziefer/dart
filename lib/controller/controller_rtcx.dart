@@ -182,7 +182,8 @@ class ControllerRTCX extends ControllerBase
   bool isButtonDisabled(int value) {
     // Disable buttons that would make currentNumber + value > 21
     // This happens when there are only 1 or 2 targets remaining
-    if (value > 0) { // Don't disable return button (-1) or undo button (-2)
+    if (value > 0) {
+      // Don't disable return button (-1) or undo button (-2)
       return currentNumber + value > 21;
     }
     return false; // Return button and undo button are never disabled

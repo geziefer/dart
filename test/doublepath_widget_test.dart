@@ -22,18 +22,19 @@ void main() {
     setUp(() {
       // Create fresh mock storage for each test
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('totalPoints')).thenReturn(0);
       when(mockStorage.read('recordRoundPoints')).thenReturn(0);
-      when(mockStorage.read('recordRoundAverage')).thenReturn(0.0); // Fix key name
+      when(mockStorage.read('recordRoundAverage'))
+          .thenReturn(0.0); // Fix key name
       when(mockStorage.read('longtermAverage')).thenReturn(0.0); // Fix key name
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerDoublePath.forTesting(mockStorage);
-      
+
       // Initialize with a proper MenuItem
       controller.init(MenuItem(
         id: 'test_doublepath',
@@ -46,10 +47,11 @@ void main() {
 
     /// Tests complete Double Path game workflow with all 5 rounds
     /// Verifies: target sequences, point calculation, round progression, game ending
-    testWidgets('Complete Double Path game workflow - all 5 rounds', (WidgetTester tester) async {
+    testWidgets('Complete Double Path game workflow - all 5 rounds',
+        (WidgetTester tester) async {
       // Disable overflow errors for this test
       disableOverflowError();
-      
+
       // Arrange: Set up the game widget
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
@@ -59,7 +61,6 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Verify initial state
       expect(controller.currentRound, equals(0));
@@ -74,7 +75,8 @@ void main() {
       // Assert: Verify Round 1 results
       expect(controller.currentRound, equals(1));
       expect(controller.hitCounts[0], equals(2));
-      expect(controller.points[0], equals(3)); // Controller uses fixed scoring: 2 hits = 3 points
+      expect(controller.points[0],
+          equals(3)); // Controller uses fixed scoring: 2 hits = 3 points
       expect(controller.totalPoints[0], equals(3));
 
       // Act: Play Round 2 (20-10-5) - hit 3 targets (perfect)
@@ -84,7 +86,8 @@ void main() {
       // Assert: Verify Round 2 results
       expect(controller.currentRound, equals(2));
       expect(controller.hitCounts[1], equals(3));
-      expect(controller.points[1], equals(6)); // 3 hits = 6 points (controller's fixed scoring)
+      expect(controller.points[1],
+          equals(6)); // 3 hits = 6 points (controller's fixed scoring)
       expect(controller.totalPoints[1], equals(9)); // 3 + 6
 
       // Act: Play Round 3 (4-2-1) - hit 1 target
@@ -94,7 +97,8 @@ void main() {
       // Assert: Verify Round 3 results
       expect(controller.currentRound, equals(3));
       expect(controller.hitCounts[2], equals(1));
-      expect(controller.points[2], equals(1)); // 1 hit = 1 point (controller's fixed scoring)
+      expect(controller.points[2],
+          equals(1)); // 1 hit = 1 point (controller's fixed scoring)
       expect(controller.totalPoints[2], equals(10)); // 9 + 1
 
       // Act: Play Round 4 (12-6-3) - hit 0 targets
@@ -114,7 +118,8 @@ void main() {
       // Assert: Verify game completion
       expect(controller.currentRound, equals(5)); // Game completed
       expect(controller.hitCounts[4], equals(2));
-      expect(controller.points[4], equals(3)); // 2 hits = 3 points (controller's fixed scoring)
+      expect(controller.points[4],
+          equals(3)); // 2 hits = 3 points (controller's fixed scoring)
       expect(controller.totalPoints[4], equals(13)); // 10 + 3
       expect(find.byType(Dialog), findsOneWidget);
 
@@ -128,9 +133,10 @@ void main() {
 
     /// Tests undo functionality during Double Path gameplay
     /// Verifies: undo removes last round, points recalculate correctly
-    testWidgets('Double Path undo functionality test', (WidgetTester tester) async {
+    testWidgets('Double Path undo functionality test',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -140,7 +146,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
@@ -148,7 +153,7 @@ void main() {
       await tester.pump();
       controller.pressNumpadButton(1); // Round 3: 1 hit
       await tester.pump();
-      
+
       // Assert: Verify state before undo
       expect(controller.currentRound, equals(3));
       expect(controller.hitCounts.length, equals(3));
@@ -168,7 +173,7 @@ void main() {
       // Act: Continue game after undo with different choice
       controller.pressNumpadButton(0); // 0 hits instead of 1
       await tester.pump();
-      
+
       // Assert: Game continues correctly after undo
       expect(controller.currentRound, equals(3));
       expect(controller.hitCounts[2], equals(0)); // Third round now has 0 hits
@@ -177,9 +182,10 @@ void main() {
 
     /// Tests point calculation for different target sequences
     /// Verifies: points are calculated correctly for each target sequence
-    testWidgets('Double Path point calculation verification', (WidgetTester tester) async {
+    testWidgets('Double Path point calculation verification',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -188,7 +194,6 @@ void main() {
           ),
         ),
       );
-
 
       // Test point calculations for each round with perfect scores (3 hits)
       List<int> expectedPerfectScores = [
@@ -204,22 +209,25 @@ void main() {
         // Act: Hit all 3 targets in current round
         controller.pressNumpadButton(3);
         await tester.pump();
-        
+
         cumulativeTotal += expectedPerfectScores[round];
-        
+
         // Assert: Verify point calculation for this round
         expect(controller.points[round], equals(expectedPerfectScores[round]),
-            reason: 'Round ${round + 1} should score ${expectedPerfectScores[round]} points');
+            reason:
+                'Round ${round + 1} should score ${expectedPerfectScores[round]} points');
         expect(controller.totalPoints[round], equals(cumulativeTotal),
-            reason: 'Cumulative total after round ${round + 1} should be $cumulativeTotal');
+            reason:
+                'Cumulative total after round ${round + 1} should be $cumulativeTotal');
       }
     });
 
     /// Tests return button functionality (equivalent to 0 hits)
     /// Verifies: return button (-1) works as 0 hits input
-    testWidgets('Double Path return button for zero hits', (WidgetTester tester) async {
+    testWidgets('Double Path return button for zero hits',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -228,7 +236,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Use return button (should work as 0 hits)
       controller.pressNumpadButton(-1); // Return button
@@ -245,7 +252,7 @@ void main() {
     /// Verifies: invalid inputs are rejected, valid inputs are accepted
     testWidgets('Double Path input validation', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -254,7 +261,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try invalid inputs
       controller.pressNumpadButton(4); // Too high
@@ -281,15 +287,18 @@ void main() {
 
     /// Tests statistics with existing data
     /// Verifies: statistics are updated correctly with existing game data
-    testWidgets('Double Path statistics with existing data', (WidgetTester tester) async {
+    testWidgets('Double Path statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(3);
       when(mockStorage.read('totalPoints')).thenReturn(450);
       when(mockStorage.read('recordRoundPoints')).thenReturn(70);
-      when(mockStorage.read('recordRoundAverage')).thenReturn(25.0); // Fix key name
-      when(mockStorage.read('longtermAverage')).thenReturn(150.0); // Fix key name
+      when(mockStorage.read('recordRoundAverage'))
+          .thenReturn(25.0); // Fix key name
+      when(mockStorage.read('longtermAverage'))
+          .thenReturn(150.0); // Fix key name
 
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
@@ -299,7 +308,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a game scoring 180 points total
       List<int> hits = [3, 3, 2, 1, 2]; // Mixed performance
@@ -318,7 +326,7 @@ void main() {
     /// Verifies: undo doesn't work when no rounds played
     testWidgets('Double Path undo edge cases', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -327,7 +335,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try undo with no rounds played
       controller.pressNumpadButton(-2);
@@ -353,9 +360,10 @@ void main() {
 
     /// Tests target sequence consistency
     /// Verifies: target sequences remain consistent throughout game
-    testWidgets('Double Path target sequence consistency', (WidgetTester tester) async {
+    testWidgets('Double Path target sequence consistency',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -366,8 +374,14 @@ void main() {
       );
 
       // Assert: Verify all target sequences are correct
-      List<String> expectedSequences = ['16-8-4', '20-10-5', '4-2-1', '12-6-3', '18-9-B'];
-      
+      List<String> expectedSequences = [
+        '16-8-4',
+        '20-10-5',
+        '4-2-1',
+        '12-6-3',
+        '18-9-B'
+      ];
+
       for (int i = 0; i < expectedSequences.length; i++) {
         expect(controller.targets[i], equals(expectedSequences[i]),
             reason: 'Target sequence $i should be ${expectedSequences[i]}');
@@ -375,7 +389,7 @@ void main() {
 
       // Assert: Verify sequences don't change during gameplay
       List<String> originalTargets = List.from(controller.targets);
-      
+
       // Act: Play through some rounds
       for (int i = 0; i < 3; i++) {
         controller.pressNumpadButton(2);
@@ -391,9 +405,10 @@ void main() {
 
     /// Tests getCurrentStats method
     /// Verifies: current game statistics are calculated correctly
-    testWidgets('Double Path current stats calculation', (WidgetTester tester) async {
+    testWidgets('Double Path current stats calculation',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerDoublePath>(
           create: (_) => controller,
@@ -402,7 +417,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(3); // Perfect round 1
@@ -416,9 +430,10 @@ void main() {
       expect(controller.currentRound, equals(3));
       expect(controller.hitCounts.length, equals(3));
       expect(controller.points.length, equals(3));
-      
+
       // Verify total points calculation
-      int expectedTotal = controller.points.fold(0, (sum, points) => sum + points);
+      int expectedTotal =
+          controller.points.fold(0, (sum, points) => sum + points);
       expect(controller.totalPoints.last, equals(expectedTotal));
     });
   });

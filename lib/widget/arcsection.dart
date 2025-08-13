@@ -68,11 +68,13 @@ class ArcSectionPainter extends CustomPainter {
     final centerArcPaint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.stroke
-      ..strokeWidth = radius * 0.15; // Much thicker stroke for larger outer bull
+      ..strokeWidth =
+          radius * 0.15; // Much thicker stroke for larger outer bull
 
     final centerArcRect = Rect.fromCircle(
         center: Offset(size.width / 2, size.height / 2),
-        radius: centerCircleRadius * 1.75); // Larger radius for bigger outer bull
+        radius:
+            centerCircleRadius * 1.75); // Larger radius for bigger outer bull
     canvas.drawArc(centerArcRect, 0, 2 * pi, false, centerArcPaint);
   }
 

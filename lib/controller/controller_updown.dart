@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerUpDown extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -147,7 +148,6 @@ class ControllerUpDown extends ControllerBase
       }
     }
   }
-
 
   @override
   List<SummaryLine> createSummaryLines() {

@@ -159,7 +159,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(3); // Hit target 1 with 3
       await tester.pump();
@@ -219,7 +218,6 @@ void main() {
         ),
       );
 
-
       // Act: Use return button (should work as miss)
       controller.pressNumpadButton(-1); // Return button
       await tester.pump();
@@ -247,7 +245,6 @@ void main() {
           ),
         ),
       );
-
 
       // Verify initial target
       expect(controller.targets.length, equals(1));
@@ -298,7 +295,6 @@ void main() {
         ),
       );
 
-
       // Act: Skip to Bull target quickly
       while (controller.currentTargetIndex < 20 && !controller.gameEnded) {
         controller.pressNumpadButton(0); // Miss all targets
@@ -343,7 +339,6 @@ void main() {
         ),
       );
 
-
       // Act: Hit targets to reduce score to near zero
       // Start with 27, need to lose 27+ points through misses
       // Miss targets: 1(-2), 2(-4), 3(-6), 4(-8), 5(-10) = -30 total
@@ -373,7 +368,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try invalid inputs
       controller.pressNumpadButton(-3); // Invalid negative
@@ -419,7 +413,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a game with 12 successful rounds
       for (int i = 0; i < 12; i++) {
         controller.pressNumpadButton(1); // Small hits
@@ -457,7 +450,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try undo with no rounds played
       controller.pressNumpadButton(-2);
@@ -498,7 +490,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(3); // Hit

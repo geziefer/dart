@@ -83,7 +83,9 @@ class ViewSpeedBull extends StatelessWidget {
                                       child: Text(
                                         'START',
                                         style: TextStyle(
-                                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
+                                            fontSize: ResponsiveUtils
+                                                .getResponsiveFontSize(
+                                                    context, 24),
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),

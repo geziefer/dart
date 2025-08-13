@@ -19,7 +19,7 @@ class ViewXXXCheckout extends StatelessWidget {
   Widget build(BuildContext context) {
     ControllerXXXCheckout controller =
         Provider.of<ControllerXXXCheckout>(context);
-    
+
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);

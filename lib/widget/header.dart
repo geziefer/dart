@@ -41,7 +41,8 @@ class Header extends StatelessWidget {
             child: Icon(
               Icons.arrow_back,
               color: const Color.fromARGB(255, 215, 198, 132),
-              size: ResponsiveUtils.getResponsiveFontSize(context, 40), // Make it larger and responsive
+              size: ResponsiveUtils.getResponsiveFontSize(
+                  context, 40), // Make it larger and responsive
             ),
           ),
         ),

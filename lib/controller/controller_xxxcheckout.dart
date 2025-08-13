@@ -133,8 +133,8 @@ class ControllerXXXCheckout extends ControllerBase
       if (value == -3) {
         int parsedInput = int.tryParse(input) ?? 0;
         int finishScore = remaining - parsedInput;
-        if (parsedInput != 1 && 
-            finishScore <= 170 && 
+        if (parsedInput != 1 &&
+            finishScore <= 170 &&
             !isBogeyNumber(finishScore)) {
           input = finishScore.toString();
         } else {
@@ -196,7 +196,7 @@ class ControllerXXXCheckout extends ControllerBase
         if (completedLegs < end) {
           leg++;
         }
-        
+
         // Don't trigger game end here - let it be triggered by checkout dialog callback
         return; // Return early to prevent further processing
       }
@@ -230,7 +230,7 @@ class ControllerXXXCheckout extends ControllerBase
 
     // Collect dart counts for finished rounds only
     List<int> finishedDarts = [];
-    
+
     for (int i = 0; i < results.length && i < finishes.length; i++) {
       if (finishes[i]) {
         finishedDarts.add(results[i]);
@@ -238,11 +238,10 @@ class ControllerXXXCheckout extends ControllerBase
     }
 
     // Create condensed summary line
-    String dartsText = finishedDarts.isEmpty ? "" : " (${finishedDarts.join(', ')})";
-    lines.add(SummaryLine(
-      'Finished', 
-      '${finishedDarts.length}/$end$dartsText'
-    ));
+    String dartsText =
+        finishedDarts.isEmpty ? "" : " (${finishedDarts.join(', ')})";
+    lines
+        .add(SummaryLine('Finished', '${finishedDarts.length}/$end$dartsText'));
 
     // Add average score line
     lines.add(SummaryService.createValueLine(

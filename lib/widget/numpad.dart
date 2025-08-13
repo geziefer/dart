@@ -122,33 +122,41 @@ class Numpad extends StatelessWidget {
       String label, int value, bool large) {
     bool isDisabled = controller.isButtonDisabled(value);
     bool isEmoji = label == '❌' || label == '✅';
-    
+
     // Use smaller margins on phone screens to save space
     final buttonMargin = ResponsiveUtils.getButtonMargin(context);
-    
+
     return Expanded(
       flex: 1,
       child: Container(
         margin: EdgeInsets.all(buttonMargin),
         child: TextButton(
-          onPressed: isDisabled ? null : () {
-            // call interface method from controller
-            controller.pressNumpadButton(value);
-          },
+          onPressed: isDisabled
+              ? null
+              : () {
+                  // call interface method from controller
+                  controller.pressNumpadButton(value);
+                },
           // for enter button accept long press as rest value, other ignore
-          onLongPress: isDisabled ? null : () {
-            if (value == -1) {
-              controller.pressNumpadButton(-3);
-            }
-          },
+          onLongPress: isDisabled
+              ? null
+              : () {
+                  if (value == -1) {
+                    controller.pressNumpadButton(-3);
+                  }
+                },
           style: isDisabled ? numpadDisabledTextStyle : numpadTextStyle,
           child: Text(
             label,
-            style: isEmoji 
+            style: isEmoji
                 ? emojiTextStyle(context)
-                : isDisabled 
-                    ? (large ? numpadScoreButtonLargeDisabledTextStyle(context) : numpadScoreButtonSmallDisabledTextStyle(context))
-                    : (large ? numpadScoreButtonLargeTextStyle(context) : numpadScoreButtonSmallTextStyle(context)),
+                : isDisabled
+                    ? (large
+                        ? numpadScoreButtonLargeDisabledTextStyle(context)
+                        : numpadScoreButtonSmallDisabledTextStyle(context))
+                    : (large
+                        ? numpadScoreButtonLargeTextStyle(context)
+                        : numpadScoreButtonSmallTextStyle(context)),
             textAlign: TextAlign.center,
           ),
         ),

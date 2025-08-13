@@ -7,6 +7,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerKillBull extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -37,7 +38,8 @@ class ControllerKillBull extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     roundNumbers = <int>[];
@@ -52,6 +54,7 @@ class ControllerKillBull extends ControllerBase
   void initFromProvider(MenuItem item) {
     init(item);
   }
+
   @override
   void pressNumpadButton(int value) {
     // undo button pressed
@@ -68,18 +71,18 @@ class ControllerKillBull extends ControllerBase
       if (value == -1) {
         value = 0;
       }
-      
+
       // calculate score: number of bulls * 25 points each
       int roundScore = value * 25;
-      
+
       // add round data
       roundNumbers.add(round);
       roundScores.add(roundScore);
       totalScore += roundScore;
       totalScores.add(totalScore);
-      
+
       notifyListeners();
-      
+
       // check if game should end (0 bulls hit)
       if (value == 0) {
         gameEnded = true;
@@ -102,7 +105,8 @@ class ControllerKillBull extends ControllerBase
     return [
       SummaryService.createValueLine('Runden', round),
       SummaryService.createValueLine('Punkte', totalScore),
-      SummaryService.createAverageLine('Punkte/Runde', _getAvgScore(), emphasized: true),
+      SummaryService.createAverageLine('Punkte/Runde', _getAvgScore(),
+          emphasized: true),
     ];
   }
 
@@ -114,7 +118,7 @@ class ControllerKillBull extends ControllerBase
     // Update records
     statsService.updateRecord<int>('recordRounds', round);
     statsService.updateRecord<int>('recordScore', totalScore);
-    
+
     // Update long-term average using totalScore (not avgScore) to match old behavior
     statsService.updateLongTermAverage('longtermScore', totalScore.toDouble());
   }
@@ -160,19 +164,23 @@ class ControllerKillBull extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordRounds = statsService.getStat<int>('recordRounds', defaultValue: 0)!;
-    int recordScore = statsService.getStat<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordRounds =
+        statsService.getStat<int>('recordRounds', defaultValue: 0)!;
+    int recordScore =
+        statsService.getStat<int>('recordScore', defaultValue: 0)!;
+    double longtermScore =
+        statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'R': recordRounds,         // Runden
-        'P': recordScore,          // Punkte
+        'R': recordRounds, // Runden
+        'P': recordScore, // Punkte
       },
       averages: {
-        'P': longtermScore,        // Durchschnittspunkte
+        'P': longtermScore, // Durchschnittspunkte
       },
     );
   }

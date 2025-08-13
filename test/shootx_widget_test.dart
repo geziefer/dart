@@ -20,16 +20,16 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordNumbers')).thenReturn(0);
       when(mockStorage.read('longtermNumbers')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerShootx.forTesting(mockStorage);
-      
+
       // Initialize with safe parameters (10 rounds max, target number 20)
       controller.init(MenuItem(
         id: 'test_shoot20',
@@ -42,7 +42,8 @@ void main() {
 
     /// Tests ShootX widget creation and initial state
     /// Verifies: widget can be created and displays correctly
-    testWidgets('ShootX widget creation and initial state', (WidgetTester tester) async {
+    testWidgets('ShootX widget creation and initial state',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -54,11 +55,10 @@ void main() {
         ),
       );
 
-
       // Assert: Widget was created successfully
       expect(find.byType(ViewShootx), findsOneWidget);
       expect(find.text('Shoot 20s Test'), findsOneWidget);
-      
+
       // Assert: Initial controller state
       expect(controller.number, equals(0)); // No hits yet
       expect(controller.round, equals(1)); // First round
@@ -69,7 +69,8 @@ void main() {
 
     /// Tests ShootX basic scoring functionality
     /// Verifies: hits are recorded correctly, totals are calculated
-    testWidgets('ShootX basic scoring functionality', (WidgetTester tester) async {
+    testWidgets('ShootX basic scoring functionality',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -80,7 +81,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Record some hits in first round
       controller.pressNumpadButton(3); // 3 hits
@@ -107,7 +107,8 @@ void main() {
 
     /// Tests ShootX return button (0 hits) functionality
     /// Verifies: return button records 0 hits correctly
-    testWidgets('ShootX return button functionality', (WidgetTester tester) async {
+    testWidgets('ShootX return button functionality',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -118,7 +119,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Use return button (should record 0 hits)
       controller.pressNumpadButton(-1); // Return button
@@ -144,7 +144,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(4); // 4 hits
@@ -183,7 +182,6 @@ void main() {
         ),
       );
 
-
       // Act: Try to undo when no rounds have been played
       controller.pressNumpadButton(-2); // Undo button
       await tester.pump();
@@ -208,7 +206,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(6); // 6 hits in round 1
       await tester.pump();
@@ -219,7 +216,8 @@ void main() {
       Map stats = controller.getCurrentStats();
       expect(stats['round'], equals(3)); // Current round
       expect(stats['hits'], equals(10)); // Total hits (6+4) - Fixed key name
-      expect(stats['avgHits'], equals('5.0')); // 10 hits / 2 rounds = 5.0 - Fixed key name
+      expect(stats['avgHits'],
+          equals('5.0')); // 10 hits / 2 rounds = 5.0 - Fixed key name
 
       // Act: Play one more round
       controller.pressNumpadButton(2); // 2 hits in round 3
@@ -229,12 +227,14 @@ void main() {
       stats = controller.getCurrentStats();
       expect(stats['round'], equals(4)); // Current round
       expect(stats['hits'], equals(12)); // Total hits (6+4+2) - Fixed key name
-      expect(stats['avgHits'], equals('4.0')); // 12 hits / 3 rounds = 4.0 - Fixed key name
+      expect(stats['avgHits'],
+          equals('4.0')); // 12 hits / 3 rounds = 4.0 - Fixed key name
     });
 
     /// Tests ShootX string generation methods
     /// Verifies: string methods return properly formatted data
-    testWidgets('ShootX string generation methods', (WidgetTester tester) async {
+    testWidgets('ShootX string generation methods',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -246,7 +246,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds to generate data
       controller.pressNumpadButton(3); // Round 1: 3 hits
       controller.pressNumpadButton(1); // Round 2: 1 hit
@@ -256,12 +255,12 @@ void main() {
       expect(controller.getCurrentRounds(), isA<String>());
       expect(controller.getCurrentThrownNumbers(), isA<String>());
       expect(controller.getCurrentTotalNumbers(), isA<String>());
-      
+
       // Assert: String methods contain expected data patterns
       String rounds = controller.getCurrentRounds();
       String thrownNumbers = controller.getCurrentThrownNumbers();
       String totalNumbers = controller.getCurrentTotalNumbers();
-      
+
       expect(rounds, contains('1')); // Round 1
       expect(rounds, contains('2')); // Round 2
       expect(thrownNumbers, contains('3')); // 3 hits
@@ -313,7 +312,6 @@ void main() {
         ),
       );
 
-
       // Act: Play through several rounds (but not all 10 to avoid dialog)
       for (int i = 1; i <= 8; i++) {
         controller.pressNumpadButton(i % 4); // Varying hits
@@ -324,16 +322,17 @@ void main() {
       expect(controller.round, equals(9)); // Should be at round 9
       expect(controller.rounds.length, equals(8)); // 8 rounds played
       expect(controller.number, greaterThan(0)); // Some hits recorded
-      
+
       // Assert: No dialogs appeared (game not completed)
       expect(find.byType(Dialog), findsNothing);
     });
 
     /// Tests ShootX statistics with existing data
     /// Verifies: statistics are read correctly from storage
-    testWidgets('ShootX statistics with existing data', (WidgetTester tester) async {
+    testWidgets('ShootX statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('recordNumbers')).thenReturn(25);

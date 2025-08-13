@@ -7,6 +7,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+
 class ControllerHalfit extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -52,7 +53,8 @@ class ControllerHalfit extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     rounds = <String>[labels.first];
@@ -82,12 +84,12 @@ class ControllerHalfit extends ControllerBase
         hit.removeLast();
         round--;
         totalScore -= lastscore;
-        
+
         // If we're back to round 1, restore the initial score of 40 in totals
         if (round == 1) {
           totals = <int>[40];
         }
-        
+
         score = 0;
       }
       input = "";
@@ -104,14 +106,14 @@ class ControllerHalfit extends ControllerBase
       }
       scores.add(score);
       totalScore += score;
-      
+
       // For first round, replace the initial 40; for subsequent rounds, add new total
       if (round == 1) {
         totals[0] = totalScore; // replace initial score
       } else {
         totals.add(totalScore); // add new total for subsequent rounds
       }
-      
+
       if (score > 0) {
         hit.add(true);
       } else {
@@ -153,9 +155,11 @@ class ControllerHalfit extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     return [
-      SummaryService.createValueLine('Anzahl Checks', hit.where((h) => h).length),
+      SummaryService.createValueLine(
+          'Anzahl Checks', hit.where((h) => h).length),
       SummaryService.createValueLine('Punkte', totalScore),
-      SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'], emphasized: true),
+      SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'],
+          emphasized: true),
     ];
   }
 
@@ -165,10 +169,10 @@ class ControllerHalfit extends ControllerBase
   @override
   void updateSpecificStats() {
     double avgScore = _getAvgScore();
-    
+
     // Update records
     statsService.updateRecord<int>('recordScore', totalScore);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermScore', avgScore);
   }
@@ -196,10 +200,11 @@ class ControllerHalfit extends ControllerBase
 
   double _getAvgScore() {
     if (round == 1) return 0;
-    
+
     // Sum only positive scores (Option C)
-    int positiveScoreSum = scores.where((score) => score > 0).fold(0, (sum, score) => sum + score);
-    
+    int positiveScoreSum =
+        scores.where((score) => score > 0).fold(0, (sum, score) => sum + score);
+
     // Divide by total rounds played
     return positiveScoreSum / (round - 1);
   }
@@ -219,17 +224,20 @@ class ControllerHalfit extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordScore = statsService.getStat<int>('recordScore', defaultValue: 0)!;
-    double longtermScore = statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordScore =
+        statsService.getStat<int>('recordScore', defaultValue: 0)!;
+    double longtermScore =
+        statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'P': recordScore,          // Punkte
+        'P': recordScore, // Punkte
       },
       averages: {
-        'P': longtermScore,        // Durchschnittspunkte
+        'P': longtermScore, // Durchschnittspunkte
       },
     );
   }

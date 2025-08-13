@@ -22,18 +22,20 @@ void main() {
     setUp(() {
       // Create fresh mock storage for each test
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('totalSuccessfulRounds')).thenReturn(0);
-      when(mockStorage.read('totalRoundsPlayed')).thenReturn(0); // Add missing mock
+      when(mockStorage.read('totalRoundsPlayed'))
+          .thenReturn(0); // Add missing mock
       when(mockStorage.read('highestTarget')).thenReturn(0); // Add missing mock
-      when(mockStorage.read('highestSavePoint')).thenReturn(0); // Add missing mock
+      when(mockStorage.read('highestSavePoint'))
+          .thenReturn(0); // Add missing mock
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerCheck121.forTesting(mockStorage);
-      
+
       // Initialize with a proper MenuItem
       controller.init(MenuItem(
         id: 'test_check121',
@@ -46,10 +48,11 @@ void main() {
 
     /// Tests complete Check 121 game workflow with target progression
     /// Verifies: target progression, save point management, game ending conditions
-    testWidgets('Complete Check 121 game workflow - target progression', (WidgetTester tester) async {
+    testWidgets('Complete Check 121 game workflow - target progression',
+        (WidgetTester tester) async {
       // Disable overflow errors for this test
       disableOverflowError();
-      
+
       // Arrange: Set up the game widget
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
@@ -59,7 +62,6 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Verify initial state
       expect(controller.round, equals(1));
@@ -75,7 +77,8 @@ void main() {
       // Assert: Verify progression after success
       expect(controller.round, equals(2));
       expect(controller.successfulRounds, equals(1));
-      expect(controller.currentTarget, greaterThan(121)); // Target should increase
+      expect(
+          controller.currentTarget, greaterThan(121)); // Target should increase
       expect(controller.savePoint, equals(121)); // Save point remains
       expect(controller.attempts[0], equals(2)); // First round had 2 attempts
 
@@ -95,13 +98,16 @@ void main() {
 
       // Assert: Verify regression after miss
       expect(controller.round, equals(4));
-      expect(controller.successfulRounds, equals(2)); // No change in successful rounds
+      expect(controller.successfulRounds,
+          equals(2)); // No change in successful rounds
       expect(controller.missCount, equals(1)); // Miss count increased
-      expect(controller.currentTarget, equals(controller.savePoint)); // Back to save point
+      expect(controller.currentTarget,
+          equals(controller.savePoint)); // Back to save point
       expect(controller.attempts[2], equals(0)); // Third round was a miss
 
       // Act: Continue until game ends (10 misses total)
-      for (int i = 0; i < 9; i++) { // 1 existing miss + 9 more = 10 total
+      for (int i = 0; i < 9; i++) {
+        // 1 existing miss + 9 more = 10 total
         controller.pressNumpadButton(0); // More misses
         await tester.pumpAndSettle();
       }
@@ -118,9 +124,10 @@ void main() {
 
     /// Tests undo functionality during Check 121 gameplay
     /// Verifies: undo restores previous state, target and save point management
-    testWidgets('Check 121 undo functionality test', (WidgetTester tester) async {
+    testWidgets('Check 121 undo functionality test',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -130,7 +137,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(2); // Success with 2 attempts
       await tester.pump();
@@ -138,7 +144,7 @@ void main() {
       await tester.pump();
       controller.pressNumpadButton(0); // Miss
       await tester.pump();
-      
+
       // Assert: Verify state before undo
       expect(controller.round, equals(4)); // Revert back
       expect(controller.successfulRounds, equals(2));
@@ -158,18 +164,20 @@ void main() {
       // Act: Continue game after undo with different choice
       controller.pressNumpadButton(3); // Success instead of miss
       await tester.pump();
-      
+
       // Assert: Game continues correctly after undo
       expect(controller.round, equals(4));
       expect(controller.successfulRounds, equals(3)); // Now 3 successes
-      expect(controller.attempts[2], equals(3)); // Third round now has 3 attempts
+      expect(
+          controller.attempts[2], equals(3)); // Third round now has 3 attempts
     });
 
     /// Tests return button functionality (equivalent to miss)
     /// Verifies: return button (-1) works as miss (0 attempts)
-    testWidgets('Check 121 return button for miss', (WidgetTester tester) async {
+    testWidgets('Check 121 return button for miss',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -178,7 +186,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Use return button (should work as miss)
       controller.pressNumpadButton(-1); // Return button
@@ -188,14 +195,16 @@ void main() {
       expect(controller.round, equals(2));
       expect(controller.missCount, equals(1));
       expect(controller.attempts[0], equals(0)); // First round was miss
-      expect(controller.currentTarget, equals(controller.savePoint)); // Back to save point
+      expect(controller.currentTarget,
+          equals(controller.savePoint)); // Back to save point
     });
 
     /// Tests target and save point progression logic
     /// Verifies: targets increase correctly, save points update appropriately
-    testWidgets('Check 121 target and save point progression', (WidgetTester tester) async {
+    testWidgets('Check 121 target and save point progression',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -204,7 +213,6 @@ void main() {
           ),
         ),
       );
-
 
       // Track initial values
       int initialTarget = controller.currentTarget;
@@ -217,7 +225,7 @@ void main() {
       // Assert: Verify save point updated after 1-attempt success
       expect(controller.savePoint, greaterThan(initialSavePoint));
       expect(controller.currentTarget, greaterThan(initialTarget));
-      
+
       int newSavePoint = controller.savePoint;
       int newTarget = controller.currentTarget;
 
@@ -227,7 +235,8 @@ void main() {
 
       // Assert: Verify save point not updated after 3-attempt success
       expect(controller.savePoint, equals(newSavePoint)); // No change
-      expect(controller.currentTarget, greaterThan(newTarget)); // Target still increases
+      expect(controller.currentTarget,
+          greaterThan(newTarget)); // Target still increases
 
       // Act: Miss (should revert to save point)
       controller.pressNumpadButton(0);
@@ -239,9 +248,10 @@ void main() {
 
     /// Tests game ending conditions
     /// Verifies: game ends after 10 misses, statistics are calculated correctly
-    testWidgets('Check 121 game ending conditions', (WidgetTester tester) async {
+    testWidgets('Check 121 game ending conditions',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -250,7 +260,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play some successful rounds first
       controller.pressNumpadButton(1); // Success
@@ -279,7 +288,7 @@ void main() {
     /// Verifies: invalid inputs are rejected, valid inputs are accepted
     testWidgets('Check 121 input validation', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -288,7 +297,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try invalid inputs
       controller.pressNumpadButton(4); // Too high
@@ -300,7 +308,8 @@ void main() {
 
       // Assert: Invalid inputs should be ignored
       expect(controller.round, equals(1)); // Should still be round 1
-      expect(controller.attempts.length, equals(1)); // Still just initial empty attempt
+      expect(controller.attempts.length,
+          equals(1)); // Still just initial empty attempt
 
       // Act: Try valid inputs
       for (int validInput in [0, 1, 2, 3]) {
@@ -315,15 +324,18 @@ void main() {
 
     /// Tests statistics with existing data
     /// Verifies: statistics are updated correctly with existing game data
-    testWidgets('Check 121 statistics with existing data', (WidgetTester tester) async {
+    testWidgets('Check 121 statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('totalSuccessfulRounds')).thenReturn(25);
-      when(mockStorage.read('totalRoundsPlayed')).thenReturn(50); // Add missing mock
+      when(mockStorage.read('totalRoundsPlayed'))
+          .thenReturn(50); // Add missing mock
       when(mockStorage.read('highestTarget')).thenReturn(180); // Fix key name
-      when(mockStorage.read('highestSavePoint')).thenReturn(150); // Add missing mock
+      when(mockStorage.read('highestSavePoint'))
+          .thenReturn(150); // Add missing mock
 
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
@@ -334,13 +346,12 @@ void main() {
         ),
       );
 
-
       // Act: Play a game with 6 successful rounds
       for (int i = 0; i < 6; i++) {
         controller.pressNumpadButton(1); // Success
         await tester.pump();
       }
-      
+
       // End game with misses
       for (int i = 0; i < 10; i++) {
         controller.pressNumpadButton(0); // Miss
@@ -349,7 +360,8 @@ void main() {
 
       // Assert: Verify storage operations with existing data
       verify(mockStorage.write('numberGames', 6)).called(1); // 5 + 1
-      verify(mockStorage.write('totalSuccessfulRounds', 31)).called(1); // 25 + 6
+      verify(mockStorage.write('totalSuccessfulRounds', 31))
+          .called(1); // 25 + 6
       // Note: recordSuccessfulRounds not updated because 6 < 8 (existing record)
     });
 
@@ -357,7 +369,7 @@ void main() {
     /// Verifies: undo doesn't work when no rounds played, proper state management
     testWidgets('Check 121 undo edge cases', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -367,14 +379,14 @@ void main() {
         ),
       );
 
-
       // Act: Try undo with no rounds played
       controller.pressNumpadButton(-2);
       await tester.pump();
 
       // Assert: Nothing should change
       expect(controller.round, equals(1));
-      expect(controller.attempts.length, equals(1)); // Still just initial empty attempt
+      expect(controller.attempts.length,
+          equals(1)); // Still just initial empty attempt
       expect(controller.successfulRounds, equals(0));
 
       // Act: Play one round and undo
@@ -392,9 +404,10 @@ void main() {
 
     /// Tests highest target tracking
     /// Verifies: highest target reached is tracked correctly
-    testWidgets('Check 121 highest target tracking', (WidgetTester tester) async {
+    testWidgets('Check 121 highest target tracking',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -403,7 +416,6 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Initial highest target
       expect(controller.highestTarget, equals(121));
@@ -424,14 +436,16 @@ void main() {
 
       // Assert: Highest target should remain at peak
       expect(controller.highestTarget, equals(peakTarget));
-      expect(controller.currentTarget, lessThanOrEqualTo(peakTarget)); // Current target may equal peak
+      expect(controller.currentTarget,
+          lessThanOrEqualTo(peakTarget)); // Current target may equal peak
     });
 
     /// Tests getCurrentStats method
     /// Verifies: current game statistics are calculated correctly
-    testWidgets('Check 121 current stats calculation', (WidgetTester tester) async {
+    testWidgets('Check 121 current stats calculation',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerCheck121>(
           create: (_) => controller,
@@ -440,7 +454,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(1); // Success
@@ -455,7 +468,8 @@ void main() {
       expect(controller.successfulRounds, equals(2));
       expect(controller.missCount, equals(1));
       expect(controller.currentTarget, greaterThan(121));
-      expect(controller.highestTarget, greaterThanOrEqualTo(controller.currentTarget));
+      expect(controller.highestTarget,
+          greaterThanOrEqualTo(controller.currentTarget));
     });
   });
 }

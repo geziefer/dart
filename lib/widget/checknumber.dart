@@ -18,7 +18,7 @@ class CheckNumber extends StatelessWidget {
     final isPhone = ResponsiveUtils.isPhoneSize(context);
     final numberWidth = isPhone ? 60.0 : 100.0;
     final checkWidth = isPhone ? 60.0 : 100.0;
-    
+
     // exclude numbers > 20
     if (number > 20) {
       return const Text('');

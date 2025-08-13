@@ -21,15 +21,15 @@ void main() {
 
     setUp(() {
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordScore')).thenReturn(0);
       when(mockStorage.read('longtermScore')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       controller = ControllerHalfit.forTesting(mockStorage);
-      
+
       // Initialize controller
       controller.init(MenuItem(
         id: 'test_halfit',
@@ -42,7 +42,8 @@ void main() {
 
     /// Tests HalfIt widget creation and initial state
     /// Verifies: widget can be created and displays correctly
-    testWidgets('HalfIt widget creation and initial state', (WidgetTester tester) async {
+    testWidgets('HalfIt widget creation and initial state',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -57,7 +58,7 @@ void main() {
       // Assert: Widget was created successfully
       expect(find.byType(ViewHalfit), findsOneWidget);
       expect(find.text('HalfIt Test'), findsOneWidget);
-      
+
       // Assert: Initial controller state
       expect(controller.round, equals(1));
       expect(controller.score, equals(40));
@@ -80,9 +81,10 @@ void main() {
       );
 
       // Assert: Labels are correct
-      expect(ControllerHalfit.labels, equals(['15', '16', 'D', '17', '18', 'T', '19', '20', 'B']));
+      expect(ControllerHalfit.labels,
+          equals(['15', '16', 'D', '17', '18', 'T', '19', '20', 'B']));
       expect(ControllerHalfit.labels.length, equals(9));
-      
+
       // Assert: Initial state
       expect(controller.rounds[0], equals('15'));
     });
@@ -100,7 +102,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Build input digit by digit (no submission)
       controller.pressNumpadButton(6);
@@ -130,13 +131,12 @@ void main() {
         ),
       );
 
-
       // Test: Score > 180 should be rejected
       controller.pressNumpadButton(1);
       controller.pressNumpadButton(8);
       controller.pressNumpadButton(1); // "181" - should be rejected
       await tester.pump();
-      
+
       expect(controller.input, equals("18")); // Only "18" remains
       expect(controller.totalScore, equals(40)); // No change
     });
@@ -154,7 +154,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Build some input
       controller.pressNumpadButton(1);
@@ -182,7 +181,6 @@ void main() {
           ),
         ),
       );
-
 
       // Test getInput method
       controller.pressNumpadButton(4);
@@ -227,7 +225,7 @@ void main() {
     /// Verifies: existing statistics are read correctly
     testWidgets('HalfIt with existing statistics', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('recordScore')).thenReturn(300);
@@ -251,7 +249,8 @@ void main() {
 
     /// Tests HalfIt score submission and game progression
     /// Verifies: scores are submitted correctly and game progresses
-    testWidgets('HalfIt score submission and progression', (WidgetTester tester) async {
+    testWidgets('HalfIt score submission and progression',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -364,17 +363,18 @@ void main() {
         controller.pressNumpadButton(0);
         controller.pressNumpadButton(-1); // Submit 20 each round
         await tester.pump();
-        
+
         // Process any pending callbacks after each round
         await tester.pumpAndSettle();
       }
 
       // Assert: All 9 scores were submitted
       expect(controller.scores.length, equals(9));
-      
+
       // The triggerGameEnd should have been called via post-frame callback
       // We can't easily test the callback directly, but we can verify the game state
-      expect(controller.round, equals(9)); // Round should be 9 after 9 submissions
+      expect(
+          controller.round, equals(9)); // Round should be 9 after 9 submissions
     });
 
     /// Tests HalfIt summary creation
@@ -405,7 +405,7 @@ void main() {
 
       // Assert: Summary contains expected lines (condensed format)
       expect(summary.length, equals(3)); // Should have exactly 3 lines now
-      
+
       // Check for condensed summary lines
       expect(summary.any((line) => line.label == 'Anzahl Checks'), isTrue);
       expect(summary.any((line) => line.label == 'Punkte'), isTrue);
@@ -414,7 +414,8 @@ void main() {
 
     /// Tests HalfIt average score calculation
     /// Verifies: average score is calculated correctly
-    testWidgets('HalfIt average score calculation', (WidgetTester tester) async {
+    testWidgets('HalfIt average score calculation',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -445,7 +446,8 @@ void main() {
 
     /// Tests Menu widget business logic - MenuItem creation and controller initialization
     /// Verifies: MenuItem can be created and controller properly initialized
-    testWidgets('Menu widget MenuItem creation and initialization', (WidgetTester tester) async {
+    testWidgets('Menu widget MenuItem creation and initialization',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -484,7 +486,8 @@ void main() {
 
     /// Tests Menu widget controller provider logic
     /// Verifies: Controller can be retrieved and reinitialized
-    testWidgets('Menu widget controller provider logic', (WidgetTester tester) async {
+    testWidgets('Menu widget controller provider logic',
+        (WidgetTester tester) async {
       disableOverflowError();
 
       await tester.pumpWidget(
@@ -501,12 +504,15 @@ void main() {
         id: 'halfit_game',
         name: 'Half It',
         view: const ViewHalfit(title: 'Half It'),
-        getController: (context) => Provider.of<ControllerHalfit>(context, listen: false),
+        getController: (context) =>
+            Provider.of<ControllerHalfit>(context, listen: false),
         params: {},
       );
 
       // Test controller retrieval (simulates getController call)
-      final retrievedController = menuItem.getController(tester.element(find.byType(ViewHalfit))) as ControllerHalfit;
+      final retrievedController =
+          menuItem.getController(tester.element(find.byType(ViewHalfit)))
+              as ControllerHalfit;
       expect(retrievedController, equals(controller));
 
       // Test reinitialization (simulates fresh game state)

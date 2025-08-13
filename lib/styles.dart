@@ -8,8 +8,10 @@ ButtonStyle headerButtonStyle(BuildContext context) {
   final phoneScale = ResponsiveUtils.isPhoneSize(context) ? 1.2 : 1.0;
   return OutlinedButton.styleFrom(
     side: const BorderSide(width: 3.0, color: Colors.white),
-    minimumSize: Size(50 * scaleFactor * phoneScale, 80 * scaleFactor * phoneScale),
-    padding: EdgeInsets.all(8 * scaleFactor), // Add padding for better icon visibility
+    minimumSize:
+        Size(50 * scaleFactor * phoneScale, 80 * scaleFactor * phoneScale),
+    padding: EdgeInsets.all(
+        8 * scaleFactor), // Add padding for better icon visibility
     shape: const CircleBorder(),
   );
 }
@@ -47,10 +49,13 @@ TextStyle okButtonTextStyle(BuildContext context) {
 ButtonStyle finishButtonStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.getTextScaleFactor(context);
   // Make buttons much smaller on phones to reduce dialog size
-  final phoneScale = ResponsiveUtils.isPhoneSize(context) ? 0.5 : 1.0; // Reduced from 0.7 to 0.5
+  final phoneScale = ResponsiveUtils.isPhoneSize(context)
+      ? 0.5
+      : 1.0; // Reduced from 0.7 to 0.5
   return TextButton.styleFrom(
     backgroundColor: Colors.black,
-    minimumSize: Size(60 * scaleFactor * phoneScale, 50 * scaleFactor * phoneScale), // Reduced base sizes
+    minimumSize: Size(60 * scaleFactor * phoneScale,
+        50 * scaleFactor * phoneScale), // Reduced base sizes
     padding: EdgeInsets.all(4 * scaleFactor * phoneScale), // Reduced padding
     shape: const BeveledRectangleBorder(),
   );
@@ -106,8 +111,9 @@ TextStyle endSummaryEmphasizedTextStyle(BuildContext context) {
 }
 
 TextStyle checkNumberStyle(BuildContext context) {
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.85 // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 50 * scaleFactor,
@@ -161,8 +167,9 @@ TextStyle numpadScoreButtonSmallDisabledTextStyle(BuildContext context) {
 }
 
 TextStyle scoreLabelTextStyle(BuildContext context) {
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.85 // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
@@ -171,8 +178,9 @@ TextStyle scoreLabelTextStyle(BuildContext context) {
 }
 
 TextStyle scoreTextStyle(BuildContext context) {
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Increased from 0.75 for better readability
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.85 // Increased from 0.75 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
@@ -184,8 +192,9 @@ TextStyle scoreTextStyle(BuildContext context) {
 }
 
 TextStyle boardTextStyle(BuildContext context) {
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.7  // Smaller for phone screens
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.7 // Smaller for phone screens
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     color: Colors.white,
@@ -210,8 +219,9 @@ TextStyle inputTextStyle(BuildContext context) {
 
 TextStyle emojiTextStyle(BuildContext context) {
   // Use same scaling as checkNumberStyle for consistent alignment in RTCX
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Updated to match checkNumberStyle
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.85 // Updated to match checkNumberStyle
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 50 * scaleFactor, // Match checkNumberStyle font size
@@ -228,8 +238,9 @@ TextStyle timerTextStyle(BuildContext context) {
 }
 
 TextStyle emojiLargeTextStyle(BuildContext context) {
-  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
-      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Same scaling as scoreTextStyle
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context)
+      ? ResponsiveUtils.getTextScaleFactor(context) *
+          0.85 // Same scaling as scoreTextStyle
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Same base size as scoreTextStyle

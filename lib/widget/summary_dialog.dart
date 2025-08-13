@@ -49,7 +49,8 @@ class SummaryDialog extends StatelessWidget {
                             Text(
                               line.checkSymbol!,
                               style: TextStyle(
-                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
+                                fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                    context, 32),
                                 fontFamily: "NotoColorEmoji",
                               ),
                             ),
@@ -92,7 +93,9 @@ class SummaryLine {
   final String label;
   final String value;
   final bool emphasized;
-  final String? checkSymbol; // Optional check symbol (emoji) to display after the text
+  final String?
+      checkSymbol; // Optional check symbol (emoji) to display after the text
 
-  SummaryLine(this.label, this.value, {this.emphasized = false, this.checkSymbol});
+  SummaryLine(this.label, this.value,
+      {this.emphasized = false, this.checkSymbol});
 }

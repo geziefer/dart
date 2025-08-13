@@ -27,7 +27,7 @@ class ScoreColumn extends StatelessWidget {
         ),
         Text(
           content,
-          style: _containsEmoji(content) 
+          style: _containsEmoji(content)
               ? emojiLargeTextStyle(context).copyWith(color: color)
               : scoreTextStyle(context).copyWith(color: color),
           textAlign: TextAlign.right,

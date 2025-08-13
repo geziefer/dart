@@ -22,16 +22,17 @@ void main() {
     setUp(() {
       // Create fresh mock storage for each test
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordSuccesses')).thenReturn(0);
-      when(mockStorage.read('longtermSuccesses')).thenReturn(0.0); // Fix key name
+      when(mockStorage.read('longtermSuccesses'))
+          .thenReturn(0.0); // Fix key name
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerTwoDarts.forTesting(mockStorage);
-      
+
       // Initialize with a proper MenuItem
       controller.init(MenuItem(
         id: 'test_twodarts',
@@ -44,10 +45,11 @@ void main() {
 
     /// Tests complete Two Darts game workflow with target progression
     /// Verifies: target sequence, success tracking, game ending, summary dialog
-    testWidgets('Complete Two Darts game workflow - target progression', (WidgetTester tester) async {
+    testWidgets('Complete Two Darts game workflow - target progression',
+        (WidgetTester tester) async {
       // Disable overflow errors for this test
       disableOverflowError();
-      
+
       // Arrange: Set up the game widget
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
@@ -57,7 +59,6 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Verify initial state
       expect(controller.currentTargetIndex, equals(0));
@@ -85,7 +86,14 @@ void main() {
       expect(controller.results[1], isFalse);
 
       // Act: Continue with mixed results until game ends (10 targets total)
-      List<int> remainingInputs = [1, 0, 1, 1, 0, 1]; // 4 more successes, 2 more failures
+      List<int> remainingInputs = [
+        1,
+        0,
+        1,
+        1,
+        0,
+        1
+      ]; // 4 more successes, 2 more failures
       for (int input in remainingInputs) {
         controller.pressNumpadButton(input);
         await tester.pumpAndSettle();
@@ -94,7 +102,7 @@ void main() {
       // Assert: Verify game completion
       expect(controller.currentTargetIndex, equals(8)); // 8 targets completed
       expect(controller.successCount, equals(5)); // 1 + 4 more successes
-      
+
       // Act: Complete final targets
       controller.pressNumpadButton(1); // 9th target - success
       await tester.pumpAndSettle();
@@ -108,15 +116,17 @@ void main() {
 
       // Assert: Verify storage interactions
       verify(mockStorage.write('numberGames', 1)).called(1);
-      verify(mockStorage.write('longtermSuccesses', 6.0)).called(1); // Use actual key and value
+      verify(mockStorage.write('longtermSuccesses', 6.0))
+          .called(1); // Use actual key and value
       verify(mockStorage.write('recordSuccesses', 6)).called(1);
     });
 
     /// Tests undo functionality during Two Darts gameplay
     /// Verifies: undo removes last result, target index decreases correctly
-    testWidgets('Two Darts undo functionality test', (WidgetTester tester) async {
+    testWidgets('Two Darts undo functionality test',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -126,7 +136,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few targets
       controller.pressNumpadButton(1); // Success on target 1
       await tester.pump();
@@ -134,7 +143,7 @@ void main() {
       await tester.pump();
       controller.pressNumpadButton(0); // Failure on target 3
       await tester.pump();
-      
+
       // Assert: Verify state before undo
       expect(controller.currentTargetIndex, equals(3));
       expect(controller.successCount, equals(2));
@@ -146,7 +155,8 @@ void main() {
 
       // Assert: Verify undo worked correctly
       expect(controller.currentTargetIndex, equals(2));
-      expect(controller.successCount, equals(2)); // Success count unchanged (last was failure)
+      expect(controller.successCount,
+          equals(2)); // Success count unchanged (last was failure)
       expect(controller.results.length, equals(2));
       expect(controller.targets.length, equals(3)); // Target removed
 
@@ -162,7 +172,7 @@ void main() {
       // Act: Continue game after undo
       controller.pressNumpadButton(0); // Failure instead of success
       await tester.pump();
-      
+
       // Assert: Game continues correctly after undo
       expect(controller.currentTargetIndex, equals(2));
       expect(controller.successCount, equals(1)); // Still 1 success
@@ -171,9 +181,10 @@ void main() {
 
     /// Tests return button functionality (equivalent to failure)
     /// Verifies: return button (-1) works as failure input
-    testWidgets('Two Darts return button for failure', (WidgetTester tester) async {
+    testWidgets('Two Darts return button for failure',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -182,23 +193,24 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Use return button (should work as failure)
       controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as failure
-      expect(controller.currentTargetIndex, equals(0)); // Return button doesn't advance target
+      expect(controller.currentTargetIndex,
+          equals(0)); // Return button doesn't advance target
       expect(controller.successCount, equals(0));
       // Don't check results[0] if no target was processed
     });
 
     /// Tests target generation logic
     /// Verifies: targets are generated in correct sequence
-    testWidgets('Two Darts target generation logic', (WidgetTester tester) async {
+    testWidgets('Two Darts target generation logic',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -207,37 +219,38 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Verify initial target
       expect(controller.targets[0], equals(61)); // First target should be 61
 
       // Act: Progress through several targets to verify generation
       List<int> expectedTargets = [61]; // We'll track expected targets
-      
+
       for (int i = 0; i < 5; i++) {
         // Record current target before input
         int currentTarget = controller.targets[controller.currentTargetIndex];
         expectedTargets.add(currentTarget);
-        
+
         // Act: Input success to progress
         controller.pressNumpadButton(1);
         await tester.pump();
-        
+
         // Assert: Verify new target was added
         expect(controller.targets.length, equals(i + 2));
       }
 
       // Assert: Verify targets are reasonable (should be different checkout values)
       Set<int> uniqueTargets = controller.targets.toSet();
-      expect(uniqueTargets.length, greaterThan(1)); // Should have different targets
+      expect(uniqueTargets.length,
+          greaterThan(1)); // Should have different targets
     });
 
     /// Tests game completion scenarios
     /// Verifies: game ends after 10 targets, statistics are calculated correctly
-    testWidgets('Two Darts game completion scenarios', (WidgetTester tester) async {
+    testWidgets('Two Darts game completion scenarios',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -246,7 +259,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play perfect game (all successes)
       for (int i = 0; i < 10; i++) {
@@ -261,19 +273,22 @@ void main() {
 
       // Assert: Verify storage operations for perfect game
       verify(mockStorage.write('numberGames', 1)).called(1);
-      verify(mockStorage.write('longtermSuccesses', 10.0)).called(1); // Use actual key and value
+      verify(mockStorage.write('longtermSuccesses', 10.0))
+          .called(1); // Use actual key and value
       verify(mockStorage.write('recordSuccesses', 10)).called(1);
     });
 
     /// Tests statistics with existing data
     /// Verifies: statistics are updated correctly with existing game data
-    testWidgets('Two Darts statistics with existing data', (WidgetTester tester) async {
+    testWidgets('Two Darts statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(4);
       when(mockStorage.read('recordSuccesses')).thenReturn(8);
-      when(mockStorage.read('longtermSuccesses')).thenReturn(6.25); // Fix key name
+      when(mockStorage.read('longtermSuccesses'))
+          .thenReturn(6.25); // Fix key name
 
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
@@ -284,10 +299,20 @@ void main() {
         ),
       );
 
-
       // Act: Play a game with 7 successes
-      List<int> gameResults = [1, 1, 0, 1, 1, 0, 1, 1, 1, 0]; // 7 successes, 3 failures
-      
+      List<int> gameResults = [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0
+      ]; // 7 successes, 3 failures
+
       for (int result in gameResults) {
         controller.pressNumpadButton(result);
         await tester.pumpAndSettle();
@@ -295,7 +320,8 @@ void main() {
 
       // Assert: Verify storage operations with existing data
       verify(mockStorage.write('numberGames', 5)).called(1); // 4 + 1
-      verify(mockStorage.write('longtermSuccesses', 6.4375)).called(1); // Correct calculated value
+      verify(mockStorage.write('longtermSuccesses', 6.4375))
+          .called(1); // Correct calculated value
       // Note: recordSuccesses not updated because 7 < 8 (existing record)
     });
 
@@ -303,7 +329,7 @@ void main() {
     /// Verifies: undo doesn't work when no targets played, proper state management
     testWidgets('Two Darts undo edge cases', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -312,7 +338,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try undo with no targets played
       controller.pressNumpadButton(-2);
@@ -338,9 +363,10 @@ void main() {
 
     /// Tests invalid input handling
     /// Verifies: only valid inputs (0, 1, -1, -2) are processed
-    testWidgets('Two Darts invalid input handling', (WidgetTester tester) async {
+    testWidgets('Two Darts invalid input handling',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -349,7 +375,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try invalid inputs
       controller.pressNumpadButton(2); // Invalid
@@ -378,9 +403,10 @@ void main() {
 
     /// Tests getCurrentStats method
     /// Verifies: current game statistics are calculated correctly
-    testWidgets('Two Darts current stats calculation', (WidgetTester tester) async {
+    testWidgets('Two Darts current stats calculation',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerTwoDarts>(
           create: (_) => controller,
@@ -389,7 +415,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few targets
       controller.pressNumpadButton(1); // Success
@@ -402,9 +427,10 @@ void main() {
       // Assert: Verify current stats
       expect(controller.currentTargetIndex, equals(3));
       expect(controller.successCount, equals(2));
-      
+
       // Verify success rate calculation (if implemented)
-      double successRate = controller.successCount / controller.currentTargetIndex;
+      double successRate =
+          controller.successCount / controller.currentTargetIndex;
       expect(successRate, closeTo(0.667, 0.01)); // 2/3 ≈ 0.667
     });
   });

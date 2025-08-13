@@ -3,7 +3,6 @@ import 'package:dart/utils/stats_formatter.dart';
 
 void main() {
   group('StatsFormatter Tests', () {
-    
     /// Tests StatsFormatter constants
     /// Verifies: All symbols are defined correctly
     test('StatsFormatter constants', () {
@@ -19,14 +18,14 @@ void main() {
       final result = StatsFormatter.formatGameStats(
         numberGames: 10,
         records: {
-          'P': 150,           // int
-          'D': 12.5,          // double
-          'C': 8,             // int
+          'P': 150, // int
+          'D': 12.5, // double
+          'C': 8, // int
         },
         averages: {
-          'P': 85.7,          // double
-          'D': 18.0,          // double with .0
-          'T': 25,            // int
+          'P': 85.7, // double
+          'D': 18.0, // double with .0
+          'T': 25, // int
         },
       );
 
@@ -37,7 +36,7 @@ void main() {
       expect(result, contains('ØP: 85.7'));
       expect(result, contains('ØD: 18.0'));
       expect(result, contains('ØT: 25'));
-      
+
       // Verify parts are separated by double spaces
       expect(result.split('  ').length, equals(7));
     });
@@ -111,7 +110,8 @@ void main() {
       expect(StatsFormatter.formatStat('Ø', 'P', 85.7), contains('85.7'));
       expect(StatsFormatter.formatStat('Ø', 'P', 18.0), contains('18.0'));
       expect(StatsFormatter.formatStat('Ø', 'P', 0.0), contains('0.0'));
-      expect(StatsFormatter.formatStat('Ø', 'P', 123.456), contains('123.5')); // Should round to 1 decimal
+      expect(StatsFormatter.formatStat('Ø', 'P', 123.456),
+          contains('123.5')); // Should round to 1 decimal
 
       // Test string formatting
       expect(StatsFormatter.formatStat('♛', 'P', 'test'), contains('test'));
@@ -186,7 +186,8 @@ void main() {
 
       // Test very small numbers
       expect(StatsFormatter.formatAverage('P', 0.1), equals('ØP: 0.1'));
-      expect(StatsFormatter.formatAverage('P', 0.01), equals('ØP: 0.0')); // Rounds to 1 decimal
+      expect(StatsFormatter.formatAverage('P', 0.01),
+          equals('ØP: 0.0')); // Rounds to 1 decimal
 
       // Test negative numbers
       expect(StatsFormatter.formatRecord('P', -10), equals('♛P: -10'));
@@ -211,8 +212,8 @@ void main() {
         final input = testCase['input'] as double;
         final expected = testCase['expected'] as String;
         final result = StatsFormatter.formatAverage('P', input);
-        expect(result, equals('ØP: $expected'), 
-               reason: 'Input $input should format to $expected');
+        expect(result, equals('ØP: $expected'),
+            reason: 'Input $input should format to $expected');
       }
     });
 
@@ -223,16 +224,16 @@ void main() {
       final result = StatsFormatter.formatGameStats(
         numberGames: 25,
         records: {
-          'P': 180,      // Record points
-          'D': 9,        // Record darts
-          'C': 15,       // Record checkouts
-          'F': 170,      // Record finish
+          'P': 180, // Record points
+          'D': 9, // Record darts
+          'C': 15, // Record checkouts
+          'F': 170, // Record finish
         },
         averages: {
-          'P': 78.5,     // Average points
-          'D': 15.2,     // Average darts
-          'C': 8.7,      // Average checkouts
-          'A': 92.3,     // Average accuracy
+          'P': 78.5, // Average points
+          'D': 15.2, // Average darts
+          'C': 8.7, // Average checkouts
+          'A': 92.3, // Average accuracy
         },
       );
 

@@ -65,7 +65,6 @@ void main() {
         ),
       );
 
-
       // Assert: Verify initial state
       expect(controller.currentRound, equals(1));
       expect(controller.currentTarget, equals(50));
@@ -135,7 +134,6 @@ void main() {
         ),
       );
 
-
       // Act: Play a few rounds
       controller.pressNumpadButton(1); // Success: 50 -> 60
       await tester.pump();
@@ -185,10 +183,16 @@ void main() {
         ),
       );
 
-
       // Test sequence: Success, Success, Failure, Success, Failure, Failure
       List<int> inputs = [1, 1, 0, 1, 0, 0];
-      List<int> expectedTargets = [60, 70, 69, 79, 78, 77]; // Use actual progression
+      List<int> expectedTargets = [
+        60,
+        70,
+        69,
+        79,
+        78,
+        77
+      ]; // Use actual progression
 
       for (int i = 0; i < inputs.length; i++) {
         // Act: Input success or failure
@@ -220,14 +224,15 @@ void main() {
         ),
       );
 
-
       // Act: Use return button (should work as failure)
       controller.pressNumpadButton(-1); // Return button
       await tester.pump();
 
       // Assert: Return button worked as failure
-      expect(controller.currentRound, equals(1)); // Return button doesn't advance round
-      expect(controller.currentTarget, equals(50)); // Target unchanged if round didn't advance
+      expect(controller.currentRound,
+          equals(1)); // Return button doesn't advance round
+      expect(controller.currentTarget,
+          equals(50)); // Target unchanged if round didn't advance
       expect(controller.successCount, equals(0));
       // Don't check results[0] if round didn't advance
     });
@@ -246,7 +251,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play all 13 rounds with mixed results
       List<int> gameResults = [
@@ -307,10 +311,10 @@ void main() {
         ),
       );
 
-
       // Act: Play a game with 10 successes
       for (int i = 0; i < 13; i++) {
-        controller.pressNumpadButton(i < 10 ? 1 : 0); // 10 successes, 3 failures
+        controller
+            .pressNumpadButton(i < 10 ? 1 : 0); // 10 successes, 3 failures
         await tester.pumpAndSettle();
       }
 
@@ -334,7 +338,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try undo with no rounds played
       controller.pressNumpadButton(-2);
@@ -373,7 +376,6 @@ void main() {
         ),
       );
 
-
       // Act: Fail multiple times to test lower boundary
       for (int i = 0; i < 10; i++) {
         controller.pressNumpadButton(0); // Failure
@@ -399,7 +401,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Play a few rounds
       controller.pressNumpadButton(1); // Success

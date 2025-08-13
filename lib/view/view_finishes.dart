@@ -19,15 +19,16 @@ class ViewFinishes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the MenuItem from route arguments
-    final MenuItem? menuItem = ModalRoute.of(context)?.settings.arguments as MenuItem?;
-    
+    final MenuItem? menuItem =
+        ModalRoute.of(context)?.settings.arguments as MenuItem?;
+
     ControllerFinishes controller = Provider.of<ControllerFinishes>(context);
-    
+
     // Initialize the controller if not already initialized
     if (controller.item == null && menuItem != null) {
       controller.init(menuItem);
     }
-    
+
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
@@ -137,10 +138,15 @@ class ViewFinishes extends StatelessWidget {
                                 (maxSize - 60) / 2; // 60px for number labels
 
                             // Make radius bounds responsive to screen size
-                            final isPhone = ResponsiveUtils.isPhoneSize(context);
-                            final minRadius = isPhone ? 110.0 : 200.0; // Slightly reduced from 120 to 110
-                            final maxRadius = isPhone ? 170.0 : 280.0; // Slightly reduced from 180 to 170
-                            
+                            final isPhone =
+                                ResponsiveUtils.isPhoneSize(context);
+                            final minRadius = isPhone
+                                ? 110.0
+                                : 200.0; // Slightly reduced from 120 to 110
+                            final maxRadius = isPhone
+                                ? 170.0
+                                : 280.0; // Slightly reduced from 180 to 170
+
                             // Ensure minimum and maximum bounds based on device type
                             radius = radius.clamp(minRadius, maxRadius);
 
@@ -156,15 +162,18 @@ class ViewFinishes extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: Colors.grey[800],
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
                                     ),
                                     child: IconButton(
-                                      onPressed: controller.canUndo() 
-                                        ? () => controller.undoLastInput()
-                                        : null,
+                                      onPressed: controller.canUndo()
+                                          ? () => controller.undoLastInput()
+                                          : null,
                                       icon: Icon(
                                         Icons.undo,
-                                        color: controller.canUndo() ? Colors.white : Colors.grey[600],
+                                        color: controller.canUndo()
+                                            ? Colors.white
+                                            : Colors.grey[600],
                                         size: 36,
                                       ),
                                     ),
@@ -189,10 +198,12 @@ class ViewFinishes extends StatelessWidget {
                                       if (controller.waitingForNextRound)
                                         Positioned.fill(
                                           child: GestureDetector(
-                                            onTap: () => controller.startNextRound(),
+                                            onTap: () =>
+                                                controller.startNextRound(),
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                color: Colors.black.withValues(alpha: 0.6),
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.6),
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Center(
@@ -200,7 +211,9 @@ class ViewFinishes extends StatelessWidget {
                                                   "Nächste Runde",
                                                   style: TextStyle(
                                                     color: Colors.white,
-                                                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                                                    fontSize: ResponsiveUtils
+                                                        .getResponsiveFontSize(
+                                                            context, 28),
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),

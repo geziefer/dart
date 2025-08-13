@@ -22,7 +22,7 @@ void main() {
     setUp(() {
       // Create fresh mock storage for each test
       mockStorage = MockGetStorage();
-      
+
       // Set up default mock responses (simulate fresh game stats)
       when(mockStorage.read('numberGames')).thenReturn(0);
       when(mockStorage.read('recordHits')).thenReturn(0);
@@ -30,10 +30,10 @@ void main() {
       when(mockStorage.read('totalRoundsAllGames')).thenReturn(0);
       when(mockStorage.read('overallAverage')).thenReturn(0.0);
       when(mockStorage.write(any, any)).thenAnswer((_) async {});
-      
+
       // Create controller with injected mock storage
       controller = ControllerSpeedBull.forTesting(mockStorage);
-      
+
       // Initialize with a proper MenuItem (60 second duration)
       controller.init(MenuItem(
         id: 'test_speedbull',
@@ -46,10 +46,11 @@ void main() {
 
     /// Tests complete Speed Bull game workflow with timer
     /// Verifies: game start, timer countdown, hit recording, game ending, summary dialog
-    testWidgets('Complete Speed Bull game workflow - timer based', (WidgetTester tester) async {
+    testWidgets('Complete Speed Bull game workflow - timer based',
+        (WidgetTester tester) async {
       // Disable overflow errors for this test
       disableOverflowError();
-      
+
       // Arrange: Set up the game widget
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
@@ -59,7 +60,6 @@ void main() {
           ),
         ),
       );
-
 
       // Assert: Verify initial state
       expect(controller.round, equals(1));
@@ -79,7 +79,7 @@ void main() {
       // Act: Record some hits during gameplay
       controller.pressNumpadButton(3); // 3 bulls
       await tester.pump();
-      
+
       // Assert: Verify first round recorded
       expect(controller.totalHits, equals(3));
       expect(controller.round, equals(2));
@@ -116,9 +116,10 @@ void main() {
 
     /// Tests undo functionality during Speed Bull gameplay
     /// Verifies: undo removes last round, hit counts recalculate correctly
-    testWidgets('Speed Bull undo functionality test', (WidgetTester tester) async {
+    testWidgets('Speed Bull undo functionality test',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -128,16 +129,15 @@ void main() {
         ),
       );
 
-
       // Act: Start game and record hits
       controller.startGame();
       await tester.pump();
-      
+
       controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
       controller.pressNumpadButton(2); // Round 2: 2 hits
       await tester.pump();
-      
+
       // Assert: Verify state before undo
       expect(controller.totalHits, equals(5)); // 3 + 2
       expect(controller.round, equals(3));
@@ -156,7 +156,7 @@ void main() {
       // Act: Continue game after undo
       controller.pressNumpadButton(1); // 1 hit
       await tester.pump();
-      
+
       // Assert: Game continues correctly after undo
       expect(controller.totalHits, equals(4)); // 3 + 1
       expect(controller.hits[1], equals(1)); // Second round now has 1 hit
@@ -164,9 +164,10 @@ void main() {
 
     /// Tests return button functionality (equivalent to 0 hits)
     /// Verifies: return button (-1) works as 0 hits input
-    testWidgets('Speed Bull return button for zero hits', (WidgetTester tester) async {
+    testWidgets('Speed Bull return button for zero hits',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -176,11 +177,10 @@ void main() {
         ),
       );
 
-
       // Act: Start game and use return button
       controller.startGame();
       await tester.pump();
-      
+
       controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
       controller.pressNumpadButton(-1); // Return button (0 hits)
@@ -194,9 +194,10 @@ void main() {
 
     /// Tests game behavior before starting
     /// Verifies: inputs ignored before game starts, timer doesn't run
-    testWidgets('Speed Bull pre-game state handling', (WidgetTester tester) async {
+    testWidgets('Speed Bull pre-game state handling',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -205,7 +206,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Try to input hits before starting game
       controller.pressNumpadButton(3);
@@ -231,7 +231,7 @@ void main() {
     /// Verifies: invalid inputs are rejected, valid inputs are accepted
     testWidgets('Speed Bull input validation', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -240,7 +240,6 @@ void main() {
           ),
         ),
       );
-
 
       // Act: Start game
       controller.startGame();
@@ -269,9 +268,10 @@ void main() {
 
     /// Tests statistics calculation and storage with existing data
     /// Verifies: statistics are calculated correctly, storage operations occur
-    testWidgets('Speed Bull statistics with existing data', (WidgetTester tester) async {
+    testWidgets('Speed Bull statistics with existing data',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Mock existing game statistics
       when(mockStorage.read('numberGames')).thenReturn(5);
       when(mockStorage.read('recordHits')).thenReturn(10);
@@ -288,16 +288,15 @@ void main() {
         ),
       );
 
-
       // Act: Play a game and end it
       controller.startGame();
       await tester.pump();
-      
+
       controller.pressNumpadButton(3); // 3 hits
       await tester.pump();
       controller.pressNumpadButton(2); // 2 hits
       await tester.pump();
-      
+
       // Simulate game ending
       controller.lastThrowAllowed = true;
       controller.pressNumpadButton(1); // final hit
@@ -314,7 +313,7 @@ void main() {
     /// Verifies: undo doesn't work when no rounds played, undo doesn't work after game ends
     testWidgets('Speed Bull undo edge cases', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -324,11 +323,10 @@ void main() {
         ),
       );
 
-
       // Act: Start game and try undo with no completed rounds
       controller.startGame();
       await tester.pump();
-      
+
       controller.pressNumpadButton(-2); // Undo
       await tester.pump();
 
@@ -360,7 +358,7 @@ void main() {
     /// Verifies: different game durations are respected
     testWidgets('Speed Bull custom duration test', (WidgetTester tester) async {
       disableOverflowError();
-      
+
       // Arrange: Create controller with custom duration
       controller = ControllerSpeedBull.forTesting(mockStorage);
       controller.init(MenuItem(
@@ -395,9 +393,10 @@ void main() {
 
     /// Tests getCurrentStats method
     /// Verifies: statistics are calculated correctly during gameplay
-    testWidgets('Speed Bull current stats calculation', (WidgetTester tester) async {
+    testWidgets('Speed Bull current stats calculation',
+        (WidgetTester tester) async {
       disableOverflowError();
-      
+
       await tester.pumpWidget(
         ChangeNotifierProvider<ControllerSpeedBull>(
           create: (_) => controller,
@@ -407,11 +406,10 @@ void main() {
         ),
       );
 
-
       // Act: Start game and record hits
       controller.startGame();
       await tester.pump();
-      
+
       controller.pressNumpadButton(3); // Round 1: 3 hits
       await tester.pump();
       controller.pressNumpadButton(1); // Round 2: 1 hit
