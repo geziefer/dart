@@ -609,9 +609,9 @@ class ControllerFinishes extends ControllerBase
     return [
       SummaryService.createValueLine(
           'Richtige Runden', '$correctRounds/$maxRounds'),
-      SummaryService.createAverageLine('Korrektheit', correctnessPercentage,
+      SummaryService.createAverageLine('Korrekt[%]', correctnessPercentage,
           emphasized: true),
-      SummaryService.createAverageLine('ØZeit/Runde', averageTime,
+      SummaryService.createAverageLine('ØZeit[s]/Runde', averageTime,
           emphasized: true),
     ];
   }
@@ -665,15 +665,12 @@ class ControllerFinishes extends ControllerBase
 
   Map getCurrentStats() {
     int completedRounds = currentRound - 1;
-    double currentPercentage =
-        completedRounds > 0 ? (correctRounds / completedRounds) * 100 : 0.0;
     double averageTime =
         completedRounds > 0 ? (totalTimeSeconds / completedRounds) : 0.0;
 
     return {
       'round': currentRound,
       'correct': correctRounds,
-      'percentage': currentPercentage.toStringAsFixed(1),
       'totalTime': totalTimeSeconds,
       'averageTime': averageTime.toStringAsFixed(1),
     };

@@ -250,7 +250,7 @@ class ViewFinishes extends StatelessWidget {
                       style: statsTextStyle(context),
                     ),
                     Text(
-                      "${currentStats['correct']} (${currentStats['percentage']}%)",
+                      "${currentStats['correct']}",
                       style: statsNumberTextStyle(context),
                     ),
                     Text(
