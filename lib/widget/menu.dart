@@ -27,6 +27,7 @@ import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
+import 'package:dart/widget/version_info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -208,6 +209,16 @@ class Menu extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+            // Header with version info
+            Padding(
+              padding: const EdgeInsets.only(top: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const VersionInfo(),
+                ],
+              ),
+            ),
             image,
             const SizedBox(height: 10),
             Expanded(
