@@ -144,45 +144,74 @@ class ViewFinishes extends StatelessWidget {
                             // Ensure minimum and maximum bounds based on device type
                             radius = radius.clamp(minRadius, maxRadius);
 
-                            return Center(
-                              child: Stack(
-                                children: [
-                                  // Dartboard
-                                  FullCircle(
-                                    controller: controller,
-                                    radius: radius,
-                                    arcSections: [
-                                      ArcSection(startPercent: 0.2),
-                                      ArcSection(startPercent: 0.4),
-                                      ArcSection(startPercent: 0.6),
-                                      ArcSection(startPercent: 0.8),
-                                    ],
+                            return Stack(
+                              children: [
+                                // Undo button at very left and bottom corner of the area
+                                Positioned(
+                                  left: 15,
+                                  bottom: 15,
+                                  child: Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[800],
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 2),
+                                    ),
+                                    child: IconButton(
+                                      onPressed: controller.canUndo() 
+                                        ? () => controller.undoLastInput()
+                                        : null,
+                                      icon: Icon(
+                                        Icons.undo,
+                                        color: controller.canUndo() ? Colors.white : Colors.grey[600],
+                                        size: 36,
+                                      ),
+                                    ),
                                   ),
-                                  // Full dartboard overlay button when waiting for next round
-                                  if (controller.waitingForNextRound)
-                                    Positioned.fill(
-                                      child: GestureDetector(
-                                        onTap: () => controller.startNextRound(),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withValues(alpha: 0.6),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              "Nächste Runde",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
-                                                fontWeight: FontWeight.bold,
+                                ),
+                                // Centered dartboard
+                                Center(
+                                  child: Stack(
+                                    children: [
+                                      // Dartboard
+                                      FullCircle(
+                                        controller: controller,
+                                        radius: radius,
+                                        arcSections: [
+                                          ArcSection(startPercent: 0.2),
+                                          ArcSection(startPercent: 0.4),
+                                          ArcSection(startPercent: 0.6),
+                                          ArcSection(startPercent: 0.8),
+                                        ],
+                                      ),
+                                      // Full dartboard overlay button when waiting for next round
+                                      if (controller.waitingForNextRound)
+                                        Positioned.fill(
+                                          child: GestureDetector(
+                                            onTap: () => controller.startNextRound(),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(alpha: 0.6),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  "Nächste Runde",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         ),

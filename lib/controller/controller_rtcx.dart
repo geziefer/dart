@@ -38,7 +38,8 @@ class ControllerRTCX extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
     max = item.params['max'];
 
@@ -72,35 +73,34 @@ class ControllerRTCX extends ControllerBase
         if (value == -1) {
           value = 0;
         }
-        
+
         // Check if this input will complete the game or hit round limit
         bool willCompleteGame = (currentNumber + value > 20);
         bool willHitRoundLimit = (max != -1 && round == max);
-        
+
         if (willCompleteGame || willHitRoundLimit) {
           // Calculate remaining targets BEFORE updating currentNumber
-          int remainingTargets = currentNumber > 20 ? 0 : (20 - currentNumber + 1);
-          
-          // Debug output
-          print('RTCX Debug: currentNumber=$currentNumber, value=$value, remainingTargets=$remainingTargets, willComplete=$willCompleteGame');
-          
+          int remainingTargets =
+              currentNumber > 20 ? 0 : (20 - currentNumber + 1);
+
           // Update game state
           dart += 3;
           throws.add(value);
           currentNumber += value;
           finished = currentNumber > 20 ? true : false;
-          
+
           notifyListeners();
-          
+
           // Show checkout dialog before ending the game
-          onShowCheckout?.call(remainingTargets, 0); // score parameter not used in target mode
+          onShowCheckout?.call(
+              remainingTargets, 0); // score parameter not used in target mode
         } else {
           // Normal round - just update state
           dart += 3;
           throws.add(value);
           currentNumber += value;
           round++;
-          
+
           notifyListeners();
         }
       }
@@ -124,7 +124,9 @@ class ControllerRTCX extends ControllerBase
     return [
       SummaryLine('RTC geschafft', '', checkSymbol: checkSymbol),
       SummaryService.createValueLine('Anzahl Darts', dart),
-      SummaryService.createValueLine('Darts/Checkout', getCurrentStats()['avgChecks'], emphasized: true),
+      SummaryService.createValueLine(
+          'Darts/Checkout', getCurrentStats()['avgChecks'],
+          emphasized: true),
     ];
   }
 
@@ -134,21 +136,23 @@ class ControllerRTCX extends ControllerBase
   @override
   void updateSpecificStats() {
     double avgChecks = double.parse(getCurrentStats()['avgChecks']);
-    
+
     // Update finish count if game was completed
     if (finished) {
-      int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+      int numberFinishes =
+          statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
       statsService.updateStats({'numberFinishes': numberFinishes + 1});
     }
-    
+
     // Update records (lower dart count is better for finished games)
     if (finished) {
-      int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+      int recordDarts =
+          statsService.getStat<int>('recordDarts', defaultValue: 0)!;
       if (recordDarts == 0 || dart < recordDarts) {
         statsService.updateStats({'recordDarts': dart});
       }
     }
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermChecks', avgChecks);
   }
@@ -188,20 +192,24 @@ class ControllerRTCX extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
-    int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
-    double longtermChecks = statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes =
+        statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts =
+        statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks =
+        statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
+
     String baseStats = formatStatsString(
       numberGames: numberGames,
       records: {
-        'D': recordDarts,          // Darts
+        'D': recordDarts, // Darts
       },
       averages: {
-        'C': longtermChecks,       // Checks
+        'C': longtermChecks, // Checks
       },
     );
-    return '$baseStats  #G: $numberFinishes';   // Add finishes count separately
+    return '$baseStats  #G: $numberFinishes'; // Add finishes count separately
   }
 }

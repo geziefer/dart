@@ -711,6 +711,43 @@ class ControllerFinishes extends ControllerBase
     return baseStats;
   }
 
+  /// Undo the last dart input within the current round
+  void undoLastInput() {
+    switch (currentState) {
+      case FinishesState.inputPreferred:
+        if (preferredInput.isNotEmpty) {
+          preferredInput.removeLast();
+        }
+        break;
+      case FinishesState.inputAlternative:
+        if (altervativeInput.isNotEmpty) {
+          altervativeInput.removeLast();
+        } else {
+          // If alternative input is empty, go back to preferred input
+          currentState = FinishesState.inputPreferred;
+          if (preferredInput.isNotEmpty) {
+            preferredInput.removeLast();
+          }
+        }
+        break;
+      case FinishesState.solution:
+        // No undo allowed in solution state
+        break;
+    }
+    notifyListeners();
+  }
+
+  /// Check if undo is available (has inputs to undo)
+  bool canUndo() {
+    switch (currentState) {
+      case FinishesState.inputPreferred:
+        return preferredInput.isNotEmpty;
+      case FinishesState.inputAlternative:
+        return altervativeInput.isNotEmpty || preferredInput.isNotEmpty;
+      case FinishesState.solution:
+        return false;
+    }
+  }
   void _checkCorrect() {
     const listEquality = ListEquality();
     bool isCorrect = listEquality.equals(preferred, preferredInput) &&
