@@ -7,6 +7,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+
 class ControllerTwoDarts extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -88,7 +89,6 @@ class ControllerTwoDarts extends ControllerBase
     notifyListeners();
   }
 
-
   @override
   List<SummaryLine> createSummaryLines() {
     return [
@@ -151,7 +151,6 @@ class ControllerTwoDarts extends ControllerBase
 
   Map getCurrentStats() {
     return {
-      'target': currentTargetIndex < 10 ? 61 + currentTargetIndex : 70,
       'checks': successCount,
       'avgChecks':
           results.isEmpty ? 0.0 : (successCount / results.length * 100),

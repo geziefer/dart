@@ -7,6 +7,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+
 class ControllerCatchXX extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -39,7 +40,8 @@ class ControllerCatchXX extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     targets = <int>[61];
@@ -56,6 +58,7 @@ class ControllerCatchXX extends ControllerBase
   void initFromProvider(MenuItem item) {
     init(item);
   }
+
   @override
   void pressNumpadButton(int value) {
     // undo button pressed
@@ -77,16 +80,16 @@ class ControllerCatchXX extends ControllerBase
       if (value == 1) {
         return;
       }
-      
+
       int dartsUsed = value;
       // return button pressed or 0 means no score (more than 6 darts)
       if (value == -1 || value == 0) {
         dartsUsed = 0;
       }
-      
+
       // calculate points based on darts used
       int calculatedPoints = _calculatePoints(dartsUsed);
-      
+
       hits += calculatedPoints > 0 ? 1 : 0;
       thrownHits.add(calculatedPoints > 0 ? 1 : 0);
       if (target < 100) {
@@ -111,13 +114,14 @@ class ControllerCatchXX extends ControllerBase
     notifyListeners();
   }
 
-
   @override
   List<SummaryLine> createSummaryLines() {
     return [
       SummaryService.createValueLine('Anzahl Checks', hits),
       SummaryService.createValueLine('Anzahl Punkte', points),
-      SummaryService.createValueLine('Punkte/Runde', getCurrentStats()['avgPoints'], emphasized: true),
+      SummaryService.createValueLine(
+          'Punkte/Runde', getCurrentStats()['avgPoints'],
+          emphasized: true),
     ];
   }
 
@@ -127,11 +131,11 @@ class ControllerCatchXX extends ControllerBase
   @override
   void updateSpecificStats() {
     double avgPoints = _getAvgPoints();
-    
+
     // Update records using StatsService
     statsService.updateRecord<int>('recordHits', hits);
     statsService.updateRecord<int>('recordPoints', points);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermPoints', avgPoints);
   }
@@ -153,7 +157,7 @@ class ControllerCatchXX extends ControllerBase
           return 0; // 0 or more than 6 darts
       }
     }
-    
+
     // Normal scoring for all other targets
     switch (dartsUsed) {
       case 2:
@@ -215,7 +219,6 @@ class ControllerCatchXX extends ControllerBase
 
   Map getCurrentStats() {
     return {
-      'target': target,
       'hits': hits,
       'points': points,
       'avgPoints': _getAvgPoints().toStringAsFixed(1),
@@ -223,16 +226,19 @@ class ControllerCatchXX extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
     int recordHits = statsService.getStat<int>('recordHits', defaultValue: 0)!;
-    int recordPoints = statsService.getStat<int>('recordPoints', defaultValue: 0)!;
-    double longtermPoints = statsService.getStat<double>('longtermPoints', defaultValue: 0.0)!;
-    
+    int recordPoints =
+        statsService.getStat<int>('recordPoints', defaultValue: 0)!;
+    double longtermPoints =
+        statsService.getStat<double>('longtermPoints', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'C': recordHits,     // Checks
-        'P': recordPoints,   // Punkte
+        'C': recordHits, // Checks
+        'P': recordPoints, // Punkte
       },
       averages: {
         'P': longtermPoints, // Durchschnittspunkte

@@ -75,7 +75,7 @@ class ViewUpDown extends StatelessWidget {
                             ScoreColumn(
                               label: 'Z',
                               content: controller.getCurrentTargets(),
-                              color: Colors.white,
+                              color: const Color.fromARGB(255, 215, 198, 132),
                             ),
                             const SizedBox(width: 10),
                             const VerticalDivider(

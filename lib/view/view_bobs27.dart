@@ -126,15 +126,7 @@ class ViewBobs27 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Ziel: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['target']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  Erfolg: ",
+                      "  Erfolge: ",
                       style: statsTextStyle(context),
                     ),
                     Text(

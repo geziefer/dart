@@ -7,6 +7,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerDoublePath extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -121,7 +122,6 @@ class ControllerDoublePath extends ControllerBase
     }
   }
 
-
   @override
   List<SummaryLine> createSummaryLines() {
     int totalScore = totalPoints.isNotEmpty ? totalPoints.last : 0;
@@ -223,7 +223,6 @@ class ControllerDoublePath extends ControllerBase
         currentRound > 0 ? currentTotal / currentRound : 0.0;
 
     return {
-      'round': currentRound,
       'totalPoints': currentTotal,
       'averagePerRound': currentAverage,
     };

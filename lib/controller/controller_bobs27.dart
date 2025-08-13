@@ -7,6 +7,7 @@ import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
+
 class ControllerBobs27 extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -40,7 +41,8 @@ class ControllerBobs27 extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     targets = <String>['1']; // start with target 1
@@ -58,36 +60,39 @@ class ControllerBobs27 extends ControllerBase
   void initFromProvider(MenuItem item) {
     init(item);
   }
+
   @override
   void pressNumpadButton(int value) {
     // undo button pressed
     if (value == -2) {
-      if (roundScores.length > 1 && !gameEnded) { // need at least 2 entries (current + previous)
+      if (roundScores.length > 1 && !gameEnded) {
+        // need at least 2 entries (current + previous)
         round--;
         currentTargetIndex--;
-        
+
         // remove last entries (current row)
         targets.removeLast();
         roundScores.removeLast();
         totalScores.removeLast();
-        
+
         // restore previous round score and total
         int previousRoundScore = roundScores[roundScores.length - 1];
         totalScore -= previousRoundScore; // undo previous calculation
         roundScores[roundScores.length - 1] = 0; // make current row empty again
-        
+
         // If we're back to round 1, restore the initial score of 27; otherwise set to 0
         if (round == 1) {
           totalScores[totalScores.length - 1] = 27; // restore initial score
         } else {
-          totalScores[totalScores.length - 1] = 0; // make current total empty again
+          totalScores[totalScores.length - 1] =
+              0; // make current total empty again
         }
-        
+
         // adjust successful rounds if previous round was successful
         if (previousRoundScore > 0) {
           successfulRounds--;
         }
-        
+
         notifyListeners();
       }
       return;
@@ -112,12 +117,13 @@ class ControllerBobs27 extends ControllerBase
     // process the round
     int currentTarget = _getCurrentTargetNumber();
     int roundScore = _calculateScore(currentTarget, hits);
-    
+
     // record the round (complete current row)
-    roundScores[roundScores.length - 1] = roundScore; // overwrite current round score
+    roundScores[roundScores.length - 1] =
+        roundScore; // overwrite current round score
     totalScore += roundScore;
     totalScores[totalScores.length - 1] = totalScore; // overwrite current total
-    
+
     // track successful rounds
     if (hits > 0) {
       successfulRounds++;
@@ -127,7 +133,8 @@ class ControllerBobs27 extends ControllerBase
     if (totalScore <= 0) {
       gameEnded = true;
       gameWon = false;
-    } else if (currentTargetIndex >= 20) { // completed all targets including bull
+    } else if (currentTargetIndex >= 20) {
+      // completed all targets including bull
       gameEnded = true;
       gameWon = true;
     } else {
@@ -183,7 +190,8 @@ class ControllerBobs27 extends ControllerBase
 
   int _calculateScore(int target, int hits) {
     int doubleValue;
-    if (target == 21) { // bull
+    if (target == 21) {
+      // bull
       doubleValue = 50;
     } else {
       doubleValue = target * 2;
@@ -228,7 +236,6 @@ class ControllerBobs27 extends ControllerBase
 
   Map getCurrentStats() {
     return {
-      'target': _getCurrentTargetDisplay(),
       'successful': successfulRounds,
       'total': totalScore,
       'average': _getAverageScore(),
@@ -244,23 +251,26 @@ class ControllerBobs27 extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int recordSuccessful = statsService.getStat<int>('recordSuccessful', defaultValue: 0)!;
-    int recordTotal = statsService.getStat<int>('recordTotal', defaultValue: 0)!;
-    double longtermAverage = statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
-    
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordSuccessful =
+        statsService.getStat<int>('recordSuccessful', defaultValue: 0)!;
+    int recordTotal =
+        statsService.getStat<int>('recordTotal', defaultValue: 0)!;
+    double longtermAverage =
+        statsService.getStat<double>('longtermAverage', defaultValue: 0.0)!;
+
     return formatStatsString(
       numberGames: numberGames,
       records: {
-        'E': recordSuccessful,  // Erfolgreiche Runden
-        'P': recordTotal,       // Punkte
+        'E': recordSuccessful, // Erfolgreiche Runden
+        'P': recordTotal, // Punkte
       },
       averages: {
-        'P': longtermAverage,   // Durchschnittspunkte
+        'P': longtermAverage, // Durchschnittspunkte
       },
     );
   }
-
 
   @override
   List<SummaryLine> createSummaryLines() {
@@ -268,7 +278,8 @@ class ControllerBobs27 extends ControllerBase
       SummaryService.createCompletionLine('Bob\'s 27', gameWon),
       SummaryService.createValueLine('Erfolgreiche Runden', successfulRounds),
       SummaryService.createValueLine('Gesamtpunkte', totalScore),
-      SummaryService.createValueLine('Punkte/Runde', _getAverageScore(), emphasized: true),
+      SummaryService.createValueLine('Punkte/Runde', _getAverageScore(),
+          emphasized: true),
     ];
   }
 
@@ -278,11 +289,11 @@ class ControllerBobs27 extends ControllerBase
   @override
   void updateSpecificStats() {
     double currentAverage = double.parse(_getAverageScore());
-    
+
     // Update records using StatsService
     statsService.updateRecord<int>('recordSuccessful', successfulRounds);
     statsService.updateRecord<int>('recordTotal', totalScore);
-    
+
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', currentAverage);
   }

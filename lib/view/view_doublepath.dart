@@ -117,17 +117,6 @@ class ViewDoublePath extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Ziel: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      controller.currentRound < 5
-                          ? ControllerDoublePath
-                              .targetSequences[controller.currentRound]
-                          : ControllerDoublePath.targetSequences[4],
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
                       "  Punkte: ",
                       style: statsTextStyle(context),
                     ),

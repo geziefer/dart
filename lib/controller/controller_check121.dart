@@ -7,6 +7,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
+
 class ControllerCheck121 extends ControllerBase
     implements MenuitemController, NumpadController {
   StorageService? _storageService;
@@ -213,7 +214,6 @@ class ControllerCheck121 extends ControllerBase
 
   Map getCurrentStats() {
     return {
-      'target': currentTarget,
       'successful': successfulRounds,
       'misses': missCount,
       'savePoint': savePoint,
@@ -262,7 +262,6 @@ class ControllerCheck121 extends ControllerBase
       },
     );
   }
-
 
   @override
   List<SummaryLine> createSummaryLines() {

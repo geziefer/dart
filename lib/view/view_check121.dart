@@ -75,7 +75,7 @@ class ViewCheck121 extends StatelessWidget {
                             ScoreColumn(
                               label: 'Z',
                               content: controller.getCurrentTargets(),
-                              color: Colors.white,
+                              color: const Color.fromARGB(255, 215, 198, 132),
                             ),
                             const SizedBox(width: 10),
                             const VerticalDivider(
@@ -125,14 +125,6 @@ class ViewCheck121 extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Ziel: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['target']}",
-                      style: statsNumberTextStyle(context),
-                    ),
                     Text(
                       "  Checks: ",
                       style: statsTextStyle(context),

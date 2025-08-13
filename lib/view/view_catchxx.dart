@@ -126,14 +126,6 @@ class ViewCatchXX extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Ziel: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['target']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
                       "  Checks: ",
                       style: statsTextStyle(context),
                     ),
