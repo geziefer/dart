@@ -20,7 +20,7 @@ class _VersionInfoState extends State<VersionInfo> {
   Future<void> _getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      version = 'v${packageInfo.version}';
+      version = 'v${packageInfo.version}+${packageInfo.buildNumber}';
     });
   }
 
