@@ -228,8 +228,11 @@ TextStyle timerTextStyle(BuildContext context) {
 }
 
 TextStyle emojiLargeTextStyle(BuildContext context) {
+  final scaleFactor = ResponsiveUtils.isPhoneSize(context) 
+      ? ResponsiveUtils.getTextScaleFactor(context) * 0.85  // Same scaling as scoreTextStyle
+      : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 68),
+    fontSize: 60 * scaleFactor, // Same base size as scoreTextStyle
     fontFamily: "NotoColorEmoji",
   );
 }
