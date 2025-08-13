@@ -192,11 +192,12 @@ class ControllerXXXCheckout extends ControllerBase
         // Always increment completed legs counter
         completedLegs++;
 
-        // Don't trigger game end here - let it be triggered by checkout dialog callback
-        // Only increment leg if this is not the final leg
-        if (leg < end) {
+        // Always increment leg counter for next leg (unless game is ending)
+        if (completedLegs < end) {
           leg++;
         }
+        
+        // Don't trigger game end here - let it be triggered by checkout dialog callback
         return; // Return early to prevent further processing
       }
       // number button pressed
@@ -328,8 +329,8 @@ class ControllerXXXCheckout extends ControllerBase
 
   /// Handle checkout dialog being closed - check if game should end
   void handleCheckoutClosed() {
-    // Check if this was the final leg
-    if (leg == end) {
+    // Check if we have completed the target number of legs
+    if (completedLegs >= end) {
       // Use post frame callback to ensure dialog is fully closed before showing summary
       WidgetsBinding.instance.addPostFrameCallback((_) {
         triggerGameEnd();
