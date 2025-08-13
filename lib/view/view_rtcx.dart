@@ -3,6 +3,7 @@ import 'package:dart/styles.dart';
 import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/menu.dart';
@@ -30,6 +31,31 @@ class ViewRTCX extends StatelessWidget {
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
+    };
+    controller.onShowCheckout = (remaining, score) {
+      // Show checkout dialog in target mode
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(2))),
+            child: Checkout(
+              remaining: remaining,
+              controller: controller,
+              score: score,
+              isCheckoutMode: false, // Use target mode for RTCX
+              onClosed: () => controller.onCheckoutClosed?.call(),
+            ),
+          );
+        },
+      );
+    };
+    controller.onCheckoutClosed = () {
+      // Simply notify controller that checkout dialog is closed
+      // Controller will handle game end logic internally
+      controller.handleCheckoutClosed();
     };
 
     Map currentStats = controller.getCurrentStats();

@@ -29,6 +29,7 @@ Tests use Flutter's `WidgetTester` to:
 - Simulate user interactions through button taps and input
 - Verify game state changes and business logic
 - Validate statistics calculations and storage operations
+- Test dialog workflows including sequential dialog patterns (e.g., checkout dialog followed by summary dialog)
 
 ## Game Test Classes
 
@@ -186,7 +187,7 @@ Tests use Flutter's `WidgetTester` to:
 - RTCX undo edge cases
 - RTCX round limit functionality
 
-**What is tested**: Number progression (1-20), dart counting per round, round limits, input validation, and statistics calculation.
+**What is tested**: Number progression (1-20), dart counting per round, round limits, input validation, checkout dialog integration for accurate dart counting in final round, and statistics calculation. The game now shows a checkout dialog before the summary to allow players to specify the exact number of darts used in the final round, ensuring accurate dart count statistics.
 
 ### 10. 10 Up 1 Down Game Widget Tests
 **Test Class**: `updown_widget_test.dart`
@@ -265,9 +266,19 @@ Tests use Flutter's `WidgetTester` to:
 **Test Class**: `checkout_widget_test.dart`
 
 **Test Cases**:
-- FullCircle widget build method execution
+- Checkout widget constructor and properties
+- Checkout widget constructor with null callback
+- Checkout widget build method execution paths
+- Checkout widget conditional button rendering
+- Checkout widget button press integration
+- Checkout widget callback integration
+- Checkout widget failed checkout scenario
+- Checkout dart calculation comprehensive test
+- Checkout dart correction business logic
+- Checkout edge cases
+- Checkout score validation integration
 
-**What is tested**: Build method calculations and widget rendering for the FullCircle game component.
+**What is tested**: Checkout dialog functionality for both score-based checkout games (XXXCheckout) and target-based games (RTCX). Tests cover dual-mode operation with `isCheckoutMode` flag, dart calculation logic for different score ranges, button rendering based on possible dart counts, callback integration, and dart correction functionality. The widget now supports both traditional checkout scenarios and target-count scenarios for accurate final round dart counting.
 
 ### 15. Menu Widget Business Logic Tests
 **Test Class**: `menu_widget_test.dart`

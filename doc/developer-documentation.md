@@ -215,11 +215,50 @@ Services Setup → Game Ready
 - **Service Integration**: Controllers use services for business logic
 - **State Variables**: Game-specific data (scores, rounds, targets)
 - **Initialization**: Route-based with MenuItem parameter
+- **Dialog Callbacks**: UI interaction callbacks for decoupling from BuildContext
 - **Methods**: 
   - `init(MenuItem)` - Game setup and service initialization
   - `pressNumpadButton()` - Input processing
   - `getStats()` - Statistics formatting via StatsService
   - Display methods for UI data formatting
+
+### Sequential Dialog Pattern
+Some games implement a two-dialog workflow where an intermediate dialog is shown before the final summary dialog:
+
+**Implementation Pattern:**
+1. **Controller Callbacks**: Controllers define callback functions for UI interactions
+   ```dart
+   VoidCallback? onGameEnded;
+   Function(int remaining, int score)? onShowCheckout;
+   VoidCallback? onCheckoutClosed;
+   ```
+
+2. **View Setup**: Views set up callback handlers during build
+   ```dart
+   controller.onShowCheckout = (remaining, score) {
+     // Show first dialog
+     showDialog(context: context, builder: (context) => FirstDialog(...));
+   };
+   controller.onCheckoutClosed = () {
+     // Handle first dialog closure, trigger second dialog
+     controller.handleCheckoutClosed();
+   };
+   ```
+
+3. **Controller Flow**: Controllers trigger dialogs in sequence
+   ```dart
+   // Trigger first dialog
+   onShowCheckout?.call(remaining, score);
+   
+   // Handle first dialog closure
+   void handleCheckoutClosed() {
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+       triggerGameEnd(); // This triggers onGameEnded callback
+     });
+   }
+   ```
+
+**Used in**: XXXCheckout (checkout → summary), RTCX (dart count → summary)
 
 ### Service Architecture
 - **StatsService**: Handles all statistics calculations and formatting

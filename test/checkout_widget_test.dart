@@ -119,7 +119,7 @@ void main() {
       );
 
       // Should show the dart selection dialog
-      expect(find.text("Wie viele Darts zum Checkout?"), findsOneWidget);
+      expect(find.text("Wie viele Darts zum Finish?"), findsOneWidget);
     });
 
     /// Tests Checkout widget conditional button rendering

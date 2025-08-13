@@ -6,6 +6,7 @@ import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
+import 'package:flutter/material.dart';
 
 class ControllerRTCX extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -71,19 +72,36 @@ class ControllerRTCX extends ControllerBase
         if (value == -1) {
           value = 0;
         }
-        dart += 3;
-        throws.add(value);
-        currentNumber += value;
-
-        notifyListeners();
-
-        // check for last number reached or limit of rounds
-        if (currentNumber > 20 || (max != -1 && round == max)) {
+        
+        // Check if this input will complete the game or hit round limit
+        bool willCompleteGame = (currentNumber + value > 20);
+        bool willHitRoundLimit = (max != -1 && round == max);
+        
+        if (willCompleteGame || willHitRoundLimit) {
+          // Calculate remaining targets BEFORE updating currentNumber
+          int remainingTargets = currentNumber > 20 ? 0 : (20 - currentNumber + 1);
+          
+          // Debug output
+          print('RTCX Debug: currentNumber=$currentNumber, value=$value, remainingTargets=$remainingTargets, willComplete=$willCompleteGame');
+          
+          // Update game state
+          dart += 3;
+          throws.add(value);
+          currentNumber += value;
           finished = currentNumber > 20 ? true : false;
-          // Game ends directly without checkout dialog
-          triggerGameEnd();
+          
+          notifyListeners();
+          
+          // Show checkout dialog before ending the game
+          onShowCheckout?.call(remainingTargets, 0); // score parameter not used in target mode
         } else {
+          // Normal round - just update state
+          dart += 3;
+          throws.add(value);
+          currentNumber += value;
           round++;
+          
+          notifyListeners();
         }
       }
     }
@@ -92,7 +110,13 @@ class ControllerRTCX extends ControllerBase
 
   // Checkout and summary dialogs are now handled by the view via callbacks
 
-  // Summary dialog is now handled by the view via callback
+  /// Handle checkout dialog being closed - trigger game end
+  void handleCheckoutClosed() {
+    // Use post frame callback to ensure dialog is fully closed before showing summary
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      triggerGameEnd();
+    });
+  }
 
   @override
   List<SummaryLine> createSummaryLines() {

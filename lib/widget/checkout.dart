@@ -11,12 +11,14 @@ class Checkout extends StatelessWidget {
     required this.controller,
     required this.score,
     this.onClosed,
+    this.isCheckoutMode = true,
   });
 
   final int remaining;
   final NumpadController controller;
   final int score;
   final VoidCallback? onClosed;
+  final bool isCheckoutMode; // true for score-based checkout (default), false for target-based mode
 
   /// Determines the maximum number of darts possible for a given score
   /// Returns -1 for numbers out of range - Note: no bogey number check, will be done in controller
@@ -47,60 +49,69 @@ class Checkout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate the maximum darts for the score that was just thrown
-    int maxDarts = getMaxDartsForScore(score);
-
-    if (remaining > 0 || maxDarts == -1) {
-      return SizedBox(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(10),
-              child: Text(
-                "Maximale Dart-Anzahl erreicht",
-                style: endSummaryHeaderTextStyle(context),
-                textAlign: TextAlign.center,
+    int maxDarts;
+    
+    if (isCheckoutMode) {
+      // Calculate the maximum darts for the score that was just thrown (original behavior)
+      maxDarts = getMaxDartsForScore(score);
+      
+      if (remaining > 0 || maxDarts == -1) {
+        return SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.all(10),
+                child: Text(
+                  "Maximale Dart-Anzahl erreicht",
+                  style: endSummaryHeaderTextStyle(context),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(10),
-              child: DurationButton(
-                duration: const Duration(seconds: 3),
-                onPressed: () {
-                  Navigator.pop(context);
-                  onClosed?.call();
-                },
-                coverColor: Colors.black,
-                backgroundColor: Colors.grey[800],
-                width: 150,
-                height: 80,
-                child: Center(
-                  child: Text(
-                    'OK',
-                    style: okButtonTextStyle(context),
-                    textAlign: TextAlign.center,
+              Container(
+                margin: const EdgeInsets.all(10),
+                child: DurationButton(
+                  duration: const Duration(seconds: 3),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onClosed?.call();
+                  },
+                  coverColor: Colors.black,
+                  backgroundColor: Colors.grey[800],
+                  width: 150,
+                  height: 80,
+                  child: Center(
+                    child: Text(
+                      'OK',
+                      style: okButtonTextStyle(context),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      }
+    } else {
+      // Target mode: maximum darts is always 3, but minimum is the number of remaining targets
+      maxDarts = 3;
     }
 
-    // here we are if finish happened and was possible with 1 to 3 darts
+    // here we are if finish happened and was possible with 1 to 3 darts (checkout mode)
+    // or if we have remaining targets (target mode)
     final isPhone = ResponsiveUtils.isPhoneSize(context);
     final dialogWidth = isPhone ? 300.0 : 550.0; // Much smaller width on phones
-    final dialogHeight = isPhone ? 200.0 : 250.0; // Slightly smaller height on phones
-    
+    final dialogHeight =
+        isPhone ? 200.0 : 250.0; // Slightly smaller height on phones
+
     return SizedBox(
       height: dialogHeight,
       width: dialogWidth,
       child: Column(
         children: [
           Text(
-            "Wie viele Darts zum Checkout?",
+            "Wie viele Darts zum Finish?",
             style: endSummaryHeaderTextStyle(context),
             textAlign: TextAlign.center,
           ),
@@ -110,8 +121,9 @@ class Checkout extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // 1 dart button - only show if finishable with 1 dart
-                if (maxDarts == 1)
+                // 1 dart button - only show if remaining is exactly 1
+                if ((isCheckoutMode && maxDarts == 1) || 
+                    (!isCheckoutMode && remaining == 1))
                   Expanded(
                     flex: 1,
                     child: Container(
@@ -132,8 +144,9 @@ class Checkout extends StatelessWidget {
                       ),
                     ),
                   ),
-                // 2 dart button - if finishable with less than 3
-                if (maxDarts <= 2)
+                // 2 dart button - show if remaining is 1 or 2
+                if ((isCheckoutMode && maxDarts <= 2) || 
+                    (!isCheckoutMode && (remaining == 1 || remaining == 2)))
                   Expanded(
                     flex: 1,
                     child: Container(
