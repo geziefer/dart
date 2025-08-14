@@ -509,5 +509,48 @@ void main() {
       double successRate = controller.successfulRounds / (controller.round - 1);
       expect(successRate, closeTo(0.667, 0.01)); // 2/3 ≈ 0.667
     });
+
+    /// Tests new averaging logic (same as halfit)
+    /// Verifies: only positive scores are summed, but divided by total rounds
+    testWidgets('Bobs 27 averaging logic - positive scores only',
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerBobs27>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewBobs27(title: 'Bobs 27 Test'),
+          ),
+        ),
+      );
+
+      // Act: Play rounds with mixed positive and negative scores
+      controller.pressNumpadButton(3); // Hit target 1: +6 points
+      await tester.pump();
+      controller.pressNumpadButton(0); // Miss target 2: -4 points
+      await tester.pump();
+      controller.pressNumpadButton(2); // Hit target 3: +12 points
+      await tester.pump();
+      controller.pressNumpadButton(0); // Miss target 4: -8 points
+      await tester.pump();
+
+      // Assert: Verify scores
+      expect(controller.roundScores[0], equals(6)); // 3 hits * 2 = 6
+      expect(controller.roundScores[1], equals(-4)); // miss * -4 = -4
+      expect(controller.roundScores[2], equals(12)); // 2 hits * 6 = 12
+      expect(controller.roundScores[3], equals(-8)); // miss * -8 = -8
+
+      // Calculate expected average using new logic:
+      // Only positive scores: 6 + 12 = 18
+      // Divided by total completed rounds: 18 / 4 = 4.5
+      Map stats = controller.getCurrentStats();
+      expect(stats['average'], equals('4.5'));
+
+      // Verify this is different from old logic which would be:
+      // Total change from starting score: (27 + 6 - 4 + 12 - 8) - 27 = 6
+      // Old average would be: 6 / 4 = 1.5
+      // New average is: (6 + 12) / 4 = 4.5
+    });
   });
 }

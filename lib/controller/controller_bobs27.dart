@@ -246,7 +246,20 @@ class ControllerBobs27 extends ControllerBase
     if (round == 1) {
       return "0.0";
     }
-    double avg = (totalScore - 27) / (round - 1); // exclude starting score
+    
+    // Sum only positive scores (same logic as halfit)
+    // This excludes the initial 27 points since we only look at roundScores
+    int positiveScoreSum = roundScores
+        .where((score) => score > 0)
+        .fold(0, (sum, score) => sum + score);
+    
+    // Divide by total rounds played (excluding current empty round if any)
+    int completedRounds = roundScores.where((score) => score != 0).length;
+    if (completedRounds == 0) {
+      return "0.0";
+    }
+    
+    double avg = positiveScoreSum / completedRounds;
     return avg.toStringAsFixed(1);
   }
 
