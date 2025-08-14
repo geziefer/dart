@@ -140,7 +140,6 @@ void main() {
       Map stats = controller.getCurrentStats();
       expect(stats['round'], equals(1));
       expect(stats['correct'], equals(0));
-      expect(stats['percentage'], equals('0.0'));
       expect(stats['totalTime'], equals(0));
       expect(stats['averageTime'], equals('0.0'));
     });

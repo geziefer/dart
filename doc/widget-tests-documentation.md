@@ -138,8 +138,9 @@ Tests use Flutter's `WidgetTester` to:
 - Bobs 27 statistics with existing data
 - Bobs 27 undo edge cases
 - Bobs 27 current stats calculation
+- Bobs 27 averaging logic - positive scores only
 
-**What is tested**: Score reduction from 27 points, target progression (1-20, Bull), win/lose conditions, score validation, and statistics tracking.
+**What is tested**: Score reduction from 27 points, target progression (1-20, Bull), win/lose conditions, score validation, statistics tracking, and averaging logic that sums only positive scores but divides by total rounds (same behavior as HalfIt game).
 
 ### 7. Check 121 Game Widget Tests
 **Test Class**: `check121_widget_test.dart`
