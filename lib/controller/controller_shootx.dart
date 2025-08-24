@@ -122,7 +122,7 @@ class ControllerShootx extends ControllerBase
   }
 
   double _getAvgNumbers() {
-    return round == 1 ? 0 : (number / (round - 1));
+    return rounds.isEmpty ? 0 : (number / rounds.length);
   }
 
   String getCurrentRounds() {
