@@ -463,6 +463,10 @@ class ControllerFinishes extends ControllerBase
   int correctRounds = 0;
   int totalTimeSeconds = 0; // Track total time spent in all completed rounds
   static const int maxRounds = 10;
+  
+  // Pre-generated distinct finishes for the session
+  List<int> sessionFinishes = [];
+  int currentFinishIndex = 0;
 
   @override
   void init(MenuItem item) {
@@ -478,6 +482,10 @@ class ControllerFinishes extends ControllerBase
     correctRounds = 0;
     totalTimeSeconds = 0;
 
+    // Generate distinct finishes for the session
+    _generateSessionFinishes();
+    currentFinishIndex = 0;
+
     _createRandomFinish();
   }
 
@@ -486,16 +494,39 @@ class ControllerFinishes extends ControllerBase
     init(item);
   }
 
-  void _createRandomFinish() {
+  void _generateSessionFinishes() {
     var r = Random();
-
+    
     // Get all available finishes in the range
     List<int> availableFinishes = finishes.keys
         .where((finish) => finish >= from && finish <= to)
         .toList();
+    
+    // Shuffle the available finishes
+    availableFinishes.shuffle(r);
+    
+    sessionFinishes = [];
+    
+    // If we have enough distinct finishes, take the first 10
+    if (availableFinishes.length >= maxRounds) {
+      sessionFinishes = availableFinishes.take(maxRounds).toList();
+    } else {
+      // If we have fewer than 10 distinct finishes, repeat them as needed
+      while (sessionFinishes.length < maxRounds) {
+        for (int finish in availableFinishes) {
+          sessionFinishes.add(finish);
+          if (sessionFinishes.length >= maxRounds) break;
+        }
+      }
+      // Shuffle again to randomize the order of repeated elements
+      sessionFinishes.shuffle(r);
+    }
+  }
 
-    // Select random finish from available ones
-    int finish = availableFinishes[r.nextInt(availableFinishes.length)];
+  void _createRandomFinish() {
+    // Use the next finish from the pre-generated session list
+    int finish = sessionFinishes[currentFinishIndex];
+    currentFinishIndex++;
 
     currentFinish = finish;
     preferred = finishes[currentFinish]![0];
