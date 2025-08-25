@@ -102,8 +102,9 @@ class ControllerKillBull extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
+    int roundsPlayed = roundScores.length;
     return [
-      SummaryService.createValueLine('Runden', round),
+      SummaryService.createValueLine('Runden', roundsPlayed),
       SummaryService.createValueLine('Punkte', totalScore),
       SummaryService.createAverageLine('Punkte/Runde', _getAvgScore(),
           emphasized: true),
@@ -115,8 +116,9 @@ class ControllerKillBull extends ControllerBase
 
   @override
   void updateSpecificStats() {
+    int roundsPlayed = roundScores.length;
     // Update records
-    statsService.updateRecord<int>('recordRounds', round);
+    statsService.updateRecord<int>('recordRounds', roundsPlayed);
     statsService.updateRecord<int>('recordScore', totalScore);
 
     // Update long-term average using totalScore (not avgScore) to match old behavior
@@ -124,7 +126,10 @@ class ControllerKillBull extends ControllerBase
   }
 
   double _getAvgScore() {
-    return round == 1 ? 0 : (totalScore / (round - 1));
+    // Use the actual number of rounds played (length of roundScores)
+    // This is more robust than relying on the round counter
+    int roundsPlayed = roundScores.length;
+    return roundsPlayed == 0 ? 0 : (totalScore / roundsPlayed);
   }
 
   String getCurrentRoundNumbers() {
@@ -156,8 +161,9 @@ class ControllerKillBull extends ControllerBase
   }
 
   Map getCurrentStats() {
+    int roundsPlayed = roundScores.length;
     return {
-      'round': round,
+      'round': roundsPlayed,
       'totalScore': totalScore,
       'avgScore': _getAvgScore().toStringAsFixed(1),
     };
