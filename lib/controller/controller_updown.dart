@@ -47,7 +47,7 @@ class ControllerUpDown extends ControllerBase
     targets = <int>[50];
     results = <bool>[];
     currentRound = 1;
-    currentTarget = 50;
+    currentTarget = 50; // This represents the current score
     successCount = 0;
     highestTarget = 50;
     notifyListeners();
@@ -125,17 +125,19 @@ class ControllerUpDown extends ControllerBase
         highestTarget = currentTarget;
       }
 
+      // Always update the current target (this is the current score)
+      currentTarget = nextTarget;
+
       // Move to next round if not finished
       if (currentRound < 13) {
         currentRound++;
-        currentTarget = nextTarget;
         rounds.add(currentRound);
         targets.add(currentTarget);
+      }
 
-        // Update highest target for new target
-        if (currentTarget > highestTarget) {
-          highestTarget = currentTarget;
-        }
+      // Update highest target for new target
+      if (currentTarget > highestTarget) {
+        highestTarget = currentTarget;
       }
 
       notifyListeners();
@@ -152,12 +154,11 @@ class ControllerUpDown extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     double averageSuccesses = successCount / 13.0;
-    int lastTarget = targets.isNotEmpty ? targets.last : 50;
 
     return [
       SummaryService.createValueLine('Checks', successCount, emphasized: true),
       SummaryService.createAverageLine('Durchschnitt Checks', averageSuccesses),
-      SummaryService.createValueLine('Letztes Ziel', lastTarget),
+      SummaryService.createValueLine('Letztes Ziel', currentTarget),
       SummaryService.createValueLine('Höchstes Ziel', highestTarget),
     ];
   }
