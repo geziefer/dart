@@ -471,5 +471,68 @@ void main() {
       expect(controller.highestTarget,
           greaterThanOrEqualTo(controller.currentTarget));
     });
+
+    /// Tests Check121 average calculation
+    /// Verifies: average success rate calculation works correctly during game and at end
+    testWidgets('Check121 average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerCheck121>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewCheck121(title: 'Check 121 Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['average'], equals('0.0')); // No attempts yet
+
+      // Test 2: First attempt - success with 1 dart
+      controller.pressNumpadButton(1); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('1.0')); // 1/1 = 1.0
+
+      // Test 3: Second attempt - success with 2 darts
+      controller.pressNumpadButton(2); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('1.0')); // 2/2 = 1.0
+
+      // Test 4: Third attempt - miss (first miss)
+      controller.pressNumpadButton(0); // Miss
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('0.7')); // 2/3 = 0.67 ≈ 0.7
+
+      // Test 5: Play until game ends (10 misses total)
+      // We already have 1 miss, so we need 9 more misses
+      // Add a few more successes first, then complete with remaining misses
+      
+      // Add 3 more successes
+      for (int i = 0; i < 3; i++) {
+        controller.pressNumpadButton(1); // Success
+        await tester.pump();
+      }
+      
+      // Now add the remaining 9 misses to end the game
+      for (int i = 0; i < 9; i++) {
+        controller.pressNumpadButton(0); // Miss
+        await tester.pump();
+      }
+
+      // Game should be ended now with 10 misses
+      expect(controller.gameEnded, isTrue);
+      
+      // Final average: 5 successes / 14 total rounds = 0.357... ≈ 0.4
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('0.4'));
+    });
   });
 }

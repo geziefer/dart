@@ -421,5 +421,57 @@ void main() {
       expect(stats['totalHits'], equals(4)); // 3 + 1
       expect(stats['average'], equals('2.0')); // 4 hits / 2 rounds = 2.0
     });
+
+    /// Tests SpeedBull comprehensive average calculation
+    /// Verifies: average calculation handles edge cases and full game progression
+    testWidgets('SpeedBull comprehensive average calculation', 
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerSpeedBull>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewSpeedBull(title: 'SpeedBull Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['average'], equals('0.0')); // No rounds yet
+
+      controller.startGame();
+      await tester.pump();
+
+      // Test 2: After first round
+      controller.pressNumpadButton(3); // Round 1: 3 hits (valid range 0-3)
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('3.0')); // 3 hits / 1 round = 3.0
+
+      // Test 3: After second round
+      controller.pressNumpadButton(2); // Round 2: 2 hits
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('2.5')); // 5 hits / 2 rounds = 2.5
+
+      // Test 4: After third round
+      controller.pressNumpadButton(1); // Round 3: 1 hit
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('2.0')); // 6 hits / 3 rounds = 2.0
+
+      // Test 5: End game with 0 and verify final average
+      controller.pressNumpadButton(0); // Round 4: 0 hits
+      await tester.pump();
+
+      // Final: 3 + 2 + 1 + 0 = 6 hits / 4 rounds = 1.5
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('1.5'));
+    });
   });
 }

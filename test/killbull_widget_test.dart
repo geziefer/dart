@@ -398,5 +398,53 @@ void main() {
           .called(greaterThan(0)); // Some storage operations happened
       expect(controller.gameEnded, isTrue);
     });
+
+    /// Tests KillBull average calculation
+    /// Verifies: average score calculation works correctly during game and at end
+    testWidgets('KillBull average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerKillBull>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewKillBull(title: 'KillBull Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('0.0')); // No rounds yet
+
+      // Test 2: First round - hit 1 bull (25 points)
+      controller.pressNumpadButton(1);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('25.0')); // 25 / 1 round = 25.0
+
+      // Test 3: Second round - hit 3 bulls (75 points)
+      controller.pressNumpadButton(3);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('50.0')); // 100 / 2 rounds = 50.0
+
+      // Test 4: Third round - hit 2 bulls (50 points)
+      controller.pressNumpadButton(2);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('50.0')); // 150 / 3 rounds = 50.0
+
+      // Test 5: End game with 0 bulls and verify final average
+      controller.pressNumpadButton(0); // 0 bulls (ends game)
+      await tester.pump();
+
+      // Final: (25 + 75 + 50 + 0) / 4 = 150 / 4 = 37.5
+      stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('37.5'));
+    });
   });
 }

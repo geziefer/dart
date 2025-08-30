@@ -353,5 +353,62 @@ void main() {
       expect(stats, contains('♛T: 25')); // Record numbers (Treffer)
       expect(stats, contains('ØT: 4.2')); // Average hits (Treffer)
     });
+
+    /// Tests ShootX average calculation
+    /// Verifies: average hits calculation works correctly during game and at end
+    testWidgets('ShootX average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerShootx>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewShootx(title: 'Shoot 20s Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgHits'], equals('0.0')); // No rounds yet
+
+      // Test 2: Play first round - 3 hits
+      controller.pressNumpadButton(3);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgHits'], equals('3.0')); // 3 total hits / 1 round = 3.0
+
+      // Test 3: Play second round - 2 hits (total 5 hits)
+      controller.pressNumpadButton(2);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgHits'], equals('2.5')); // 5 total hits / 2 rounds = 2.5
+
+      // Test 4: Play third round - 1 hit (total 6 hits)
+      controller.pressNumpadButton(1);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgHits'], equals('2.0')); // 6 total hits / 3 rounds = 2.0
+
+      // Test 5: Complete remaining rounds until game ends
+      int totalHits = 6; // Already have 6 hits from first 3 rounds
+      int roundsPlayed = 3;
+      
+      // Play remaining rounds (max is 10, we've played 3, so 7 more)
+      for (int i = roundsPlayed + 1; i <= controller.max; i++) {
+        controller.pressNumpadButton(4); // 4 hits each remaining round
+        await tester.pump();
+        totalHits += 4;
+        roundsPlayed++;
+      }
+
+      // Final calculation: totalHits / roundsPlayed
+      double expectedAverage = totalHits / roundsPlayed;
+      stats = controller.getCurrentStats();
+      expect(stats['avgHits'], equals(expectedAverage.toStringAsFixed(1)));
+    });
   });
 }

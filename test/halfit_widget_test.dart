@@ -413,7 +413,7 @@ void main() {
     });
 
     /// Tests HalfIt average score calculation
-    /// Verifies: average score is calculated correctly
+    /// Verifies: average score is calculated correctly during game and at end
     testWidgets('HalfIt average score calculation',
         (WidgetTester tester) async {
       disableOverflowError();
@@ -427,21 +427,47 @@ void main() {
         ),
       );
 
-      // Act: Submit multiple scores
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('0.0')); // No rounds yet
+
+      // Test 2: First round - score 20 (total becomes 60)
       controller.pressNumpadButton(2);
       controller.pressNumpadButton(0);
       controller.pressNumpadButton(-1); // 20, total = 60
       await tester.pump();
 
+      stats = controller.getCurrentStats();
+      // Average = (total - initial) / rounds = (60 - 40) / 1 = 20.0
+      expect(stats['avgScore'], equals('20.0'));
+
+      // Test 3: Second round - score 30 (total becomes 90)
       controller.pressNumpadButton(3);
       controller.pressNumpadButton(0);
       controller.pressNumpadButton(-1); // 30, total = 90
       await tester.pump();
 
-      // Assert: Average is calculated correctly
-      Map stats = controller.getCurrentStats();
+      stats = controller.getCurrentStats();
       // Average = (total - initial) / rounds = (90 - 40) / 2 = 25.0
       expect(stats['avgScore'], equals('25.0'));
+
+      // Test 4: Third round - miss (half-it, total becomes 45)
+      controller.pressNumpadButton(-1); // Miss: 0 (half-it)
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      // Average = positive scores / rounds = (20 + 30) / 3 = 16.7
+      expect(stats['avgScore'], equals('16.7'));
+
+      // Test 5: Fourth round - score 10 (total becomes 55)
+      controller.pressNumpadButton(1);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // 10, total = 55
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      // Average = positive scores / rounds = (20 + 30 + 10) / 4 = 15.0
+      expect(stats['avgScore'], equals('15.0'));
     });
 
     /// Tests Menu widget business logic - MenuItem creation and controller initialization

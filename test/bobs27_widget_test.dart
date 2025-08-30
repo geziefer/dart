@@ -552,5 +552,71 @@ void main() {
       // Old average would be: 6 / 4 = 1.5
       // New average is: (6 + 12) / 4 = 4.5
     });
+
+    /// Tests Bobs27 comprehensive average calculation
+    /// Verifies: average calculation handles edge cases and full game progression
+    testWidgets('Bobs27 comprehensive average calculation', 
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerBobs27>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewBobs27(title: 'Bobs 27 Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['average'], equals('0.0')); // No targets completed yet
+
+      // Test 2: First target (D1) - hit 1 (score: 1×2 = 2)
+      controller.pressNumpadButton(1);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('2.0')); // 2 points / 1 round = 2.0
+
+      // Test 3: Second target (D2) - hit 2 (score: 2×4 = 8)
+      controller.pressNumpadButton(2);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('5.0')); // 10 points / 2 rounds = 5.0
+
+      // Test 4: Third target (D3) - miss (score: -6, not counted in sum)
+      controller.pressNumpadButton(0);
+      await tester.pump();
+      
+      // Positive sum: 10, Total rounds: 3, Average: 10/3 = 3.3
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals('3.3'));
+
+      // Test 5: Complete all remaining targets (D4-D20 + Bull)
+      // Play remaining 18 rounds with alternating hits and misses
+      int totalPositiveScore = 10; // 2 + 8 from first two rounds
+      int totalRounds = 3; // including the miss
+      
+      for (int target = 4; target <= 21; target++) {
+        if (target % 2 == 0) {
+          // Even targets: hit 1
+          controller.pressNumpadButton(1);
+          int doubleValue = target == 21 ? 50 : target * 2;
+          totalPositiveScore += doubleValue;
+        } else {
+          // Odd targets: miss
+          controller.pressNumpadButton(0);
+        }
+        totalRounds++;
+        await tester.pump();
+      }
+
+      // Final average: positive scores / all completed rounds
+      double expectedAverage = totalPositiveScore / totalRounds;
+      stats = controller.getCurrentStats();
+      expect(stats['average'], equals(expectedAverage.toStringAsFixed(1)));
+    });
   });
 }

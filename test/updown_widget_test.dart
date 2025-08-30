@@ -416,5 +416,64 @@ void main() {
       expect(controller.currentTarget, equals(69)); // Use actual value
       expect(controller.highestTarget, equals(70));
     });
+
+    /// Tests UpDown average calculation
+    /// Verifies: average success rate calculation works correctly during game and at end
+    testWidgets('UpDown average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerUpDown>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewUpDown(title: 'UpDown Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['averageSuccess'], equals(0.0)); // No attempts yet
+
+      // Test 2: First attempt - success
+      controller.pressNumpadButton(1); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageSuccess'], equals(1.0)); // 1/1 = 1.0
+
+      // Test 3: Second attempt - miss
+      controller.pressNumpadButton(0); // Miss
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageSuccess'], equals(0.5)); // 1/2 = 0.5
+
+      // Test 4: Third attempt - success
+      controller.pressNumpadButton(1); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageSuccess'], closeTo(0.67, 0.01)); // 2/3 = 0.67
+
+      // Test 5: Complete all remaining 10 rounds (total 13 rounds)
+      // Play remaining 10 rounds with alternating success/miss pattern
+      int totalSuccesses = 2; // Already have 2 successes
+      
+      for (int i = 4; i <= 13; i++) {
+        if (i % 2 == 0) {
+          controller.pressNumpadButton(1); // Success
+          totalSuccesses++;
+        } else {
+          controller.pressNumpadButton(0); // Miss
+        }
+        await tester.pump();
+      }
+
+      // Final: calculate expected success rate
+      double expectedRate = totalSuccesses / 13.0;
+      stats = controller.getCurrentStats();
+      expect(stats['averageSuccess'], closeTo(expectedRate, 0.01));
+    });
   });
 }

@@ -470,5 +470,60 @@ void main() {
       expect(stats, contains('♛P: 78')); // Record points
       expect(stats, contains('ØP: 18.5')); // Average points
     });
+
+    /// Tests CatchXX average calculation
+    /// Verifies: average points calculation works correctly during game and at end
+    testWidgets('CatchXX average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerCatchXX>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewCatchXX(title: 'CatchXX Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgPoints'], equals('0.0')); // No rounds yet
+
+      // Test 2: Play first round and verify calculation
+      // Round 1: Hit target in 2 darts (3 points)
+      controller.pressNumpadButton(2);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgPoints'], equals('3.0')); // 3 points / 1 round = 3.0
+
+      // Test 3: Play second round
+      // Round 2: Hit target in 3 darts (2 points)
+      controller.pressNumpadButton(3);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgPoints'], equals('2.5')); // 5 points / 2 rounds = 2.5
+
+      // Test 4: Play third round with miss
+      // Round 3: Miss target (0 points)
+      controller.pressNumpadButton(0);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgPoints'], equals('1.7')); // 5 points / 3 rounds = 1.67
+
+      // Test 5: Complete game to verify final average
+      // Play remaining rounds until game ends (targets 61-100 = 40 rounds total)
+      // Play remaining rounds (target goes from 64 to 100)
+      for (int i = 4; i <= 40; i++) {
+        controller.pressNumpadButton(4); // 1 point each round
+        await tester.pump();
+      }
+
+      // Final: (3 + 2 + 0 + 37*1) / 40 = 42 / 40 = 1.05 = 1.1
+      stats = controller.getCurrentStats();
+      expect(stats['avgPoints'], equals('1.1'));
+    });
   });
 }

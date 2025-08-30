@@ -247,6 +247,59 @@ void main() {
       expect(statsString, contains('ØC: 2.5')); // Average checks
     });
 
+    /// Tests RTCX average calculation
+    /// Verifies: average checks calculation works correctly during game and at end
+    testWidgets('RTCX average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerRTCX>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewRTCX(title: 'RTCX Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals('0.0')); // No numbers completed yet
+
+      // Test 2: Hit first 2 numbers (uses 3 darts per round)
+      controller.pressNumpadButton(2); // Hit numbers 1-2
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals('1.5')); // 3 darts / 2 numbers = 1.5
+
+      // Test 3: Hit next 3 numbers
+      controller.pressNumpadButton(3); // Hit numbers 3-5
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals('1.2')); // 6 darts / 5 numbers = 1.2
+
+      // Test 4: Hit next 1 number
+      controller.pressNumpadButton(1); // Hit number 6
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals('1.5')); // 9 darts / 6 numbers = 1.5
+
+      // Test 5: Complete remaining numbers and verify final average
+      // Hit remaining numbers 7-20 (14 numbers) in groups
+      controller.pressNumpadButton(5); // Hit numbers 7-11
+      await tester.pump();
+      controller.pressNumpadButton(5); // Hit numbers 12-16
+      await tester.pump();
+      controller.pressNumpadButton(4); // Hit numbers 17-20
+      await tester.pump();
+
+      // Final: 18 darts / 20 numbers = 0.9
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals('0.9'));
+    });
+
     /// Tests RTCX undo edge cases
     /// Verifies: undo doesn't work when no throws played, proper state management
     testWidgets('RTCX undo edge cases', (WidgetTester tester) async {

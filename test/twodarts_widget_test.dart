@@ -433,5 +433,56 @@ void main() {
           controller.successCount / controller.currentTargetIndex;
       expect(successRate, closeTo(0.667, 0.01)); // 2/3 ≈ 0.667
     });
+
+    /// Tests TwoDarts average calculation
+    /// Verifies: average success rate calculation works correctly during game and at end
+    testWidgets('TwoDarts average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerTwoDarts>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewTwoDarts(title: 'TwoDarts Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals(0.0)); // No attempts yet
+
+      // Test 2: First target - success
+      controller.pressNumpadButton(1); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals(100.0)); // 1/1 = 100%
+
+      // Test 3: Second target - miss
+      controller.pressNumpadButton(0); // Miss
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals(50.0)); // 1/2 = 50%
+
+      // Test 4: Third target - success
+      controller.pressNumpadButton(1); // Success
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], closeTo(66.7, 0.1)); // 2/3 = 66.67%
+
+      // Test 5: Complete remaining targets and verify final average
+      // Complete targets 4-10 with alternating success/miss pattern
+      for (int i = 4; i <= 10; i++) {
+        controller.pressNumpadButton(i % 2); // Alternating 0,1,0,1...
+        await tester.pump();
+      }
+
+      // Final: 5 successes out of 10 attempts = 50%
+      stats = controller.getCurrentStats();
+      expect(stats['avgChecks'], equals(50.0));
+    });
   });
 }

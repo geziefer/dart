@@ -436,5 +436,55 @@ void main() {
           controller.points.fold(0, (sum, points) => sum + points);
       expect(controller.totalPoints.last, equals(expectedTotal));
     });
+
+    /// Tests DoublePath average calculation
+    /// Verifies: average round score calculation works correctly during game and at end
+    testWidgets('DoublePath average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerDoublePath>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewDoublePath(title: 'DoublePath Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['averagePerRound'], equals(0.0)); // No rounds yet
+
+      // Test 2: First round - 3 hits (6 points)
+      controller.pressNumpadButton(3);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averagePerRound'], equals(6.0)); // 6 points / 1 round = 6.0
+
+      // Test 3: Second round - 2 hits (3 points)
+      controller.pressNumpadButton(2);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averagePerRound'], equals(4.5)); // 9 points / 2 rounds = 4.5
+
+      // Test 4: Third round - 1 hit (1 point)
+      controller.pressNumpadButton(1);
+      await tester.pump();
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averagePerRound'], closeTo(3.3, 0.1)); // 10 points / 3 rounds = 3.33...
+
+      // Test 5: Complete remaining rounds and verify final average
+      controller.pressNumpadButton(0); // Round 4: 0 hits (0 points)
+      await tester.pump();
+      controller.pressNumpadButton(2); // Round 5: 2 hits (3 points)
+      await tester.pump();
+
+      // Final: (6 + 3 + 1 + 0 + 3) / 5 = 13 / 5 = 2.6
+      stats = controller.getCurrentStats();
+      expect(stats['averagePerRound'], equals(2.6));
+    });
   });
 }

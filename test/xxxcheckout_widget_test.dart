@@ -436,7 +436,7 @@ void main() {
     });
 
     /// Tests XXXCheckout average calculations
-    /// Verifies: average score and darts are calculated correctly
+    /// Verifies: average score and darts are calculated correctly during game and at end
     testWidgets('XXXCheckout average calculations',
         (WidgetTester tester) async {
       disableOverflowError();
@@ -450,21 +450,48 @@ void main() {
         ),
       );
 
-      // Act: Submit multiple scores
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['avgScore'], equals('0.0')); // No darts thrown yet
+
+      // Test 2: First throw - 60 points with 3 darts
       controller.pressNumpadButton(6);
       controller.pressNumpadButton(0);
       controller.pressNumpadButton(-1); // 60 points, 3 darts
       await tester.pump();
 
+      stats = controller.getCurrentStats();
+      // Average score = (totalScore / totalDarts) * 3 = (60 / 3) * 3 = 60.0
+      expect(stats['avgScore'], equals('60.0'));
+
+      // Test 3: Second throw - 90 points with 3 more darts (6 total)
       controller.pressNumpadButton(9);
       controller.pressNumpadButton(0);
       controller.pressNumpadButton(-1); // 90 points, 6 darts total
       await tester.pump();
 
-      // Assert: Average score calculation
-      Map stats = controller.getCurrentStats();
+      stats = controller.getCurrentStats();
       // Average score = (totalScore / totalDarts) * 3 = (150 / 6) * 3 = 75.0
       expect(stats['avgScore'], equals('75.0'));
+
+      // Test 4: Third throw - 30 points with 3 more darts (9 total)
+      controller.pressNumpadButton(3);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // 30 points, 9 darts total
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      // Average score = (totalScore / totalDarts) * 3 = (180 / 9) * 3 = 60.0
+      expect(stats['avgScore'], equals('60.0'));
+
+      // Test 5: Fourth throw - 0 points (miss) with 3 more darts (12 total)
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // 0 points, 12 darts total
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      // Average score = (totalScore / totalDarts) * 3 = (180 / 12) * 3 = 45.0
+      expect(stats['avgScore'], equals('45.0'));
     });
 
     /// Tests XXXCheckout game end detection

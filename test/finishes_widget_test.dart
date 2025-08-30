@@ -279,5 +279,52 @@ void main() {
       expect(ControllerFinishes.finishes.containsKey(controller.currentFinish),
           isTrue);
     });
+
+    /// Tests Finishes average calculation
+    /// Verifies: average time calculation works correctly during game and at end
+    testWidgets('Finishes average calculation', (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerFinishes>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewFinishes(title: 'Finishes Test'),
+          ),
+        ),
+      );
+
+      // Test 1: Beginning - should handle division by zero
+      Map stats = controller.getCurrentStats();
+      expect(stats['averageTime'], equals('0.0')); // No finishes completed yet
+
+      // Test 2: Simulate completing first finish by manually setting time
+      controller.totalTimeSeconds = 5; // Simulate 5 seconds
+      controller.currentRound = 2; // Simulate moving to round 2 (1 completed)
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageTime'], equals('5.0')); // 5 seconds / 1 round = 5.0
+
+      // Test 3: Simulate completing second finish
+      controller.totalTimeSeconds = 12; // Total 12 seconds (5 + 7)
+      controller.currentRound = 3; // Simulate moving to round 3 (2 completed)
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageTime'], equals('6.0')); // 12 seconds / 2 rounds = 6.0
+
+      // Test 4: Simulate completing third finish
+      controller.totalTimeSeconds = 15; // Total 15 seconds (12 + 3)
+      controller.currentRound = 4; // Simulate moving to round 4 (3 completed)
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageTime'], equals('5.0')); // 15 seconds / 3 rounds = 5.0
+
+      // Test 5: Simulate completing more rounds and verify calculation
+      controller.totalTimeSeconds = 40; // Total 40 seconds
+      controller.currentRound = 6; // Simulate 5 completed rounds
+      
+      stats = controller.getCurrentStats();
+      expect(stats['averageTime'], equals('8.0')); // 40 seconds / 5 rounds = 8.0
+    });
   });
 }
