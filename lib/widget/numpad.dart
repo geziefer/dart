@@ -13,6 +13,7 @@ class Numpad extends StatelessWidget {
     required this.showLower,
     required this.showExtraButtons,
     required this.showYesNo,
+    this.cricketMode = false,
   });
 
   final NumpadController controller; // controller class which supports Numpad
@@ -22,12 +23,21 @@ class Numpad extends StatelessWidget {
   final bool
       showExtraButtons; // flag if extra buttons for predefined results should be shown
   final bool showYesNo; // flag if only yes and no should be shown in lower row
+  final bool cricketMode; // flag if cricket mode is active (changes button labels)
 
   @override
   Widget build(BuildContext context) {
+    // Define button labels and values based on mode
+    final List<String> labels = cricketMode 
+        ? ['15', '16', '17', '18', '19', '20', '', 'B', '']
+        : ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    final List<int> values = cricketMode 
+        ? [15, 16, 17, 18, 19, 20, -99, 25, -99]  // -99 for disabled, 25 for Bull
+        : [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
     return Row(
       children: [
-        if (showExtraButtons)
+        if (showExtraButtons && !cricketMode)
           _buildExtraButtons(context, controller, showExtraButtons),
         Expanded(
           flex: 4,
@@ -49,67 +59,54 @@ class Numpad extends StatelessWidget {
               if (showUpper)
                 Expanded(
                   flex: 1,
-                  // ########## 1st row 7, 8, 9
+                  // ########## 1st row 7, 8, 9 (or disabled, B, disabled in cricket)
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      for (int i = 7; i <= 9; i++)
+                      for (int i = 6; i <= 8; i++)  // indices 6,7,8 for buttons 7,8,9
                         _buildNumpadButton(
-                            context, controller, i.toString(), i, true),
+                            context, controller, labels[i], values[i], true),
                     ],
                   ),
                 ),
               if (showMiddle)
                 Expanded(
                   flex: 1,
-                  // ########## 2nd row 4, 5, 6
+                  // ########## 2nd row 4, 5, 6 (or 18, 19, 20 in cricket)
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      for (int i = 4; i <= 6; i++)
+                      for (int i = 3; i <= 5; i++)  // indices 3,4,5 for buttons 4,5,6
                         _buildNumpadButton(
-                            context, controller, i.toString(), i, true),
+                            context, controller, labels[i], values[i], true),
                     ],
                   ),
                 ),
               if (showLower)
                 Expanded(
                   flex: 1,
-                  // ########## 3rd row 1, 2, 3
+                  // ########## 3rd row 1, 2, 3 (or 15, 16, 17 in cricket)
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      for (int i = 1; i <= 3; i++)
+                      for (int i = 0; i <= 2; i++)  // indices 0,1,2 for buttons 1,2,3
                         _buildNumpadButton(
-                            context, controller, i.toString(), i, true),
+                            context, controller, labels[i], values[i], true),
                     ],
                   ),
                 ),
-              // ########## 4th row back, 0, enter or back, yes, no
-              if (showYesNo)
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildNumpadButton(context, controller, '↶', -2, true),
-                      _buildNumpadButton(context, controller, '❌', 0, true),
-                      _buildNumpadButton(context, controller, '✅', 1, true),
-                    ],
-                  ),
-                )
-              else
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildNumpadButton(context, controller, '↶', -2, true),
-                      _buildNumpadButton(context, controller, '0', 0, true),
-                      _buildNumpadButton(context, controller, '↵', -1, true),
-                    ],
-                  ),
+              // ########## 4th row back, 0, enter
+              Expanded(
+                flex: 1,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildNumpadButton(context, controller, '↶', -2, true),
+                    _buildNumpadButton(context, controller, '0', 0, true),
+                    _buildNumpadButton(context, controller, '↵', -1, true),
+                  ],
                 ),
+              ),
             ],
           ),
         ),

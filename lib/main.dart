@@ -11,6 +11,7 @@ import 'package:dart/controller/controller_check121.dart';
 import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/controller/controller_doublepath.dart';
 import 'package:dart/controller/controller_updown.dart';
+import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,6 +46,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerSpeedBull()),
         ChangeNotifierProvider(create: (context) => ControllerDoublePath()),
         ChangeNotifierProvider(create: (context) => ControllerUpDown()),
+        ChangeNotifierProvider(create: (context) => ControllerCricket()),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',
