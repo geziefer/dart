@@ -49,7 +49,21 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target sequence generation, point calculation based on hits, round progression through 5 rounds, undo functionality, input validation (0-3 hits), statistics tracking and storage operations.
 
-### 2. Two Darts Game Widget Tests
+### 2. Big Ts Game Widget Tests
+**Test Class**: `bigts_widget_test.dart`
+
+**Test Cases**:
+- Complete Big Ts game workflow - all 10 rounds
+- Big Ts undo functionality test
+- Big Ts point calculation verification
+- Big Ts return button for zero hits
+- Big Ts input validation
+- Big Ts average calculation
+- Big Ts undo edge cases
+
+**What is tested**: Triple hitting practice (T20, T19, T18), point calculation based on hits (0→0, 1→1, 2→3, 3→6 points), round progression through 10 rounds, undo functionality, input validation (0-3 hits), average calculation at different game stages, and statistics tracking.
+
+### 3. Two Darts Game Widget Tests
 **Test Class**: `twodarts_widget_test.dart`
 
 **Test Cases**:
@@ -65,7 +79,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target sequence progression, success/failure tracking, game completion after 10 targets, undo functionality, input validation, and statistics calculation.
 
-### 3. CatchXX Game Widget Tests
+### 4. CatchXX Game Widget Tests
 **Test Class**: `catchxx_widget_test.dart`
 
 **Test Cases**:
@@ -85,7 +99,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Scoring based on dart count (2-6 darts), special cases for impossible finishes, target 99 special handling, undo functionality, and statistics tracking.
 
-### 4. Speed Bull Game Widget Tests
+### 5. Speed Bull Game Widget Tests
 **Test Class**: `speedbull_widget_test.dart`
 
 **Test Cases**:
@@ -101,7 +115,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Timer-based gameplay, hit counting during timed rounds, game duration handling, pre-game state management, and statistics calculation.
 
-### 5. HalfIt Game Widget Tests
+### 6. HalfIt Game Widget Tests
 **Test Class**: `halfit_widget_test.dart`
 
 **Test Cases**:
@@ -124,7 +138,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target sequence (20, 19, 18, 17, 16, 15, Bull, 14, 13), score halving logic when missing targets, input validation, game progression through 9 rounds, and statistics calculation.
 
-### 6. Bobs 27 Game Widget Tests
+### 7. Bobs 27 Game Widget Tests
 **Test Class**: `bobs27_widget_test.dart`
 
 **Test Cases**:
@@ -142,7 +156,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Score reduction from 27 points, target progression (1-20, Bull), win/lose conditions, score validation, statistics tracking, and averaging logic that sums only positive scores but divides by total rounds (same behavior as HalfIt game).
 
-### 7. Check 121 Game Widget Tests
+### 8. Check 121 Game Widget Tests
 **Test Class**: `check121_widget_test.dart`
 
 **Test Cases**:
@@ -159,7 +173,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target progression with save points, miss counting (game ends after 10 misses), highest target reached tracking, and statistics calculation.
 
-### 8. Finishes Game Widget Tests
+### 9. Finishes Game Widget Tests
 **Test Class**: `finishes_widget_test.dart`
 
 **Test Cases**:
@@ -175,7 +189,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Random finish generation within specified ranges, finish data structure validation, statistics tracking, and text formatting methods.
 
-### 9. RTCX Game Widget Tests
+### 10. RTCX Game Widget Tests
 **Test Class**: `rtcx_widget_test.dart`
 
 **Test Cases**:
@@ -190,7 +204,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Number progression (1-20), dart counting per round, round limits, input validation, checkout dialog integration for accurate dart counting in final round, and statistics calculation. The game now shows a checkout dialog before the summary to allow players to specify the exact number of darts used in the final round, ensuring accurate dart count statistics.
 
-### 10. 10 Up 1 Down Game Widget Tests
+### 11. 10 Up 1 Down Game Widget Tests
 **Test Class**: `updown_widget_test.dart`
 
 **Test Cases**:
@@ -206,7 +220,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target adjustment based on success/failure (up on success, down on failure), boundary conditions, game completion after 13 rounds, and statistics tracking.
 
-### 11. Kill Bull Game Widget Tests
+### 12. Kill Bull Game Widget Tests
 **Test Class**: `killbull_widget_test.dart`
 
 **Test Cases**:
@@ -221,7 +235,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Bull hit counting, game ending when missing bulls, score calculation, immediate game end scenarios, and statistics tracking.
 
-### 12. ShootX Game Widget Tests
+### 13. ShootX Game Widget Tests
 **Test Class**: `shootx_widget_test.dart`
 
 **Test Cases**:
@@ -238,7 +252,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Hit counting and scoring, return button functionality, undo operations, statistics calculation, and data formatting methods.
 
-### 13. XXXCheckout Game Widget Tests
+### 14. XXXCheckout Game Widget Tests
 **Test Class**: `xxxcheckout_widget_test.dart`
 
 **Test Cases**:
@@ -263,7 +277,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Checkout game logic, bogey number validation, bust prevention, dart counting, average calculations, leg completion detection, and statistics tracking.
 
-### 14. Checkout Widget Business Logic Tests
+### 15. Checkout Widget Business Logic Tests
 **Test Class**: `checkout_widget_test.dart`
 
 **Test Cases**:
@@ -281,7 +295,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Checkout dialog functionality for both score-based checkout games (XXXCheckout) and target-based games (RTCX). Tests cover dual-mode operation with `isCheckoutMode` flag, dart calculation logic for different score ranges, button rendering based on possible dart counts, callback integration, and dart correction functionality. The widget now supports both traditional checkout scenarios and target-count scenarios for accurate final round dart counting.
 
-### 15. Menu Widget Business Logic Tests
+### 16. Menu Widget Business Logic Tests
 **Test Class**: `menu_widget_test.dart`
 
 **Test Cases**:
