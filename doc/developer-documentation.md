@@ -14,8 +14,8 @@ The DART Training App is a Flutter-based mobile application designed for dart tr
 
 ```
 lib/
-├── controller/          # Game logic controllers (14 files)
-├── view/               # UI screens for each game (13 files)
+├── controller/          # Game logic controllers (15 files)
+├── view/               # UI screens for each game (14 files)
 ├── widget/             # Reusable UI components (9 files)
 ├── interfaces/         # Abstract interfaces and contracts (3 files)
 ├── services/           # Business logic services (3 files)
@@ -26,8 +26,8 @@ lib/
 └── styles.dart        # Global styling definitions
 
 test/
-├── *_widget_test.dart  # Widget tests for each game (13 files)
-├── *.mocks.dart       # Generated mock files (13 files)
+├── *_widget_test.dart  # Widget tests for each game (14 files)
+├── *.mocks.dart       # Generated mock files (14 files)
 └── test coverage: 118 tests across all games
 ```
 
@@ -46,6 +46,7 @@ test/
 
 **Controller Files:**
 - `controller_base.dart` - Abstract base class with common functionality
+- `controller_bigts.dart` - Big Ts triple hitting practice
 - `controller_bobs27.dart` - Bob's 27 double round the clock
 - `controller_catchxx.dart` - Catch 40 finishing practice
 - `controller_check121.dart` - Check 121 specific scenario
@@ -67,6 +68,7 @@ test/
 - **Initialization**: Route-based controller initialization with test compatibility
 
 **View Files:**
+- `view_bigts.dart` - Big Ts UI
 - `view_bobs27.dart` - Bob's 27 UI
 - `view_catchxx.dart` - Catch XX UI
 - `view_check121.dart` - Check 121 UI
