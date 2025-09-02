@@ -65,12 +65,12 @@ class Menu extends StatelessWidget {
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
-      id: 'FQ1',
-      name: 'FinishQuest\n61-80',
-      view: const ViewFinishes(title: 'Finishes wissen 61-80'),
+      id: 'FQ',
+      name: 'FinishQuest',
+      view: const ViewFinishes(title: 'Finishes wissen'),
       getController: (context) =>
           Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 61, 'to': 80},
+      params: const {}, // No params - controller will handle range selection
     ),
     MenuItem(
       id: 'RTCS',
@@ -97,12 +97,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 20},
     ),
     MenuItem(
-      id: 'FQ2',
-      name: 'FinishQuest\n81-107',
-      view: const ViewFinishes(title: 'Finishes wissen 81-107'),
+      id: 'Frei1',
+      name: 'Frei',
+      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
       getController: (context) =>
-          Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 81, 'to': 107},
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
     ),
     MenuItem(
       id: 'C40',
@@ -129,12 +129,12 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'FQ3',
-      name: 'FinishQuest\n108-135',
-      view: const ViewFinishes(title: 'Finishes wissen 108-135'),
+      id: 'Frei2',
+      name: 'Frei',
+      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
       getController: (context) =>
-          Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 108, 'to': 135},
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
     ),
     MenuItem(
       id: 'B27',
@@ -161,12 +161,12 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'FQ4',
-      name: 'FinishQuest\n136-170',
-      view: const ViewFinishes(title: 'Finishes wissen 136-170'),
+      id: 'Frei3',
+      name: 'Frei',
+      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
       getController: (context) =>
-          Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {'from': 136, 'to': 170},
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
     ),
     MenuItem(
       id: 'HI',

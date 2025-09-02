@@ -28,7 +28,7 @@ lib/
 test/
 ├── *_widget_test.dart  # Widget tests for each game (14 files)
 ├── *.mocks.dart       # Generated mock files (14 files)
-└── test coverage: 118 tests across all games
+└── test coverage: 215 tests across all games (all passing)
 ```
 
 ### Core Components
@@ -51,7 +51,7 @@ test/
 - `controller_catchxx.dart` - Catch 40 finishing practice
 - `controller_check121.dart` - Check 121 specific scenario
 - `controller_doublepath.dart` - Double finishing sequences
-- `controller_finishes.dart` - Finish knowledge training
+- `controller_finishes.dart` - Finish knowledge training with range selection dialog
 - `controller_halfit.dart` - Half It accuracy game
 - `controller_killbull.dart` - Bull hitting practice
 - `controller_rtcx.dart` - Round the Clock variants
@@ -99,6 +99,7 @@ test/
   - `Header` - Game title and navigation
   - `ScoreColumn` - Table display component
   - `SummaryDialog` - End-game results
+  - `FinishesRangeDialog` - Pre-game range selection for Finishes
   - `Checkout` - Checkout suggestion dialog
   - `FullCircle` - Dartboard visualization
   - `ArcSection` - Dartboard segment component
@@ -195,8 +196,8 @@ Services Setup → Game Ready
 ### Training Games (20 Total Games)
 - **Checkout Games**: 170x10 (max 3), 501x5, 501x5 (max 7) - Practice finishing combinations
 - **Accuracy Games**: Round the Clock Single/Double/Triple - Precision training
-- **Finish Training**: FinishQuest series (61-82, 83-104, 105-126, 127-170) - Learn finishing routes
-- **Specialty Games**: Kill Bull, Speed Bull - Specific skill focus
+- **Finish Training**: FinishQuest (with range selection dialog) - Learn finishing routes for ranges 61-80, 81-107, 108-135, 136-170
+- **Specialty Games**: Kill Bull, Speed Bull, Big Ts (triple hitting practice) - Specific skill focus
 
 ### Skill Development Games
 - **Double Path**: Practice common double finishing sequences
@@ -209,6 +210,7 @@ Services Setup → Game Ready
 - **Half It**: Accuracy under pressure
 - **Catch 40**: Finishing from various scores (61-100)
 - **99 x 20**: Scoring practice on 20 segment
+- **Big Ts**: Triple hitting assessment and practice
 
 ## Technical Implementation Details
 
@@ -224,7 +226,40 @@ Services Setup → Game Ready
   - `getStats()` - Statistics formatting via StatsService
   - Display methods for UI data formatting
 
-### Sequential Dialog Pattern
+### Range Selection Dialog Pattern
+The Finishes game implements a pre-game range selection dialog to consolidate multiple game variants into a single menu item:
+
+**Implementation Pattern:**
+1. **Controller State**: Controller starts with `from=0, to=0` indicating range selection needed
+   ```dart
+   bool get needsRangeSelection => from == 0 && to == 0;
+   void setRange(int fromRange, int toRange) { /* initialize game */ }
+   ```
+
+2. **View Integration**: View shows dialog when range selection is needed
+   ```dart
+   if (controller.needsRangeSelection && !_dialogShown) {
+     _dialogShown = true;
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+       _showRangeSelectionDialog(context, controller);
+     });
+   }
+   ```
+
+3. **Dialog Component**: `FinishesRangeDialog` provides 4 predefined ranges
+   - Uses SummaryDialog styling for consistency
+   - IntrinsicWidth for proper sizing
+   - Custom radio button implementation to avoid deprecation warnings
+
+4. **Dynamic Title**: Game title updates based on selected range
+   ```dart
+   String getGameTitle() {
+     if (needsRangeSelection) return 'Finishes wissen';
+     return 'Finishes wissen $from-$to';
+   }
+   ```
+
+**Used in**: FinishQuest game for range selection (61-80, 81-107, 108-135, 136-170)
 Some games implement a two-dialog workflow where an intermediate dialog is shown before the final summary dialog:
 
 **Implementation Pattern:**
@@ -356,7 +391,7 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 ## Testing Strategy
 
 ### Test Coverage
-- **118 Total Tests**: Comprehensive coverage across all games
+- **215 Total Tests**: Comprehensive coverage across all games
 - **Widget Tests**: Full UI and interaction testing
 - **Mock Dependencies**: Isolated testing with Mockito
 - **Edge Cases**: Comprehensive scenario coverage
@@ -422,7 +457,7 @@ flutter packages pub run build_runner build
 - **Environment**: Flutter SDK
 - **IDE**: Any Flutter-supported IDE
 - **Code Quality**: `flutter analyze` (0 issues)
-- **Testing**: `flutter test` (118 tests passing)
+- **Testing**: `flutter test` (215 tests passing)
 
 ### Production
 - **Platforms**: Android APK/iOS IPA

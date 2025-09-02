@@ -4,17 +4,25 @@ import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:dart/widget/fullcircle.dart';
 import 'package:dart/widget/header.dart';
+import 'package:dart/widget/finishes_range_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/menu.dart';
 
-class ViewFinishes extends StatelessWidget {
+class ViewFinishes extends StatefulWidget {
   const ViewFinishes({
     super.key,
     required this.title,
   });
 
   final String title;
+
+  @override
+  State<ViewFinishes> createState() => _ViewFinishesState();
+}
+
+class _ViewFinishesState extends State<ViewFinishes> {
+  bool _dialogShown = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +41,15 @@ class ViewFinishes extends StatelessWidget {
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
     };
+
+    // Show range selection dialog if needed
+    if (controller.needsRangeSelection && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showRangeSelectionDialog(context, controller);
+      });
+    }
+
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
     return Scaffold(
@@ -43,7 +60,7 @@ class ViewFinishes extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             flex: 1,
-            child: Header(gameName: title),
+            child: Header(gameName: controller.getGameTitle()),
           ),
 
           // ########## Main part with game results and dart board
@@ -286,5 +303,22 @@ class ViewFinishes extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showRangeSelectionDialog(BuildContext context, ControllerFinishes controller) async {
+    final result = await showDialog<Map<String, int>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const FinishesRangeDialog();
+      },
+    );
+
+    if (result != null && context.mounted) {
+      controller.setRange(result['from']!, result['to']!);
+    } else if (context.mounted) {
+      // User cancelled - go back to menu
+      Navigator.of(context).pop();
+    }
   }
 }

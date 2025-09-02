@@ -474,9 +474,16 @@ class ControllerFinishes extends ControllerBase
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
-    from = item.params['from'];
-    to = item.params['to'];
+    
+    // Always start with no range - dialog will be shown
+    from = 0;
+    to = 0;
+  }
 
+  void setRange(int fromRange, int toRange) {
+    from = fromRange;
+    to = toRange;
+    
     // Initialize session
     currentRound = 1;
     correctRounds = 0;
@@ -487,7 +494,10 @@ class ControllerFinishes extends ControllerBase
     currentFinishIndex = 0;
 
     _createRandomFinish();
+    notifyListeners();
   }
+
+  bool get needsRangeSelection => from == 0 && to == 0;
 
   @override
   void initFromProvider(MenuItem item) {
@@ -648,7 +658,12 @@ class ControllerFinishes extends ControllerBase
   }
 
   @override
-  String getGameTitle() => 'Finishes';
+  String getGameTitle() {
+    if (needsRangeSelection) {
+      return 'Finishes wissen';
+    }
+    return 'Finishes wissen $from-$to';
+  }
 
   @override
   void updateSpecificStats() {
