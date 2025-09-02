@@ -12,16 +12,12 @@ class CricketBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final numbers = [15, 16, 17, 18, 19, 20, 25];
-    
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: numbers.map((number) {
-        String numberStr = number == 25 ? 'Bull' : number.toString();
-        String circles = '';
-        for (int i = 0; i < 3; i++) {
-          circles += i < hits[number]! ? '●' : '○';
-        }
-        
+        String numberStr = number == 25 ? 'B' : number.toString();
+
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 2.0),
           child: Row(
@@ -31,9 +27,23 @@ class CricketBoard extends StatelessWidget {
                 numberStr.padRight(4),
                 style: checkNumberStyle(context),
               ),
-              Text(
-                circles,
-                style: checkNumberStyle(context).copyWith(color: Colors.white),
+              const SizedBox(width: 8),
+              Row(
+                children: List.generate(
+                  3,
+                  (i) => Container(
+                    width: 60,
+                    height: 60,
+                    alignment: Alignment.center,
+                    child: Text(
+                      i < hits[number]! ? '●' : '◯',
+                      style: checkNumberStyle(context).copyWith(
+                        color: Colors.white,
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
