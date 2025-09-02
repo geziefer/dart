@@ -12,6 +12,7 @@ import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/controller/controller_doublepath.dart';
 import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/controller/controller_bigts.dart';
+import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -27,6 +28,7 @@ import 'package:dart/view/view_speedbull.dart';
 import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/view/view_bigts.dart';
+import 'package:dart/view/view_cricket.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/version_info.dart';
@@ -54,6 +56,14 @@ class Menu extends StatelessWidget {
       view: const ViewBigTs(title: 'Big Ts - T20, T19, T18'),
       getController: (context) =>
           Provider.of<ControllerBigTs>(context, listen: false),
+      params: const {},
+    ),
+    MenuItem(
+      id: 'cricket',
+      name: 'Cricket',
+      view: const ViewCricket(title: 'Cricket'),
+      getController: (context) =>
+          Provider.of<ControllerCricket>(context, listen: false),
       params: const {},
     ),
     MenuItem(
@@ -97,12 +107,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 20},
     ),
     MenuItem(
-      id: 'Frei1',
-      name: 'Frei',
-      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
+      id: 'cricket',
+      name: 'Cricket',
+      view: const ViewCricket(title: 'Cricket'),
       getController: (context) =>
-          Provider.of<ControllerXXXCheckout>(context, listen: false),
-      params: const {'xxx': 501, 'max': -1, 'end': 5},
+          Provider.of<ControllerCricket>(context, listen: false),
+      params: const {},
     ),
     MenuItem(
       id: 'C40',
