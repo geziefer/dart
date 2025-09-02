@@ -305,15 +305,13 @@ void main() {
       }
 
       final finishQuestGames = Menu.games
-          .where((game) =>
-              game.params.containsKey('from') && game.params.containsKey('to'))
+          .where((game) => game.id == 'FQ')
           .toList();
       expect(finishQuestGames.length, greaterThan(0));
 
       for (final game in finishQuestGames) {
-        expect(game.params['from'], isA<int>());
-        expect(game.params['to'], isA<int>());
-        expect(game.params['from'], lessThan(game.params['to']));
+        expect(game.id, equals('FQ'));
+        expect(game.name, equals('FinishQuest'));
       }
     });
 
@@ -455,8 +453,7 @@ void main() {
       for (final game in Menu.games) {
         if (game.params.containsKey('xxx')) {
           xxxCheckoutGames.add(game);
-        } else if (game.params.containsKey('from') &&
-            game.params.containsKey('to')) {
+        } else if (game.id == 'FQ') {
           finishQuestGames.add(game);
         } else if (game.id.startsWith('RTC')) {
           rtcGames.add(game);
@@ -481,11 +478,8 @@ void main() {
 
       // Test FinishQuest games have valid ranges
       for (final game in finishQuestGames) {
-        expect(game.params['from'], isA<int>());
-        expect(game.params['to'], isA<int>());
-        expect(game.params['from'], lessThan(game.params['to']));
-        expect(game.params['from'], greaterThanOrEqualTo(61));
-        expect(game.params['to'], lessThanOrEqualTo(170));
+        expect(game.id, equals('FQ'));
+        expect(game.name, equals('FinishQuest'));
       }
     });
 
@@ -504,28 +498,12 @@ void main() {
 
       expect(game170.params['xxx'], lessThan(game501.params['xxx']));
 
-      // Test FinishQuest range progression
+      // Test FinishQuest game exists
       final finishGames = Menu.games
-          .where((game) =>
-              game.params.containsKey('from') && game.params.containsKey('to'))
+          .where((game) => game.id == 'FQ')
           .toList();
-
-      if (finishGames.length >= 2) {
-        // Sort by 'from' value to check progression
-        finishGames.sort((a, b) =>
-            (a.params['from'] as int).compareTo(b.params['to'] as int));
-
-        for (int i = 0; i < finishGames.length - 1; i++) {
-          final currentGame = finishGames[i];
-          final nextGame = finishGames[i + 1];
-
-          // Verify ranges don't overlap inappropriately
-          expect(currentGame.params['from'],
-              lessThanOrEqualTo(currentGame.params['to']));
-          expect(nextGame.params['from'],
-              lessThanOrEqualTo(nextGame.params['to']));
-        }
-      }
+      expect(finishGames.length, equals(1));
+      expect(finishGames.first.name, equals('FinishQuest'));
     });
 
     /// Tests Menu widget parameter validation business logic
@@ -549,15 +527,9 @@ void main() {
           }
         }
 
-        // Test FinishQuest parameter ranges
-        if (game.params.containsKey('from') && game.params.containsKey('to')) {
-          final from = game.params['from'] as int;
-          final to = game.params['to'] as int;
-
-          expect(from, greaterThanOrEqualTo(61)); // Minimum finish
-          expect(to, lessThanOrEqualTo(170)); // Maximum finish
-          expect(from, lessThan(to)); // Valid range
-          expect(to - from, greaterThanOrEqualTo(10)); // Reasonable range size
+        // Test FinishQuest game structure
+        if (game.id == 'FQ') {
+          expect(game.name, equals('FinishQuest'));
         }
 
         // Test duration parameters

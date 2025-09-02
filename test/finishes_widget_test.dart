@@ -59,9 +59,13 @@ void main() {
         ),
       );
 
+      // Set range to initialize the game
+      controller.setRange(61, 80);
+      await tester.pump();
+
       // Assert: Widget was created successfully
       expect(find.byType(ViewFinishes), findsOneWidget);
-      expect(find.text('Finishes Test'), findsOneWidget);
+      expect(find.text('Finishes wissen 61-80'), findsOneWidget);
 
       // Assert: Initial controller state
       expect(controller.currentRound, equals(1));
@@ -83,6 +87,10 @@ void main() {
           ),
         ),
       );
+
+      // Set range to initialize the game
+      controller.setRange(100, 170);
+      await tester.pump();
 
       // Assert: Current finish is within specified range
       expect(controller.currentFinish, greaterThanOrEqualTo(100));
@@ -209,7 +217,7 @@ void main() {
         name: 'Finishes Narrow Test',
         view: const ViewFinishes(title: 'Finishes Narrow Test'),
         getController: (_) => controller,
-        params: {'from': 150, 'to': 160}, // Narrow range
+        params: {}, // No params - will use setRange
       ));
 
       await tester.pumpWidget(
@@ -220,6 +228,10 @@ void main() {
           ),
         ),
       );
+
+      // Set range to initialize the game
+      controller.setRange(150, 160);
+      await tester.pump();
 
       // Assert: Current finish is within narrow range
       expect(controller.currentFinish, greaterThanOrEqualTo(150));
@@ -267,6 +279,10 @@ void main() {
           ),
         ),
       );
+
+      // Set range to initialize the game
+      controller.setRange(61, 80);
+      await tester.pump();
 
       // Assert: Preferred finish is valid
       expect(controller.preferred, isA<List<String>>());
