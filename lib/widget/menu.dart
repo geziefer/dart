@@ -51,22 +51,6 @@ class Menu extends StatelessWidget {
       params: const {'xxx': 170, 'max': 3, 'end': 10},
     ),
     MenuItem(
-      id: 'BigTs',
-      name: 'Big Ts',
-      view: const ViewBigTs(title: 'Big Ts - T20, T19, T18'),
-      getController: (context) =>
-          Provider.of<ControllerBigTs>(context, listen: false),
-      params: const {},
-    ),
-    MenuItem(
-      id: 'cricket',
-      name: 'Cricket',
-      view: const ViewCricket(title: 'Cricket'),
-      getController: (context) =>
-          Provider.of<ControllerCricket>(context, listen: false),
-      params: const {},
-    ),
-    MenuItem(
       id: '501m7',
       name: '501 x 5\nmax 7',
       view: const ViewXXXCheckout(title: '501 x 5 in 7 Aufnahmen'),
@@ -75,12 +59,20 @@ class Menu extends StatelessWidget {
       params: const {'xxx': 501, 'max': 7, 'end': 5},
     ),
     MenuItem(
-      id: 'FQ',
-      name: 'FinishQuest',
-      view: const ViewFinishes(title: 'Finishes wissen'),
+      id: '501x5',
+      name: '501 x 5',
+      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
       getController: (context) =>
-          Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {}, // No params - controller will handle range selection
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ),
+    MenuItem(
+      id: 'CR',
+      name: 'Cricket',
+      view: const ViewCricket(title: 'Cricket'),
+      getController: (context) =>
+          Provider.of<ControllerCricket>(context, listen: false),
+      params: const {},
     ),
     MenuItem(
       id: 'RTCS',
@@ -107,12 +99,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 20},
     ),
     MenuItem(
-      id: 'cricket',
-      name: 'Cricket',
-      view: const ViewCricket(title: 'Cricket'),
+      id: 'HI',
+      name: 'Half it',
+      view: const ViewHalfit(title: 'Half it'),
       getController: (context) =>
-          Provider.of<ControllerCricket>(context, listen: false),
-      params: const {},
+          Provider.of<ControllerHalfit>(context, listen: false),
+      params: const {'max': -1},
     ),
     MenuItem(
       id: 'C40',
@@ -120,14 +112,6 @@ class Menu extends StatelessWidget {
       view: const ViewCatchXX(title: 'Catch 40 - Finish 61-100'),
       getController: (context) =>
           Provider.of<ControllerCatchXX>(context, listen: false),
-      params: const {},
-    ),
-    MenuItem(
-      id: '10U1D',
-      name: '10 Up\n1 Down',
-      view: const ViewUpDown(title: '10 Up 1 Down - Finish ab 50'),
-      getController: (context) =>
-          Provider.of<ControllerUpDown>(context, listen: false),
       params: const {},
     ),
     MenuItem(
@@ -139,12 +123,44 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'Frei2',
-      name: 'Frei',
-      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
+      id: 'DPath',
+      name: 'Double Path',
+      view: const ViewDoublePath(title: 'Double Path - Typische Double Pfade'),
       getController: (context) =>
-          Provider.of<ControllerXXXCheckout>(context, listen: false),
-      params: const {'xxx': 501, 'max': -1, 'end': 5},
+          Provider.of<ControllerDoublePath>(context, listen: false),
+      params: const {},
+    ),
+    MenuItem(
+      id: '10U1D',
+      name: '10 Up\n1 Down',
+      view: const ViewUpDown(title: '10 Up 1 Down - Finish ab 50'),
+      getController: (context) =>
+          Provider.of<ControllerUpDown>(context, listen: false),
+      params: const {},
+    ),
+    MenuItem(
+      id: '99x20',
+      name: '99 x 20',
+      view: const ViewShootx(title: '99 x auf 20 scoren'),
+      getController: (context) =>
+          Provider.of<ControllerShootx>(context, listen: false),
+      params: const {'x': 20, 'max': 33},
+    ),
+    MenuItem(
+      id: 'BT',
+      name: 'Big Ts',
+      view: const ViewBigTs(title: 'Big Ts - T20, T19, T18'),
+      getController: (context) =>
+          Provider.of<ControllerBigTs>(context, listen: false),
+      params: const {},
+    ),
+    MenuItem(
+      id: '2D',
+      name: '2 Darts',
+      view: const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Bull'),
+      getController: (context) =>
+          Provider.of<ControllerTwoDarts>(context, listen: false),
+      params: const {},
     ),
     MenuItem(
       id: 'B27',
@@ -152,14 +168,6 @@ class Menu extends StatelessWidget {
       view: const ViewBobs27(title: 'Bob\'s 27 - Double Round the Clock'),
       getController: (context) =>
           Provider.of<ControllerBobs27>(context, listen: false),
-      params: const {},
-    ),
-    MenuItem(
-      id: 'DPath',
-      name: 'Double Path',
-      view: const ViewDoublePath(title: 'Double Path - Typische Double Pfade'),
-      getController: (context) =>
-          Provider.of<ControllerDoublePath>(context, listen: false),
       params: const {},
     ),
     MenuItem(
@@ -171,44 +179,28 @@ class Menu extends StatelessWidget {
       params: const {},
     ),
     MenuItem(
-      id: 'Frei3',
-      name: 'Frei',
-      view: const ViewXXXCheckout(title: '501 x 5 regulär'),
-      getController: (context) =>
-          Provider.of<ControllerXXXCheckout>(context, listen: false),
-      params: const {'xxx': 501, 'max': -1, 'end': 5},
-    ),
-    MenuItem(
-      id: 'HI',
-      name: 'Half it',
-      view: const ViewHalfit(title: 'Half it'),
-      getController: (context) =>
-          Provider.of<ControllerHalfit>(context, listen: false),
-      params: const {'max': -1},
-    ),
-    MenuItem(
-      id: '99x20',
-      name: '99 x 20',
-      view: const ViewShootx(title: '99 x auf 20 scoren'),
-      getController: (context) =>
-          Provider.of<ControllerShootx>(context, listen: false),
-      params: const {'x': 20, 'max': 33},
-    ),
-    MenuItem(
-      id: '2D',
-      name: '2 Darts',
-      view: const ViewTwoDarts(title: '2 Darts - Finishes 61-70 mit Bull'),
-      getController: (context) =>
-          Provider.of<ControllerTwoDarts>(context, listen: false),
-      params: const {},
-    ),
-    MenuItem(
       id: 'SB',
       name: 'Speed Bull',
       view: const ViewSpeedBull(title: 'Speed Bull - 1 Minute Bulls'),
       getController: (context) =>
           Provider.of<ControllerSpeedBull>(context, listen: false),
       params: const {'duration': 60},
+    ),
+    MenuItem(
+      id: 'SPAZ',
+      name: 'Bayrisches\nSportabzeichen',
+      view: const ViewXXXCheckout(title: 'Bayrisches Sportabzeichen'),
+      getController: (context) =>
+          Provider.of<ControllerXXXCheckout>(context, listen: false),
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ),
+    MenuItem(
+      id: 'FQ',
+      name: 'FinishQuest',
+      view: const ViewFinishes(title: 'Finishes wissen'),
+      getController: (context) =>
+          Provider.of<ControllerFinishes>(context, listen: false),
+      params: const {}, // No params - controller will handle range selection
     ),
   ];
 
