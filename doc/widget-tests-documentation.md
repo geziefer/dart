@@ -172,8 +172,9 @@ Tests use Flutter's `WidgetTester` to:
 - Finishes range validation
 - Finishes state enum values
 - Finishes data structure validation
+- Finishes average calculation
 
-**What is tested**: Random finish generation within specified ranges, finish data structure validation, statistics tracking, and text formatting methods.
+**What is tested**: Range selection dialog integration, random finish generation within user-selected ranges (61-80, 81-107, 108-135, 136-170), finish data structure validation, statistics tracking, text formatting methods, and dynamic title generation based on selected range. Tests verify that the controller properly initializes with `setRange()` method and handles the pre-game range selection workflow.
 
 ### 9. RTCX Game Widget Tests
 **Test Class**: `rtcx_widget_test.dart`
@@ -285,20 +286,25 @@ Tests use Flutter's `WidgetTester` to:
 **Test Class**: `menu_widget_test.dart`
 
 **Test Cases**:
-- Various menu functionality tests (specific test cases not detailed in the examined portion)
+- Menu games comprehensive data validation
+- Menu game type categorization logic
+- Menu widget game difficulty progression business logic
+- Menu widget comprehensive parameter validation
 
-**What is tested**: Menu widget functionality, navigation logic, and controller management.
+**What is tested**: Menu widget functionality, navigation logic, controller management, and game categorization. Tests verify the consolidated FinishQuest game structure (single game with ID 'FQ' instead of multiple range-specific games), "Frei" placeholder games pointing to 501x5 checkout, and proper MenuItem validation for all 20 games in the 4x5 grid layout.
 
 ## Test Coverage Summary
 
 The widget tests provide comprehensive coverage of:
-- Game logic validation for all dart games
+- Game logic validation for all dart games (215 total tests)
 - Input validation and error handling
 - Undo functionality across all games
 - Statistics calculation and persistence
-- Game state management
+- Game state management including range selection dialogs
 - Edge cases and boundary conditions
 - Controller initialization and dependency injection
 - Storage operations and data persistence
+- Dialog workflows including pre-game selection dialogs
+- Consolidated game structures and placeholder game functionality
 
-Each test ensures that the business logic functions correctly independent of the UI implementation, providing confidence in the core game mechanics and data handling.
+Each test ensures that the business logic functions correctly independent of the UI implementation, providing confidence in the core game mechanics, dialog interactions, and data handling. The tests have been updated to handle the new consolidated FinishQuest game with range selection dialog and the "Frei" placeholder games.
