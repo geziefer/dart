@@ -167,7 +167,11 @@ class ControllerShootx extends ControllerBase
 
   @override
   bool isButtonDisabled(int value) {
-    return false; // no buttons disabled in shootx
+    // In Bull mode (x=25), disable buttons 7, 8, 9 since max is 6 hits per round
+    if (x == 25 && (value == 7 || value == 8 || value == 9)) {
+      return true;
+    }
+    return false;
   }
 
   @override
