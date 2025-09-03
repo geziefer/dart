@@ -14,8 +14,8 @@ The DART Training App is a Flutter-based mobile application designed for dart tr
 
 ```
 lib/
-├── controller/          # Game logic controllers (15 files)
-├── view/               # UI screens for each game (14 files)
+├── controller/          # Game logic controllers (16 files)
+├── view/               # UI screens for each game (15 files)
 ├── widget/             # Reusable UI components (9 files)
 ├── interfaces/         # Abstract interfaces and contracts (3 files)
 ├── services/           # Business logic services (3 files)
@@ -26,9 +26,9 @@ lib/
 └── styles.dart        # Global styling definitions
 
 test/
-├── *_widget_test.dart  # Widget tests for each game (14 files)
-├── *.mocks.dart       # Generated mock files (14 files)
-└── test coverage: 215 tests across all games (all passing)
+├── *_widget_test.dart  # Widget tests for each game (15 files)
+├── *.mocks.dart       # Generated mock files (15 files)
+└── test coverage: 233 tests across all games (all passing)
 ```
 
 ### Core Components
@@ -50,6 +50,7 @@ test/
 - `controller_bobs27.dart` - Bob's 27 double round the clock
 - `controller_catchxx.dart` - Catch 40 finishing practice
 - `controller_check121.dart` - Check 121 specific scenario
+- `controller_cricket.dart` - Cricket game with target completion tracking
 - `controller_doublepath.dart` - Double finishing sequences
 - `controller_finishes.dart` - Finish knowledge training with range selection dialog
 - `controller_halfit.dart` - Half It accuracy game
@@ -72,6 +73,7 @@ test/
 - `view_bobs27.dart` - Bob's 27 UI
 - `view_catchxx.dart` - Catch XX UI
 - `view_check121.dart` - Check 121 UI
+- `view_cricket.dart` - Cricket UI
 - `view_doublepath.dart` - Double Path UI
 - `view_finishes.dart` - Finishes UI
 - `view_halfit.dart` - Half It UI
@@ -391,7 +393,7 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 ## Testing Strategy
 
 ### Test Coverage
-- **215 Total Tests**: Comprehensive coverage across all games
+- **233 Total Tests**: Comprehensive coverage across all games
 - **Widget Tests**: Full UI and interaction testing
 - **Mock Dependencies**: Isolated testing with Mockito
 - **Edge Cases**: Comprehensive scenario coverage
@@ -408,7 +410,7 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 flutter test
 
 # Run specific game tests
-flutter test test/bobs27_widget_test.dart
+flutter test test/cricket_widget_test.dart
 
 # Generate mocks
 flutter packages pub run build_runner build
@@ -457,7 +459,7 @@ flutter packages pub run build_runner build
 - **Environment**: Flutter SDK
 - **IDE**: Any Flutter-supported IDE
 - **Code Quality**: `flutter analyze` (0 issues)
-- **Testing**: `flutter test` (215 tests passing)
+- **Testing**: `flutter test` (233 tests passing)
 
 ### Production
 - **Platforms**: Android APK/iOS IPA
