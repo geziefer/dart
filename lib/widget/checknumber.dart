@@ -17,7 +17,7 @@ class CheckNumber extends StatelessWidget {
     bool showCheck = currentNumber > number;
     final isPhone = ResponsiveUtils.isPhoneSize(context);
     final numberWidth = isPhone ? 60.0 : 100.0;
-    final checkWidth = isPhone ? 60.0 : 100.0;
+    final checkWidth = isPhone ? 60.0 : 110.0;
 
     // exclude numbers > 20
     if (number > 20) {
@@ -47,7 +47,7 @@ class CheckNumber extends StatelessWidget {
                     '\u{00A0}', // non-breaking space
                     style: checkNumberStyle(context),
                   ),
-                Text('  ', style: checkNumberStyle(context)), // spacing
+                Text('', style: checkNumberStyle(context)), // reduced spacing
               ],
             ),
           ),

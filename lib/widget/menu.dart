@@ -13,6 +13,7 @@ import 'package:dart/controller/controller_doublepath.dart';
 import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/controller/controller_bigts.dart';
 import 'package:dart/controller/controller_cricket.dart';
+import 'package:dart/controller/controller_challenge.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -29,6 +30,7 @@ import 'package:dart/view/view_doublepath.dart';
 import 'package:dart/view/view_updown.dart';
 import 'package:dart/view/view_bigts.dart';
 import 'package:dart/view/view_cricket.dart';
+import 'package:dart/view/view_challenge.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/version_info.dart';
@@ -187,12 +189,12 @@ class Menu extends StatelessWidget {
       params: const {'duration': 60},
     ),
     MenuItem(
-      id: 'SPAZ',
+      id: 'CHALLENGE',
       name: 'Bayrisches\nSportabzeichen',
-      view: const ViewXXXCheckout(title: 'Bayrisches Sportabzeichen'),
+      view: const ViewChallenge(title: 'Bayrisches Sportabzeichen'),
       getController: (context) =>
-          Provider.of<ControllerXXXCheckout>(context, listen: false),
-      params: const {'xxx': 501, 'max': -1, 'end': 5},
+          Provider.of<ControllerChallenge>(context, listen: false),
+      params: const {},
     ),
     MenuItem(
       id: 'FQ',

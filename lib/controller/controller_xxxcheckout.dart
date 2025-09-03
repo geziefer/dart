@@ -28,6 +28,10 @@ class ControllerXXXCheckout extends ControllerBase
 
   MenuItem? item; // item which created the controller
 
+  bool skipLongtermStorage = false; // if true, don't update longterm stats
+  Function(int)? onGameCompleted; // callback to report score to parent controller
+  String? challengeStepInfo; // challenge step info for display
+
   int xxx = 0; // score to start with
   int max = 0; // limit of rounds per leg (-1 = unlimited)
   int end = 0; // number of rounds after game ends
@@ -225,6 +229,17 @@ class ControllerXXXCheckout extends ControllerBase
   // Checkout and summary dialogs are now handled by the view via callbacks
 
   @override
+  void showSummaryDialog(BuildContext context) {
+    if (skipLongtermStorage) {
+      // In Challenge mode, don't show the default summary dialog
+      // The Challenge controller will handle advancement
+      return;
+    }
+    // Normal mode - show the default summary dialog
+    super.showSummaryDialog(context);
+  }
+
+  @override
   List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
 
@@ -261,6 +276,14 @@ class ControllerXXXCheckout extends ControllerBase
 
   @override
   void updateSpecificStats() {
+    if (skipLongtermStorage) {
+      // Report score to parent controller if callback is set
+      if (onGameCompleted != null) {
+        onGameCompleted!(totalDarts); // total darts used
+      }
+      return;
+    }
+
     double avgScore = _getAvgScore();
     double avgDarts = _getAvgDarts();
     int finishCount = finishes.where((f) => f).length;
@@ -356,17 +379,10 @@ class ControllerXXXCheckout extends ControllerBase
     double longtermDarts =
         statsService.getStat<double>('longtermDarts', defaultValue: 0.0)!;
 
-    return formatStatsString(
-      numberGames: numberGames,
-      records: {
-        'C': recordFinishes, // Checks
-        'P': recordScore, // Punkte
-        'D': recordDarts, // Darts
-      },
-      averages: {
-        'P': longtermScore, // Durchschnittspunkte
-        'D': longtermDarts, // Durchschnittsdarts
-      },
-    );
+    if (skipLongtermStorage) {
+      return challengeStepInfo ?? "Challenge Mode";
+    } else {
+      return '#S: $numberGames  ♛C: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
+    }
   }
 }

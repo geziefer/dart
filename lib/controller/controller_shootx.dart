@@ -28,6 +28,10 @@ class ControllerShootx extends ControllerBase
 
   MenuItem? item; // item which created the controller
 
+  bool skipLongtermStorage = false; // if true, don't update longterm stats
+  Function(int)? onGameCompleted; // callback to report score to parent controller
+  String? challengeStepInfo; // challenge step info for display
+
   int x = 0; // number to throw at
   int max = 0; // limit of rounds per leg
 
@@ -99,6 +103,17 @@ class ControllerShootx extends ControllerBase
   // Show summary dialog using SummaryDialog widget
 
   @override
+  void showSummaryDialog(BuildContext context) {
+    if (skipLongtermStorage) {
+      // In Challenge mode, don't show the default summary dialog
+      // The Challenge controller will handle advancement
+      return;
+    }
+    // Normal mode - show the default summary dialog
+    super.showSummaryDialog(context);
+  }
+
+  @override
   List<SummaryLine> createSummaryLines() {
     return [
       SummaryService.createValueLine('Anzahl $x', number),
@@ -112,6 +127,14 @@ class ControllerShootx extends ControllerBase
 
   @override
   void updateSpecificStats() {
+    if (skipLongtermStorage) {
+      // Report score to parent controller if callback is set
+      if (onGameCompleted != null) {
+        onGameCompleted!(number); // total points scored
+      }
+      return;
+    }
+
     double avgHits = double.parse(getCurrentStats()['avgHits']);
 
     // Update records
@@ -169,14 +192,10 @@ class ControllerShootx extends ControllerBase
     double longtermNumbers =
         statsService.getStat<double>('longtermHits', defaultValue: 0.0)!;
 
-    return formatStatsString(
-      numberGames: numberGames,
-      records: {
-        'T': recordNumbers, // Treffer
-      },
-      averages: {
-        'T': longtermNumbers, // Treffer
-      },
-    );
+    if (skipLongtermStorage) {
+      return challengeStepInfo ?? "Challenge Mode";
+    } else {
+      return '#S: $numberGames  ♛T: $recordNumbers  ØT: ${longtermNumbers.toStringAsFixed(1)}';
+    }
   }
 }
