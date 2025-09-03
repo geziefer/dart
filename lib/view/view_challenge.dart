@@ -91,7 +91,7 @@ class _ViewChallengeState extends State<ViewChallenge> {
             );
           default:
             return const Scaffold(
-              body: Center(child: Text('Challenge Complete')),
+              body: Center(child: Text('Prüfung abgeschlossen')),
             );
         }
       },

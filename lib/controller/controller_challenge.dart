@@ -10,47 +10,57 @@ import 'package:flutter/material.dart';
 
 class ControllerChallenge extends ControllerBase
     implements MenuitemController, NumpadController {
-  
   MenuItem? item;
-  
+
   // Challenge state
   int currentStage = 0; // 0-4 for the 5 stages
   List<String> stageNames = [
     'RTCX Singles (1/2)',
-    'RTCX Singles (2/2)', 
+    'RTCX Singles (2/2)',
     'Shoot 20 (10 rounds)',
     'Shoot Bull (10 rounds)',
     '501 Checkout'
   ];
-  
+
   // Results from each stage
-  List<int> stageResults = [0, 0, 0, 0, 0]; // rtcx1, rtcx2, shoot20, shootbull, checkout501
-  
+  List<int> stageResults = [
+    0,
+    0,
+    0,
+    0,
+    0
+  ]; // rtcx1, rtcx2, shoot20, shootbull, checkout501
+
   // Current sub-controller
   dynamic currentController;
-  
+
   // Badge thresholds [bronze, bronze+, silver, silver+, gold, gold+]
   static const List<List<int>> badgeThresholds = [
-    [8, 10, 12, 14, 16, 18],   // RTCX total hits (sum of 2 rounds)
-    [120, 140, 160, 180, 200, 220], // Shoot 20 points
-    [60, 80, 100, 120, 140, 160],   // Shoot Bull points  
-    [30, 27, 24, 21, 18, 15],       // 501 Checkout darts (lower is better)
+    [2, 4, 6, 12, 20, 28], // RTCX total hits (sum of 2 rounds)
+    [2, 4, 6, 12, 20, 28], // Shoot 20 points
+    [1, 2, 4, 8, 12, 16], // Shoot Bull points
+    [80, 60, 48, 39, 30, 24], // 501 Checkout darts (lower is better)
   ];
-  
+
   static const List<String> badgeNames = [
-    'Bronze', 'Bronze+', 'Silver', 'Silver+', 'Gold', 'Gold+'
+    '🥉',
+    '🥉+',
+    '🥈',
+    '🥈+',
+    '🥇',
+    '🥇+'
   ];
 
   @override
   void init(MenuItem item) {
     this.item = item;
     // No storage service needed for challenge
-    
+
     // Reset challenge state for fresh start
     currentStage = 0;
     stageResults = List.filled(5, 0);
     currentController = null;
-    
+
     // Start the first stage
     startNextStage();
   }
@@ -66,7 +76,7 @@ class ControllerChallenge extends ControllerBase
       showFinalSummary();
       return;
     }
-    
+
     // Create appropriate controller for current stage
     switch (currentStage) {
       case 0:
@@ -82,7 +92,8 @@ class ControllerChallenge extends ControllerBase
         ));
         currentController.skipLongtermStorage = true;
         currentController.onGameCompleted = onStageCompleted;
-        currentController.challengeStepInfo = 'Challenge - Schritt ${currentStage + 1}/5';
+        currentController.challengeStepInfo =
+            'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
         currentController.notifyListeners(); // Force UI refresh
         break;
       case 2:
@@ -90,7 +101,8 @@ class ControllerChallenge extends ControllerBase
         currentController = ControllerShootx.create();
         currentController.skipLongtermStorage = true;
         currentController.onGameCompleted = onStageCompleted;
-        currentController.challengeStepInfo = 'Challenge - Schritt ${currentStage + 1}/5';
+        currentController.challengeStepInfo =
+            'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
         currentController.init(MenuItem(
           id: 'challenge_shoot20',
           name: 'Shoot 20',
@@ -105,7 +117,8 @@ class ControllerChallenge extends ControllerBase
         currentController = ControllerShootx.create();
         currentController.skipLongtermStorage = true;
         currentController.onGameCompleted = onStageCompleted;
-        currentController.challengeStepInfo = 'Challenge - Schritt ${currentStage + 1}/5';
+        currentController.challengeStepInfo =
+            'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
         currentController.init(MenuItem(
           id: 'challenge_shootbull',
           name: 'Shoot Bull',
@@ -120,7 +133,8 @@ class ControllerChallenge extends ControllerBase
         currentController = ControllerXXXCheckout.create();
         currentController.skipLongtermStorage = true;
         currentController.onGameCompleted = onStageCompleted;
-        currentController.challengeStepInfo = 'Challenge - Schritt ${currentStage + 1}/5';
+        currentController.challengeStepInfo =
+            'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
         currentController.init(MenuItem(
           id: 'challenge_501',
           name: '501 Checkout',
@@ -131,14 +145,14 @@ class ControllerChallenge extends ControllerBase
         currentController.notifyListeners();
         break;
     }
-    
+
     notifyListeners();
   }
 
   void onStageCompleted(int result) {
     stageResults[currentStage] = result;
     currentStage++;
-    
+
     // Small delay before starting next stage to allow summary dialog to close
     Future.delayed(const Duration(milliseconds: 500), () {
       startNextStage();
@@ -166,29 +180,29 @@ class ControllerChallenge extends ControllerBase
     int shoot20 = stageResults[2];
     int shootBull = stageResults[3];
     int checkout501 = stageResults[4];
-    
+
     // Find highest badge where all requirements are met
     for (int i = badgeThresholds[0].length - 1; i >= 0; i--) {
       bool qualifies = true;
-      
+
       // Check RTCX requirement
       if (rtcxTotal < badgeThresholds[0][i]) qualifies = false;
-      
+
       // Check Shoot 20 requirement
       if (shoot20 < badgeThresholds[1][i]) qualifies = false;
-      
+
       // Check Shoot Bull requirement
       if (shootBull < badgeThresholds[2][i]) qualifies = false;
-      
+
       // Check 501 Checkout requirement (lower is better)
       if (checkout501 > badgeThresholds[3][i]) qualifies = false;
-      
+
       if (qualifies) {
         return badgeNames[i];
       }
     }
-    
-    return 'No Badge';
+
+    return '😢';
   }
 
   // Delegate all numpad operations to current controller
@@ -214,7 +228,9 @@ class ControllerChallenge extends ControllerBase
 
   // Challenge-specific display methods
   String getCurrentStage() {
-    return currentStage < stageNames.length ? stageNames[currentStage] : 'Complete';
+    return currentStage < stageNames.length
+        ? stageNames[currentStage]
+        : 'Complete';
   }
 
   String getProgress() {
@@ -229,21 +245,21 @@ class ControllerChallenge extends ControllerBase
         'progress': 'Step: ${getProgress()}',
       };
     }
-    
+
     try {
       var rawStats = currentController.getCurrentStats();
       Map<String, String> stats = {};
-      
+
       if (rawStats != null) {
         rawStats.forEach((key, value) {
           stats[key.toString()] = value.toString();
         });
       }
-      
+
       // Add challenge progress
       stats['challenge'] = 'Challenge: ${getCurrentStage()}';
       stats['progress'] = 'Step: ${getProgress()}';
-      
+
       return stats;
     } catch (e) {
       return {
@@ -265,14 +281,14 @@ class ControllerChallenge extends ControllerBase
       // Final summary
       String badge = calculateBadge();
       return [
-        SummaryLine('RTCX Total', '${stageResults[0] + stageResults[1]}'),
+        SummaryLine('Big Single', '${stageResults[0] + stageResults[1]}'),
         SummaryLine('Shoot 20', '${stageResults[2]}'),
         SummaryLine('Shoot Bull', '${stageResults[3]}'),
-        SummaryLine('501 Darts', '${stageResults[4]}'),
-        SummaryLine('Badge', badge, emphasized: true),
+        SummaryLine('501', '${stageResults[4]}'),
+        SummaryLine('Abzeichen', badge, emphasized: true),
       ];
     }
-    
+
     // Delegate to current controller for individual stage summaries
     return currentController?.createSummaryLines() ?? [];
   }
