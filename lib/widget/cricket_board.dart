@@ -23,9 +23,13 @@ class CricketBoard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                numberStr.padRight(4),
-                style: checkNumberStyle(context),
+              SizedBox(
+                width: 80,
+                child: Text(
+                  numberStr,
+                  style: checkNumberStyle(context),
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(width: 8),
               Row(

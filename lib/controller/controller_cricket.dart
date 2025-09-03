@@ -31,6 +31,7 @@ class ControllerCricket extends ControllerBase
   Map<int, int> hits = {}; // number -> hit count (0-3)
   int round = 1;
   int totalHits = 0;
+  int totalDarts = 0; // total darts used (3 per round, corrected at end)
   List<List<int>> roundHits = [
     []
   ]; // 2D array: roundHits[round-1] = list of hits in that round
@@ -40,6 +41,9 @@ class ControllerCricket extends ControllerBase
 
   // Getter for round
   int get getRound => round;
+
+  // Getter for roundHits
+  List<List<int>> get getRoundHits => roundHits;
 
   // Get current round hits for display
   List<int> get currentRoundHits => roundHits[round - 1];
@@ -57,6 +61,7 @@ class ControllerCricket extends ControllerBase
     hits = {15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0};
     round = 1;
     totalHits = 0;
+    totalDarts = 0;
     roundHits = [[]]; // Start with one empty round
     input = "";
   }
@@ -76,6 +81,7 @@ class ControllerCricket extends ControllerBase
       _undoLastHit();
     } else if (value == -1 || value == 0) {
       // enter button or 0 pressed - end round
+      totalDarts += 3; // Each round consists of 3 darts
       round++;
       roundHits.add([]); // Add new empty round
       _updateInput();
@@ -95,9 +101,10 @@ class ControllerCricket extends ControllerBase
 
         // Check if game is complete
         if (hits.values.every((count) => count >= 3)) {
-          // Game completed - trigger end
+          // Game completed - add darts for current round and trigger checkout dialog
+          totalDarts += 3;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            triggerGameEnd();
+            onShowCheckout?.call(0, 0); // remaining=0, score=0 for cricket
           });
         }
       }
@@ -117,6 +124,7 @@ class ControllerCricket extends ControllerBase
       // Current round is empty, go back to previous round
       roundHits.removeLast(); // Remove empty current round
       round--;
+      totalDarts -= 3; // Remove the 3 darts from the previous round
       // Now undo the last hit from the previous round (if any)
       if (roundHits[round - 1].isNotEmpty) {
         int lastHit = roundHits[round - 1].removeLast();
@@ -173,15 +181,50 @@ class ControllerCricket extends ControllerBase
     if (currentHits.isEmpty) {
       input = "";
     } else {
-      input =
-          currentHits.map((hit) => hit == 25 ? 'B' : hit.toString()).join('-');
+      // Sort hits: 15-20 first, then bull (25)
+      List<int> sortedHits = List.from(currentHits);
+      sortedHits.sort((a, b) {
+        if (a == 25 && b != 25) return 1;  // Bull goes last
+        if (b == 25 && a != 25) return -1; // Bull goes last
+        return a.compareTo(b); // Normal numeric sort for 15-20
+      });
+      
+      // Group consecutive same numbers
+      List<String> groups = [];
+      int currentNumber = sortedHits[0];
+      int count = 1;
+      
+      for (int i = 1; i < sortedHits.length; i++) {
+        if (sortedHits[i] == currentNumber) {
+          count++;
+        } else {
+          // Add current group
+          String numberStr = currentNumber == 25 ? 'B' : currentNumber.toString();
+          groups.add(List.filled(count, numberStr).join('-'));
+          currentNumber = sortedHits[i];
+          count = 1;
+        }
+      }
+      
+      // Add final group
+      String numberStr = currentNumber == 25 ? 'B' : currentNumber.toString();
+      groups.add(List.filled(count, numberStr).join('-'));
+      
+      input = groups.join(' | ');
     }
   }
 
   @override
   List<SummaryLine> createSummaryLines() {
     List<SummaryLine> lines = [];
-    lines.add(SummaryLine('Game', 'Cricket'));
+    
+    // Add darts line
+    lines.add(SummaryLine('Darts', totalDarts.toString()));
+    
+    // Add average hits per round line
+    double avgHitsPerRound = _getAvgHitsPerRound();
+    lines.add(SummaryLine('ØTreffer/Runde', avgHitsPerRound.toStringAsFixed(1), emphasized: true));
+    
     return lines;
   }
 
@@ -189,7 +232,18 @@ class ControllerCricket extends ControllerBase
   String getGameTitle() => 'Cricket';
 
   @override
-  void updateSpecificStats() {}
+  void updateSpecificStats() {
+    Map<String, String> currentStats = getCurrentStats();
+    int darts = int.parse(currentStats['darts']!);
+    double avgHits = double.parse(currentStats['avgHits']!);
+
+    // Update records (lower is better for darts, higher is better for avgHits)
+    statsService.updateRecord<int>('recordDarts', darts, higherIsBetter: false);
+    statsService.updateRecord<double>('recordAvgHits', avgHits, higherIsBetter: true);
+
+    // Update long-term average
+    statsService.updateLongTermAverage('longtermAvgHits', avgHits);
+  }
 
   @override
   String getInput() {
@@ -197,7 +251,46 @@ class ControllerCricket extends ControllerBase
   }
 
   @override
-  void correctDarts(int value) {}
+  void correctDarts(int value) {
+    // Called from checkout dialog - value is darts to subtract from last round
+    totalDarts -= value;
+    notifyListeners();
+  }
+
+  // Get current game stats for display  
+  Map<String, String> getCurrentStats() {
+    int leftoverTargets = _getLeftoverTargets();
+    double avgHitsPerRound = _getAvgHitsPerRound();
+    
+    return {
+      'round': round.toString(),
+      'darts': totalDarts.toString(),
+      'leftover': leftoverTargets.toString(),
+      'avgHits': avgHitsPerRound.toStringAsFixed(1),
+    };
+  }
+
+  int _getLeftoverTargets() {
+    int leftover = 0;
+    hits.forEach((number, count) {
+      leftover += (3 - count).clamp(0, 3);
+    });
+    return leftover;
+  }
+
+  double _getAvgHitsPerRound() {
+    // Only calculate average for completed rounds (exclude current round)
+    int completedRounds = (round > 1) ? (round - 1) : 0;
+    if (completedRounds == 0) return 0.0;
+    
+    // Calculate hits from completed rounds only
+    int hitsFromCompletedRounds = 0;
+    for (int i = 0; i < completedRounds && i < roundHits.length; i++) {
+      hitsFromCompletedRounds += roundHits[i].length;
+    }
+    
+    return hitsFromCompletedRounds / completedRounds;
+  }
 
   @override
   bool isButtonDisabled(int value) {
@@ -224,11 +317,28 @@ class ControllerCricket extends ControllerBase
   String getStats() {
     int numberGames =
         statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+    double recordAvgHits = statsService.getStat<double>('recordAvgHits', defaultValue: 0.0)!;
+    double longtermAvgHits = statsService.getStat<double>('longtermAvgHits', defaultValue: 0.0)!;
 
     return formatStatsString(
       numberGames: numberGames,
-      records: {},
-      averages: {},
+      records: {
+        'D': recordDarts,
+        'T': recordAvgHits,
+      },
+      averages: {
+        'T': longtermAvgHits,
+      },
     );
   }
+
+  /// Handle checkout dialog being closed - trigger game end
+  void handleCheckoutClosed() {
+    // Use post frame callback to ensure dialog is fully closed before showing summary
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      triggerGameEnd();
+    });
+  }
+
 }

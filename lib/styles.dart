@@ -91,7 +91,7 @@ TextStyle statsSummaryTextStyle(BuildContext context) {
 
 TextStyle endSummaryHeaderTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 42),
     color: Colors.black,
   );
 }
