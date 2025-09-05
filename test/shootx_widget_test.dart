@@ -285,8 +285,10 @@ void main() {
       // Test getInput method (not used in ShootX)
       expect(controller.getInput(), equals(""));
 
-      // Test isButtonDisabled method
-      expect(controller.isButtonDisabled(5), isFalse); // No buttons disabled
+      // Test isButtonDisabled method for normal mode
+      expect(controller.isButtonDisabled(5), isFalse); // No buttons disabled in normal mode
+      expect(controller.isButtonDisabled(7), isFalse);
+      expect(controller.isButtonDisabled(9), isFalse);
 
       // Test correctDarts method (not used in ShootX, should not crash)
       controller.correctDarts(1); // Should do nothing

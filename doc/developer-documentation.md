@@ -26,9 +26,9 @@ lib/
 └── styles.dart        # Global styling definitions
 
 test/
-├── *_widget_test.dart  # Widget tests for each game (15 files)
-├── *.mocks.dart       # Generated mock files (15 files)
-└── test coverage: 233 tests across all games (all passing)
+├── *_widget_test.dart  # Widget tests for each game (includes Challenge)
+├── *.mocks.dart       # Generated mock files
+└── comprehensive test coverage across all games
 ```
 
 ### Core Components
@@ -320,11 +320,12 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 - **Data Structure**: Key-value pairs per game type with unique game IDs
 
 ### Testing Architecture
-- **Comprehensive Coverage**: 118 tests across all games
+- **Comprehensive Coverage**: All games including multi-stage Challenge game
 - **Mock Generation**: Mockito-generated mocks for dependencies
 - **Widget Testing**: Full widget tests for each game
 - **Test Compatibility**: Views handle null MenuItem for test scenarios
 - **Dependency Injection**: Test-friendly controller constructors
+- **Challenge Testing**: Flow testing for multi-stage Challenge game
 
 ## Development Patterns
 
@@ -393,10 +394,16 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 ## Testing Strategy
 
 ### Test Coverage
-- **233 Total Tests**: Comprehensive coverage across all games
-- **Widget Tests**: Full UI and interaction testing
+- **Core Game Logic**: Complete game workflows and state management
+- **Widget Integration**: Full UI and interaction testing
 - **Mock Dependencies**: Isolated testing with Mockito
-- **Edge Cases**: Comprehensive scenario coverage
+- **Edge Cases**: Comprehensive scenario coverage including error conditions
+- **Challenge Flow**: Multi-stage game progression and advancement
+- **Challenge Parameters**: Challenge-specific functionality (skipLongtermStorage, onGameCompleted)
+- **Badge System**: Badge calculation logic and emoji display
+- **Button States**: Dynamic button enabling/disabling (e.g., Bull mode restrictions)
+- **Statistics**: Game statistics calculation and persistence
+- **Navigation**: Menu navigation and controller initialization
 
 ### Test Architecture
 - **Mock Generation**: Automated with build_runner and Mockito
@@ -459,7 +466,7 @@ flutter packages pub run build_runner build
 - **Environment**: Flutter SDK
 - **IDE**: Any Flutter-supported IDE
 - **Code Quality**: `flutter analyze` (0 issues)
-- **Testing**: `flutter test` (233 tests passing)
+- **Testing**: `flutter test` (all tests passing)
 
 ### Production
 - **Platforms**: Android APK/iOS IPA
