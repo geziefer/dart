@@ -18,7 +18,7 @@ ButtonStyle headerButtonStyle(BuildContext context) {
 
 TextStyle menuButtonTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: 42 * ResponsiveUtils.getMenuButtonTextScale(context),
+    fontSize: 34 * ResponsiveUtils.getMenuButtonTextScale(context),
     color: const Color.fromARGB(255, 215, 198, 132),
   );
 }
