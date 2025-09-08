@@ -1,12 +1,14 @@
 # DART
 
-Damit
+"Damit
 Alex
 Richtig
-Trainiert
+Trainiert"
 
-Meine persönliche Dart-Trainings-App.
-Optimmiert für das Google Pixel C.
+My personal darts training app.
+Optimized for Google Pixel C tablet.
+
+![Darts setup](https://github.com/geziefer/dart/blob/main/DartSetupARU.jpeg)
 
 ## Documentation
 
