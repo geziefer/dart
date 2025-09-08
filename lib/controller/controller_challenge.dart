@@ -90,7 +90,7 @@ class ControllerChallenge extends ControllerBase
           getController: (_) => currentController,
           params: {'max': 7}, // Fixed 7 rounds (20 numbers / 3 darts per round)
         ));
-        currentController.skipLongtermStorage = true;
+        currentController.isChallengeMode = true;
         currentController.onGameCompleted = onStageCompleted;
         currentController.challengeStepInfo =
             'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
@@ -99,7 +99,7 @@ class ControllerChallenge extends ControllerBase
       case 2:
         // Shoot 20
         currentController = ControllerShootx.create();
-        currentController.skipLongtermStorage = true;
+        currentController.isChallengeMode = true;
         currentController.onGameCompleted = onStageCompleted;
         currentController.challengeStepInfo =
             'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
@@ -115,7 +115,7 @@ class ControllerChallenge extends ControllerBase
       case 3:
         // Shoot Bull
         currentController = ControllerShootx.create();
-        currentController.skipLongtermStorage = true;
+        currentController.isChallengeMode = true;
         currentController.onGameCompleted = onStageCompleted;
         currentController.challengeStepInfo =
             'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';
@@ -131,7 +131,7 @@ class ControllerChallenge extends ControllerBase
       case 4:
         // 501 Checkout
         currentController = ControllerXXXCheckout.create();
-        currentController.skipLongtermStorage = true;
+        currentController.isChallengeMode = true;
         currentController.onGameCompleted = onStageCompleted;
         currentController.challengeStepInfo =
             'Bayrisches Sportabzeichen - Schritt ${currentStage + 1}/5';

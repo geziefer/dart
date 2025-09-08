@@ -28,7 +28,7 @@ class ControllerXXXCheckout extends ControllerBase
 
   MenuItem? item; // item which created the controller
 
-  bool skipLongtermStorage = false; // if true, don't update longterm stats
+  bool isChallengeMode = false; // if true, running in challenge mode
   Function(int)? onGameCompleted; // callback to report score to parent controller
   String? challengeStepInfo; // challenge step info for display
 
@@ -230,7 +230,7 @@ class ControllerXXXCheckout extends ControllerBase
 
   @override
   void showSummaryDialog(BuildContext context) {
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       // In Challenge mode, don't show the default summary dialog
       // The Challenge controller will handle advancement
       return;
@@ -276,7 +276,7 @@ class ControllerXXXCheckout extends ControllerBase
 
   @override
   void updateSpecificStats() {
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       // Report score to parent controller if callback is set
       if (onGameCompleted != null) {
         onGameCompleted!(totalDarts); // total darts used
@@ -379,7 +379,7 @@ class ControllerXXXCheckout extends ControllerBase
     double longtermDarts =
         statsService.getStat<double>('longtermDarts', defaultValue: 0.0)!;
 
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       return challengeStepInfo ?? "Challenge Mode";
     } else {
       return '#S: $numberGames  ♛C: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';

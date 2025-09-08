@@ -29,7 +29,7 @@ class ControllerRTCX extends ControllerBase
   MenuItem? item; // item which created the controller
   int max = -1; // limit of rounds per leg (-1 = unlimited)
 
-  bool skipLongtermStorage = false; // if true, don't update longterm stats
+  bool isChallengeMode = false; // if true, running in challenge mode
   Function(int)? onGameCompleted; // callback to report score to parent controller
   String? challengeStepInfo; // challenge step info for display
 
@@ -86,11 +86,7 @@ class ControllerRTCX extends ControllerBase
         bool willHitRoundLimit = (max != -1 && round == max);
 
         if (willCompleteGame || willHitRoundLimit) {
-          // Calculate remaining targets BEFORE updating currentNumber
-          int remainingTargets =
-              currentNumber > 20 ? 0 : (20 - currentNumber + 1);
-
-          // Update game state
+          // Update game state first
           dart += 3;
           throws.add(advancement);
           currentNumber += advancement;
@@ -98,9 +94,20 @@ class ControllerRTCX extends ControllerBase
 
           notifyListeners();
 
-          // Show checkout dialog before ending the game
-          onShowCheckout?.call(
-              remainingTargets, 0); // score parameter not used in target mode
+          // Handle challenge mode differently
+          if (isChallengeMode) {
+            // Challenge mode: skip checkout dialog, count 2 darts for last round
+            dart -= 1; // Correct from 3 to 2 darts
+            triggerGameEnd();
+          } else {
+            // Normal mode: show checkout dialog with correct options
+            // Calculate how many targets were actually hit in this final input
+            int targetsHit = advancement;
+            
+            // Show checkout dialog - pass the number of targets hit as remaining parameter
+            // This ensures the checkout dialog shows the correct dart options
+            onShowCheckout?.call(targetsHit, 0);
+          }
         } else {
           // Normal round - just update state
           dart += 3;
@@ -127,15 +134,7 @@ class ControllerRTCX extends ControllerBase
 
   @override
   void showSummaryDialog(BuildContext context) {
-    if (skipLongtermStorage) {
-      // In Challenge mode, don't show the default summary dialog
-      // The Challenge controller will handle advancement
-      return;
-    }
-  @override
-  // ignore: unused_element
-  void showSummaryDialog(BuildContext context) {
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       // In Challenge mode, don't show the default summary dialog
       // The Challenge controller will handle advancement
       return;
@@ -145,7 +144,6 @@ class ControllerRTCX extends ControllerBase
   }
 
   @override
-  // ignore: unused_element
   List<SummaryLine> createSummaryLines() {
     String checkSymbol = finished ? "✅" : "❌";
     return [
@@ -156,14 +154,13 @@ class ControllerRTCX extends ControllerBase
           emphasized: true),
     ];
   }
-  }
 
   @override
   String getGameTitle() => 'RTCX';
 
   @override
   void updateSpecificStats() {
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       // Report score to parent controller if callback is set
       // In Challenge mode, always call the callback when game ends (finished or not)
       if (onGameCompleted != null) {
@@ -245,7 +242,7 @@ class ControllerRTCX extends ControllerBase
     double longtermChecks =
         statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
 
-    if (skipLongtermStorage) {
+    if (isChallengeMode) {
       return challengeStepInfo ?? "Challenge Mode";
     } else {
       return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØC: ${longtermChecks.toStringAsFixed(1)}';
