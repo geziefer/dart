@@ -57,7 +57,10 @@ class SummaryDialog extends StatelessWidget {
                   padding: const EdgeInsets.all(4),
                   child: Text(gameName, style: matrixGameNameTextStyle(context)),
                 ),
-                ...badgeThresholds[gameIndex].map((threshold) {
+                ...badgeThresholds[gameIndex].asMap().entries.map((thresholdEntry) {
+                  int badgeIndex = thresholdEntry.key;
+                  int threshold = thresholdEntry.value;
+                  
                   bool isAchieved;
                   if (gameIndex == 3) { // 501 Checkout (lower is better)
                     isAchieved = gameResult <= threshold && gameResult > 0;
@@ -65,13 +68,38 @@ class SummaryDialog extends StatelessWidget {
                     isAchieved = gameResult >= threshold;
                   }
                   
+                  // Find the highest badge achieved for this game
+                  int highestBadge = -1;
+                  for (int i = badgeThresholds[gameIndex].length - 1; i >= 0; i--) {
+                    bool qualifies;
+                    if (gameIndex == 3) {
+                      qualifies = gameResult <= badgeThresholds[gameIndex][i] && gameResult > 0;
+                    } else {
+                      qualifies = gameResult >= badgeThresholds[gameIndex][i];
+                    }
+                    if (qualifies) {
+                      highestBadge = i;
+                      break;
+                    }
+                  }
+                  
                   return Container(
                     color: isAchieved ? Colors.green.withValues(alpha: 0.3) : null,
                     padding: const EdgeInsets.all(4),
-                    child: Text(
-                      threshold.toString(),
-                      textAlign: TextAlign.center,
-                      style: matrixCellTextStyle(context),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          badgeIndex == highestBadge ? gameResult.toString() : ' ',
+                          textAlign: TextAlign.center,
+                          style: matrixCellTextStyle(context).copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          threshold.toString(),
+                          textAlign: TextAlign.center,
+                          style: matrixCellTextStyle(context).copyWith(fontStyle: FontStyle.italic, fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16)),
+                        ),
+                      ],
                     ),
                   );
                 }),
