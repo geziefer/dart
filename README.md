@@ -13,3 +13,4 @@ Optimized for Google Pixel C tablet.
 ## Documentation
 
 - [Developer Documentation](doc/developer-documentation.md) - Technical overview, architecture, and development guide
+- [Test Documentation](doc/widget-tests-documentation.md) - Widget test documentation listing all tested cases
