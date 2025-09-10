@@ -2,6 +2,7 @@ import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Build 4x3 numpad 0-9, undo, return, possibly extra buttons or yes/no
 class Numpad extends StatelessWidget {
@@ -144,6 +145,7 @@ class Numpad extends StatelessWidget {
           onPressed: isDisabled
               ? null
               : () {
+                  HapticFeedback.lightImpact();
                   // call interface method from controller
                   controller.pressNumpadButton(value);
                 },
