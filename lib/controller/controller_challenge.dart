@@ -278,19 +278,33 @@ class ControllerChallenge extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     if (currentStage >= 5) {
-      // Final summary
+      // Final summary with matrix
       String badge = calculateBadge();
       return [
-        SummaryLine('Big Single', '${stageResults[0] + stageResults[1]}'),
-        SummaryLine('Shoot 20', '${stageResults[2]}'),
-        SummaryLine('Shoot Bull', '${stageResults[3]}'),
-        SummaryLine('501', '${stageResults[4]}'),
-        SummaryLine('Abzeichen', badge, emphasized: true),
+        SummaryLine('MATRIX', '', isMatrix: true, matrixData: _getMatrixData()),
+        SummaryLine('', badge, emphasized: true, isFinalBadge: true),
       ];
     }
 
     // Delegate to current controller for individual stage summaries
     return currentController?.createSummaryLines() ?? [];
+  }
+
+  Map<String, dynamic> _getMatrixData() {
+    List<String> gameNames = ['2xRTCS', '10x20', '10xB', '501 BO1'];
+    List<int> gameResults = [
+      stageResults[0] + stageResults[1], // RTCX total
+      stageResults[2], // Shoot 20
+      stageResults[3], // Shoot Bull
+      stageResults[4], // 501 Checkout
+    ];
+
+    return {
+      'gameNames': gameNames,
+      'gameResults': gameResults,
+      'badgeNames': badgeNames,
+      'badgeThresholds': badgeThresholds,
+    };
   }
 
   @override

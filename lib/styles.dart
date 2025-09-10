@@ -237,6 +237,29 @@ TextStyle timerTextStyle(BuildContext context) {
   );
 }
 
+TextStyle matrixHeaderTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+}
+
+TextStyle matrixCellTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+    color: Colors.black,
+  );
+}
+
+TextStyle matrixGameNameTextStyle(BuildContext context) {
+  return TextStyle(
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+}
+
 TextStyle emojiLargeTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
