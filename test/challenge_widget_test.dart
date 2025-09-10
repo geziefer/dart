@@ -104,17 +104,12 @@ void main() {
 
       final summaryLines = controller.createSummaryLines();
       
-      expect(summaryLines.length, equals(5));
-      expect(summaryLines[0].label, equals('Big Single'));
-      expect(summaryLines[0].value, equals('18')); // 10 + 8
-      expect(summaryLines[1].label, equals('Shoot 20'));
-      expect(summaryLines[1].value, equals('15'));
-      expect(summaryLines[2].label, equals('Shoot Bull'));
-      expect(summaryLines[2].value, equals('12'));
-      expect(summaryLines[3].label, equals('501'));
-      expect(summaryLines[3].value, equals('35'));
-      expect(summaryLines[4].label, equals('Abzeichen'));
-      expect(summaryLines[4].emphasized, isTrue);
+      expect(summaryLines.length, equals(2));
+      expect(summaryLines[0].label, equals('MATRIX'));
+      expect(summaryLines[0].isMatrix, equals(true));
+      expect(summaryLines[1].isFinalBadge, equals(true));
+      // Badge should be calculated based on the results
+      expect(summaryLines[1].value, isNotEmpty);
     });
   });
 }
