@@ -1,7 +1,7 @@
 name: dart
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.1.5+8
+version: 1.2.0+9
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -15,7 +15,8 @@ dependencies:
   tuple: ^2.0.2
   collection: ^1.18.0
   path_provider: ^2.1.2
-  package_info_plus: ^8.0.0
+  package_info_plus: ^9.0.0
+  share_plus: ^12.0.0
 
 dev_dependencies:
   flutter_test:

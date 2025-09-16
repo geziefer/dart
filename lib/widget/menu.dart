@@ -31,6 +31,7 @@ import 'package:dart/view/view_updown.dart';
 import 'package:dart/view/view_bigts.dart';
 import 'package:dart/view/view_cricket.dart';
 import 'package:dart/view/view_challenge.dart';
+import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/version_info.dart';
@@ -208,8 +209,6 @@ class Menu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Image image =
-        Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Center(
@@ -225,7 +224,15 @@ class Menu extends StatelessWidget {
                 ],
               ),
             ),
-            image,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ViewStats()),
+                );
+              },
+              child: Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth),
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: LayoutBuilder(
