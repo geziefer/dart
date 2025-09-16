@@ -9,12 +9,12 @@ class ViewStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<ControllerStats>(context, listen: false);
-    
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
       body: Column(
         children: [
-          const Header(gameName: 'Statistics'),
+          const Header(gameName: 'Statistik'),
           Expanded(
             child: FutureBuilder(
               future: controller.loadAllStats(),
@@ -32,14 +32,50 @@ class ViewStats extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
-                              onPressed: () => controller.shareExportedStats(),
-                              child: const Text('Export Stats'),
+                              onPressed: () =>
+                                  controller.shareExportedStats(context),
+                              child: const Text('Teilen'),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                // TODO: Implement import functionality
-                              },
-                              child: const Text('Import Stats'),
+                              onPressed: () =>
+                                  controller.saveExportedStatsToFile(context),
+                              child: const Text('Exportieren'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => controller.importStatsFromFile(context, (jsonData) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Import bestätigen'),
+                                    content: const Text('Willst du wirklich die Statistik überschreiben?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        child: const Text('Nein'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          await controller.importStats(jsonData);
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Statistik erfolgreich importiert')),
+                                            );
+                                          }
+                                        },
+                                        child: const Text('Ja'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              child: const Text('Import'),
                             ),
                           ],
                         ),
