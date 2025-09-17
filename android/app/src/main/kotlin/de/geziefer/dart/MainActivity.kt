@@ -1,4 +1,4 @@
-package com.example.dart
+package de.geziefer.dart
 
 import io.flutter.embedding.android.FlutterActivity
 

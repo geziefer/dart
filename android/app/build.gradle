@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.dart"
+    namespace "de.geziefer.dart"
 
     compileSdkVersion 36
     ndkVersion "27.0.12077973"
@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.dart"
+        applicationId "de.geziefer.dart"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
