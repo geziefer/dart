@@ -10,6 +10,11 @@ class ViewStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ControllerStats>(
       builder: (context, controller, child) {
+        // Refresh stats when view is built
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.refresh();
+        });
+        
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 17, 17, 17),
           body: Column(

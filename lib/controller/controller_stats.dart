@@ -23,6 +23,12 @@ class ControllerStats extends ChangeNotifier {
   }
 
   void init() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadAllStats();
+    });
+  }
+
+  void refresh() {
     loadAllStats();
   }
 
