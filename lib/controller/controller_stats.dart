@@ -18,6 +18,14 @@ class ControllerStats extends ChangeNotifier {
   Map<String, Map<String, dynamic>> get allStats => _allStats;
   bool get isLoading => _isLoading;
 
+  ControllerStats() {
+    init();
+  }
+
+  void init() {
+    loadAllStats();
+  }
+
   Future<void> loadAllStats() async {
     _allStats.clear();
 

@@ -28,11 +28,8 @@ class ViewStats extends StatelessWidget {
                   children: [
                     const Divider(color: Colors.white, thickness: 3),
                     Expanded(
-                      child: FutureBuilder(
-                        future: controller.loadAllStats(),
-                        builder: (context, snapshot) {
-                          if (controller.allStats.isEmpty) {
-                            return const Center(
+                      child: controller.allStats.isEmpty
+                          ? const Center(
                               child: Text(
                                 'Keine Statistik vorhanden',
                                 style: TextStyle(
@@ -40,29 +37,22 @@ class ViewStats extends StatelessWidget {
                                   fontSize: 18,
                                 ),
                               ),
-                            );
-                          }
-                          
-                          // Sort game names alphabetically
-                          final sortedGameNames = controller.allStats.keys.toList()
-                            ..sort((a, b) => controller.allStats[a]!['name']
-                                .toString()
-                                .compareTo(controller.allStats[b]!['name'].toString()));
-                          
-                          return SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  for (var gameId in sortedGameNames)
-                                    _buildGameStats(gameId, controller.allStats[gameId]!),
-                                ],
+                            )
+                          : SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    for (var gameId in controller.allStats.keys.toList()
+                                      ..sort((a, b) => controller.allStats[a]!['name']
+                                          .toString()
+                                          .compareTo(controller.allStats[b]!['name'].toString())))
+                                      _buildGameStats(gameId, controller.allStats[gameId]!),
+                                  ],
+                                ),
                               ),
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ],
                 ),
