@@ -37,6 +37,8 @@ class ControllerStats extends ChangeNotifier {
         };
       }
     }
+    
+    notifyListeners();
   }
 
   String _generateFileName() {
@@ -62,18 +64,8 @@ class ControllerStats extends ChangeNotifier {
     if (kIsWeb) {
       await Clipboard.setData(ClipboardData(text: jsonData));
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Export'),
-            content: const Text('Statistik in Zwischenablage übertragen'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Statistik in Zwischenablage übertragen')),
         );
       }
     } else {
