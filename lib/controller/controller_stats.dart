@@ -118,23 +118,15 @@ class ControllerStats extends ChangeNotifier {
           );
         }
       } else {
-        // For mobile, use traditional file saving
-        String? outputFile = await FilePicker.platform.saveFile(
-          dialogTitle: 'Statistik speichern',
-          fileName: fileName,
-          type: FileType.custom,
-          allowedExtensions: ['json'],
-        );
-
-        if (outputFile != null) {
-          final file = File(outputFile);
-          await file.writeAsString(jsonData);
-          
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Statistik erfolgreich gespeichert')),
-            );
-          }
+        // For mobile, save to downloads directory
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsString(jsonData);
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Statistik gespeichert: ${file.path}')),
+          );
         }
       }
     } catch (e) {
