@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:js_interop';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dart/widget/menu.dart';
-import 'package:web/web.dart' as web;
+import 'package:dart/utils/web_helper_stub.dart'
+    if (dart.library.html) 'package:dart/utils/web_helper_web.dart';
 
 class ControllerStats extends ChangeNotifier {
   final Map<String, Map<String, dynamic>> _allStats = {};
@@ -103,18 +103,8 @@ class ControllerStats extends ChangeNotifier {
 
     try {
       if (kIsWeb) {
-        // For web, create a download link using modern web API
-        final bytes = Uint8List.fromList(utf8.encode(jsonData));
-        final blob = web.Blob([bytes.toJS].toJS);
-        final url = web.URL.createObjectURL(blob);
-        final anchor = web.document.createElement('a') as web.HTMLAnchorElement
-          ..href = url
-          ..style.display = 'none'
-          ..download = fileName;
-        web.document.body?.appendChild(anchor);
-        anchor.click();
-        web.document.body?.removeChild(anchor);
-        web.URL.revokeObjectURL(url);
+        // For web, use helper function to download file
+        downloadFile(jsonData, fileName);
         
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
