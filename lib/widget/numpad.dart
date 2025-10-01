@@ -143,11 +143,7 @@ class Numpad extends StatelessWidget {
         child: TextButton(
           onPressed: isDisabled
               ? null
-              : () {
-                  // call interface method from controller
-                  controller.pressNumpadButton(value);
-                },
-          // for enter button accept long press as rest value, other ignore
+              : () => controller.pressNumpadButton(value),
           onLongPress: isDisabled
               ? null
               : () {
@@ -155,7 +151,16 @@ class Numpad extends StatelessWidget {
                     controller.pressNumpadButton(-3);
                   }
                 },
-          style: isDisabled ? numpadDisabledTextStyle : numpadTextStyle,
+          style: isDisabled 
+              ? numpadDisabledTextStyle 
+              : numpadTextStyle.copyWith(
+                  overlayColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Colors.grey[300];
+                    }
+                    return null;
+                  }),
+                ),
           child: Text(
             label,
             style: isEmoji
