@@ -224,14 +224,45 @@ class Menu extends StatelessWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ViewStats()),
-                );
-              },
-              child: Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth),
+            Row(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ViewStats()),
+                        );
+                      },
+                      child: Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: GestureDetector(
+                    onTap: () {
+                      final controller = Provider.of<ControllerChallenge>(context, listen: false);
+                      controller.init(MenuItem(
+                        id: 'CHALLENGE',
+                        name: 'Bayrisches\nSportabzeichen',
+                        view: const ViewChallenge(title: 'Bayrisches Sportabzeichen'),
+                        getController: (context) => Provider.of<ControllerChallenge>(context, listen: false),
+                        params: const {},
+                      ));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ViewChallenge(title: 'Bayrisches Sportabzeichen')),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset('assets/images/bdv.jpg', width: 200, fit: BoxFit.fitWidth),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             Expanded(
