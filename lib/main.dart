@@ -14,6 +14,7 @@ import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/controller/controller_bigts.dart';
 import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_challenge.dart';
+import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_stats.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerBigTs()),
         ChangeNotifierProvider(create: (context) => ControllerCricket()),
         ChangeNotifierProvider(create: (context) => ControllerChallenge()),
+        ChangeNotifierProvider(create: (context) => ControllerAcrossBoard()),
         ChangeNotifierProvider(create: (context) => ControllerStats()),
       ],
       child: const MaterialApp(

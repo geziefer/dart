@@ -14,6 +14,7 @@ import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/controller/controller_bigts.dart';
 import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_challenge.dart';
+import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -31,6 +32,7 @@ import 'package:dart/view/view_updown.dart';
 import 'package:dart/view/view_bigts.dart';
 import 'package:dart/view/view_cricket.dart';
 import 'package:dart/view/view_challenge.dart';
+import 'package:dart/view/view_acrossboard.dart';
 import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
@@ -190,12 +192,12 @@ class Menu extends StatelessWidget {
       params: const {'duration': 60},
     ),
     MenuItem(
-      id: 'CHALLENGE',
-      name: 'Bayrisches\nSportabzeichen',
-      view: const ViewChallenge(title: 'Bayrisches Sportabzeichen'),
+      id: 'ACROSSBOARD',
+      name: 'Across\nBoard',
+      view: const ViewAcrossBoard(title: 'Across Board'),
       getController: (context) =>
-          Provider.of<ControllerChallenge>(context, listen: false),
-      params: const {},
+          Provider.of<ControllerAcrossBoard>(context, listen: false),
+      params: const {'max': 20},
     ),
     MenuItem(
       id: 'FQ',
