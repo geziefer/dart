@@ -228,6 +228,29 @@ class Menu extends StatelessWidget {
             ),
             Row(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: GestureDetector(
+                    onTap: () {
+                      final controller = Provider.of<ControllerFinishes>(context, listen: false);
+                      controller.init(MenuItem(
+                        id: 'FQ',
+                        name: 'FinishQuest',
+                        view: const ViewFinishes(title: 'Finishes wissen'),
+                        getController: (context) => Provider.of<ControllerFinishes>(context, listen: false),
+                        params: const {},
+                      ));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ViewFinishes(title: 'Finishes wissen')),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.asset('assets/images/dartquiz.jpg', height: 100, fit: BoxFit.fitHeight),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: Center(
                     child: GestureDetector(
@@ -260,7 +283,7 @@ class Menu extends StatelessWidget {
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset('assets/images/bdv.jpg', width: 200, fit: BoxFit.fitWidth),
+                      child: Image.asset('assets/images/bdv.jpg', height: 100, fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),
