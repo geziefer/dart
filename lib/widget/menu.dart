@@ -15,6 +15,7 @@ import 'package:dart/controller/controller_bigts.dart';
 import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_challenge.dart';
 import 'package:dart/controller/controller_acrossboard.dart';
+import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -33,6 +34,7 @@ import 'package:dart/view/view_bigts.dart';
 import 'package:dart/view/view_cricket.dart';
 import 'package:dart/view/view_challenge.dart';
 import 'package:dart/view/view_acrossboard.dart';
+import 'package:dart/view/view_creditfinish.dart';
 import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
@@ -200,12 +202,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 20},
     ),
     MenuItem(
-      id: 'FQ',
-      name: 'FinishQuest',
-      view: const ViewFinishes(title: 'Finishes wissen'),
+      id: 'CREDITFINISH',
+      name: 'Credit\nFinish',
+      view: const ViewCreditFinish(title: 'Credit Finish'),
       getController: (context) =>
-          Provider.of<ControllerFinishes>(context, listen: false),
-      params: const {}, // No params - controller will handle range selection
+          Provider.of<ControllerCreditFinish>(context, listen: false),
+      params: const {},
     ),
   ];
 
