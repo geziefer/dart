@@ -1,6 +1,6 @@
 import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/checknumber.dart';
+import 'package:dart/widget/target_sequence.dart';
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/checkout.dart';
@@ -80,29 +80,13 @@ class ViewAcrossBoard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      // ########## Left column with game results
+                      // ########## Left column with target sequence
                       Expanded(
                         flex: 5,
-                        child: Container(
-                          margin: const EdgeInsets.all(3),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            // ########## 5 x 4 items for all numbers
-                            children: [
-                              for (int i = 1; i <= 3; i++)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    for (int j = 1; j <= 7; j++)
-                                      CheckNumber(
-                                        currentNumber:
-                                            controller.getCurrentNumber(),
-                                        number: (i - 1) * 7 + j,
-                                      )
-                                  ],
-                                ),
-                            ],
-                          ),
+                        child: TargetSequence(
+                          targets: controller.getTargetSequence(),
+                          targetsHit: controller.getTargetsHit(),
+                          currentTargetIndex: controller.getCurrentTargetIndex(),
                         ),
                       ),
                       const VerticalDivider(color: Colors.white, thickness: 3),
@@ -144,7 +128,7 @@ class ViewAcrossBoard extends StatelessWidget {
                       style: statsNumberTextStyle(context),
                     ),
                     Text(
-                      "   ØDarts/Checkout: ",
+                      "   ØDarts/Target: ",
                       style: statsTextStyle(context),
                     ),
                     Text(

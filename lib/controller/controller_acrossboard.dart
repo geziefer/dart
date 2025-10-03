@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class ControllerAcrossBoard extends ControllerBase
     implements MenuitemController, NumpadController {
@@ -26,29 +27,76 @@ class ControllerAcrossBoard extends ControllerBase
     return ControllerAcrossBoard(storage: storage);
   }
 
-  MenuItem? item; // item which created the controller
-  int max = -1; // limit of rounds per leg (-1 = unlimited)
+  MenuItem? item;
+  int max = -1; // not used in this game
 
-  bool isChallengeMode = false; // if true, running in challenge mode
-  Function(int)? onGameCompleted; // callback to report score to parent controller
-  String? challengeStepInfo; // challenge step info for display
+  bool isChallengeMode = false;
+  Function(int)? onGameCompleted;
+  String? challengeStepInfo;
 
-  List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
-  int currentNumber = 1; // current number to throw at
-  int round = 1; // round number in game
-  int dart = 0; // darts played in game
-  bool finished = false; // flag if round the clock was finished
+  // Opposite number pairs on dartboard
+  static const Map<int, int> oppositeNumbers = {
+    20: 3, 3: 20,
+    19: 2, 2: 19,
+    18: 7, 7: 18,
+    17: 6, 6: 17,
+    16: 8, 8: 16,
+    15: 10, 10: 15,
+    14: 9, 9: 14,
+    13: 11, 11: 13,
+    12: 5, 5: 12,
+    1: 4, 4: 1,
+  };
+
+  // Target types
+  static const List<String> targetTypes = ['D', 'BS', 'T', 'SS', 'SB', 'DB', 'SB', 'SS', 'T', 'BS', 'D'];
+
+  int startNumber = 1; // randomly selected start number
+  int oppositeNumber = 1; // opposite of start number
+  List<String> targetSequence = []; // complete sequence of targets
+  List<bool> targetsHit = []; // which targets have been hit
+  int currentTargetIndex = 0; // current target to hit
+  int round = 1;
+  int dart = 0;
+  bool finished = false;
 
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService =
-        StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
-    max = item.params['max'];
 
-    throws = <int>[];
-    currentNumber = 1;
+    // Generate random start number and create target sequence
+    _initializeGame();
+    notifyListeners();
+  }
+
+  List<int> roundHits = []; // track hits per round for proper undo
+
+  void _initializeGame() {
+    // Select random start number (1-20)
+    startNumber = Random().nextInt(20) + 1;
+    oppositeNumber = oppositeNumbers[startNumber]!;
+    
+    // Create target sequence
+    targetSequence = [
+      'D$startNumber',
+      'BS$startNumber', 
+      'T$startNumber',
+      'SS$startNumber',
+      'SB',
+      'DB', 
+      'SB',
+      'SS$oppositeNumber',
+      'T$oppositeNumber',
+      'BS$oppositeNumber',
+      'D$oppositeNumber'
+    ];
+    
+    // Initialize hit tracking
+    targetsHit = List.filled(11, false);
+    roundHits = [];
+    currentTargetIndex = 0;
     round = 1;
     dart = 0;
     finished = false;
@@ -61,72 +109,73 @@ class ControllerAcrossBoard extends ControllerBase
 
   @override
   void pressNumpadButton(int value) {
-    // undo button pressed
-    if (value == -2) {
-      if (throws.isNotEmpty) {
+    if (finished) return;
+
+    if (value == -2) { // Undo
+      if (roundHits.isNotEmpty) {
+        // Get the last round's hits
+        int lastRoundHits = roundHits.removeLast();
+        
+        // Revert the targets hit in that round
+        for (int i = 0; i < lastRoundHits; i++) {
+          if (currentTargetIndex > 0) {
+            currentTargetIndex--;
+            targetsHit[currentTargetIndex] = false;
+          }
+        }
+        
+        // Revert round and dart counters
         round--;
         dart -= 3;
-        int lastThrow = throws.removeLast();
-        currentNumber -= lastThrow;
       }
-      // all other buttons pressed
-    } else {
-      // ignore numbers greater left checks
-      if (currentNumber + value <= 21) {
-        // return button pressed
-        if (value == -1) {
-          value = 0;
+      notifyListeners();
+      return;
+    }
+
+    if (value == -1) { // Enter (0 hits)
+      value = 0;
+    }
+
+    if (value >= 0 && value <= 3) {
+      // Calculate remaining targets
+      int remainingTargets = 11 - currentTargetIndex;
+      
+      // Limit hits to remaining targets
+      int actualHits = value > remainingTargets ? remainingTargets : value;
+      
+      // Store this round's hits for undo functionality
+      roundHits.add(actualHits);
+      
+      // Mark targets as hit
+      for (int i = 0; i < actualHits; i++) {
+        if (currentTargetIndex < 11) {
+          targetsHit[currentTargetIndex] = true;
+          currentTargetIndex++;
         }
-
-        // Advance by the input value (number of targets hit)
-        int advancement = value;
-
-        // Check if this input will complete the game or hit round limit
-        bool willCompleteGame = (currentNumber + advancement > 20);
-        bool willHitRoundLimit = (max != -1 && round == max);
-
-        if (willCompleteGame || willHitRoundLimit) {
-          // Update game state first
-          dart += 3;
-          throws.add(advancement);
-          currentNumber += advancement;
-          finished = currentNumber > 20 ? true : false;
-
-          notifyListeners();
-
-          // Handle challenge mode differently
-          if (isChallengeMode) {
-            // Challenge mode: skip checkout dialog, count 2 darts for last round
-            dart -= 1; // Correct from 3 to 2 darts
-            triggerGameEnd();
-          } else {
-            // Normal mode: show checkout dialog with correct options
-            // Calculate how many targets were actually hit in this final input
-            int targetsHit = advancement;
-            
-            // Show checkout dialog - pass the number of targets hit as remaining parameter
-            // This ensures the checkout dialog shows the correct dart options
-            onShowCheckout?.call(targetsHit, 0);
-          }
+      }
+      
+      dart += 3;
+      round++;
+      
+      // Check if game is finished
+      if (currentTargetIndex >= 11) {
+        finished = true;
+        notifyListeners();
+        
+        if (isChallengeMode) {
+          dart -= 1; // Correct for last round
+          triggerGameEnd();
         } else {
-          // Normal round - just update state
-          dart += 3;
-          throws.add(advancement);
-          currentNumber += advancement;
-          round++;
-
-          notifyListeners();
+          // Show checkout dialog for last round darts
+          onShowCheckout?.call(actualHits, 0);
         }
+      } else {
+        notifyListeners();
       }
     }
-    notifyListeners();
   }
 
-  // Checkout and summary dialogs are now handled by the view via callbacks
-
-  /// Handle checkout dialog being closed - trigger game end
   void handleCheckoutClosed() {
-    // Use post frame callback to ensure dialog is fully closed before showing summary
     WidgetsBinding.instance.addPostFrameCallback((_) {
       triggerGameEnd();
     });
@@ -135,23 +184,16 @@ class ControllerAcrossBoard extends ControllerBase
   @override
   void showSummaryDialog(BuildContext context) {
     if (isChallengeMode) {
-      // In Challenge mode, don't show the default summary dialog
-      // The Challenge controller will handle advancement
       return;
     }
-    // Normal mode - show the default summary dialog
     super.showSummaryDialog(context);
   }
 
   @override
   List<SummaryLine> createSummaryLines() {
-    String checkSymbol = finished ? "✅" : "❌";
     return [
-      SummaryLine('Across Board geschafft', '', checkSymbol: checkSymbol),
       SummaryService.createValueLine('Anzahl Darts', dart),
-      SummaryService.createValueLine(
-          'Darts/Checkout', getCurrentStats()['avgChecks'],
-          emphasized: true),
+      SummaryService.createValueLine('Darts/Target', _getAvgDartsPerTarget().toStringAsFixed(1), emphasized: true),
     ];
   }
 
@@ -161,91 +203,79 @@ class ControllerAcrossBoard extends ControllerBase
   @override
   void updateSpecificStats() {
     if (isChallengeMode) {
-      // Report score to parent controller if callback is set
-      // In Challenge mode, always call the callback when game ends (finished or not)
       if (onGameCompleted != null) {
-        int hits = currentNumber > 20 ? 20 : currentNumber - 1;
-        onGameCompleted!(hits);
+        int score = finished ? 11 : currentTargetIndex;
+        onGameCompleted!(score);
       }
       return;
     }
 
-    double avgChecks = double.parse(getCurrentStats()['avgChecks']);
+    double avgDartsPerTarget = _getAvgDartsPerTarget();
 
-    // Update finish count if game was completed
     if (finished) {
-      int numberFinishes =
-          statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+      int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
       statsService.updateStats({'numberFinishes': numberFinishes + 1});
-    }
-
-    // Update records (lower dart count is better for finished games)
-    if (finished) {
-      int recordDarts =
-          statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+      
+      int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
       if (recordDarts == 0 || dart < recordDarts) {
         statsService.updateStats({'recordDarts': dart});
       }
     }
 
-    // Update long-term average
-    statsService.updateLongTermAverage('longtermChecks', avgChecks);
+    statsService.updateLongTermAverage('longtermChecks', avgDartsPerTarget);
   }
 
-  int getCurrentNumber() {
-    return currentNumber;
-  }
-
-  double _getAvgChecks() {
-    return currentNumber == 1 ? 0 : (dart / (currentNumber - 1));
+  double _getAvgDartsPerTarget() {
+    return currentTargetIndex == 0 ? 0 : (dart / currentTargetIndex);
   }
 
   @override
   String getInput() {
-    // not used here
     return "";
   }
 
   @override
   void correctDarts(int value) {
     dart -= value;
-
     notifyListeners();
   }
 
   @override
   bool isButtonDisabled(int value) {
-    // Disable buttons that would make currentNumber + value > 21
-    // This happens when there are only 1 or 2 targets remaining
+    if (finished) return true;
+    
     if (value > 0) {
-      // Don't disable return button (-1) or undo button (-2)
-      return currentNumber + value > 21;
+      int remainingTargets = 11 - currentTargetIndex;
+      return value > remainingTargets;
     }
-    return false; // Return button and undo button are never disabled
+    return false;
   }
 
   Map getCurrentStats() {
     return {
       'throw': round,
       'darts': dart,
-      'avgChecks': _getAvgChecks().toStringAsFixed(1),
+      'avgChecks': _getAvgDartsPerTarget().toStringAsFixed(1),
     };
   }
 
   String getStats() {
-    int numberGames =
-        statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int numberFinishes =
-        statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
-    int recordDarts =
-        statsService.getStat<int>('recordDarts', defaultValue: 0)!;
-    double longtermChecks =
-        statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
+    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks = statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
 
     if (isChallengeMode) {
       return challengeStepInfo ?? "Challenge Mode";
     } else {
-      return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØC: ${longtermChecks.toStringAsFixed(1)}';
+      return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
     }
   }
+
+  // Getters for the view
+  List<String> getTargetSequence() => targetSequence;
+  List<bool> getTargetsHit() => targetsHit;
+  int getCurrentTargetIndex() => currentTargetIndex;
+  int getStartNumber() => startNumber;
+  int getOppositeNumber() => oppositeNumber;
 }
