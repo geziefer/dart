@@ -325,7 +325,7 @@ Tests use Flutter's `WidgetTester` to:
 ## Test Coverage Summary
 
 The widget tests provide comprehensive coverage of:
-- Game logic validation for all dart games (223 total tests)
+- Game logic validation for all dart games
 - Input validation and error handling
 - Undo functionality across all games
 - Statistics calculation and persistence
