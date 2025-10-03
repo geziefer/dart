@@ -30,10 +30,6 @@ class ControllerAcrossBoard extends ControllerBase
   MenuItem? item;
   int max = -1; // not used in this game
 
-  bool isChallengeMode = false;
-  Function(int)? onGameCompleted;
-  String? challengeStepInfo;
-
   // Opposite number pairs on dartboard
   static const Map<int, int> oppositeNumbers = {
     20: 3, 3: 20,
@@ -162,13 +158,8 @@ class ControllerAcrossBoard extends ControllerBase
         finished = true;
         notifyListeners();
         
-        if (isChallengeMode) {
-          dart -= 1; // Correct for last round
-          triggerGameEnd();
-        } else {
-          // Show checkout dialog for last round darts
-          onShowCheckout?.call(actualHits, 0);
-        }
+        // Show checkout dialog for last round darts
+        onShowCheckout?.call(actualHits, 0);
       } else {
         notifyListeners();
       }
@@ -179,14 +170,6 @@ class ControllerAcrossBoard extends ControllerBase
     WidgetsBinding.instance.addPostFrameCallback((_) {
       triggerGameEnd();
     });
-  }
-
-  @override
-  void showSummaryDialog(BuildContext context) {
-    if (isChallengeMode) {
-      return;
-    }
-    super.showSummaryDialog(context);
   }
 
   @override
@@ -202,14 +185,6 @@ class ControllerAcrossBoard extends ControllerBase
 
   @override
   void updateSpecificStats() {
-    if (isChallengeMode) {
-      if (onGameCompleted != null) {
-        int score = finished ? 11 : currentTargetIndex;
-        onGameCompleted!(score);
-      }
-      return;
-    }
-
     double avgDartsPerTarget = _getAvgDartsPerTarget();
 
     if (finished) {
@@ -265,11 +240,7 @@ class ControllerAcrossBoard extends ControllerBase
     int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
     double longtermChecks = statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
 
-    if (isChallengeMode) {
-      return challengeStepInfo ?? "Challenge Mode";
-    } else {
-      return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
-    }
+    return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
   }
 
   // Getters for the view
