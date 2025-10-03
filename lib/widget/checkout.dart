@@ -104,7 +104,8 @@ class Checkout extends StatelessWidget {
     final isPhone = ResponsiveUtils.isPhoneSize(context);
     final dialogWidth = isPhone ? 300.0 : 550.0; // Much smaller width on phones
     final dialogHeight =
-        isPhone ? 200.0 : 250.0; // Slightly smaller height on phones
+        isPhone ? 150.0 : 250.0; // Much smaller height on phones
+    final buttonMargin = isPhone ? 5.0 : 10.0; // Smaller margins on phones
 
     return SizedBox(
       height: dialogHeight,
@@ -128,7 +129,7 @@ class Checkout extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      margin: const EdgeInsets.all(10),
+                      margin: EdgeInsets.all(buttonMargin),
                       child: TextButton(
                         onPressed: () {
                           // correct previously counted 3 darts to 1
@@ -151,7 +152,7 @@ class Checkout extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      margin: const EdgeInsets.all(10),
+                      margin: EdgeInsets.all(buttonMargin),
                       child: TextButton(
                         onPressed: () {
                           // correct previously counted 3 darts to 2
@@ -172,7 +173,7 @@ class Checkout extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    margin: const EdgeInsets.all(10),
+                    margin: EdgeInsets.all(buttonMargin),
                     child: TextButton(
                       onPressed: () {
                         // nothing to correct, but call for update

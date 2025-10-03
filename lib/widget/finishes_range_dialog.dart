@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 
 class FinishesRangeDialog extends StatefulWidget {
   const FinishesRangeDialog({super.key});
@@ -20,18 +21,22 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = ResponsiveUtils.isPhoneSize(context);
+    final itemMargin = isPhone ? 5.0 : 10.0;
+    final containerPadding = isPhone ? 10.0 : 20.0;
+    
     return Dialog(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(2)),
       ),
       child: IntrinsicWidth(
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(containerPadding),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
             Container(
-              margin: const EdgeInsets.all(10),
+              margin: EdgeInsets.all(itemMargin),
               child: Text(
                 'Finishes Bereich wählen',
                 style: endSummaryHeaderTextStyle(context),
@@ -42,7 +47,7 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
               int index = entry.key;
               Map<String, int> range = entry.value;
               return Container(
-                margin: const EdgeInsets.all(10),
+                margin: EdgeInsets.all(itemMargin),
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
@@ -96,7 +101,7 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
               );
             }),
             Container(
-              margin: const EdgeInsets.all(10),
+              margin: EdgeInsets.all(itemMargin),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

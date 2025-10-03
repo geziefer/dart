@@ -1,4 +1,5 @@
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class CricketBoard extends StatelessWidget {
@@ -12,6 +13,9 @@ class CricketBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final numbers = [15, 16, 17, 18, 19, 20, 25];
+    final isPhone = ResponsiveUtils.isPhoneSize(context);
+    final verticalPadding = isPhone ? 0.2 : 2.0;
+    final circleSize = isPhone ? 35.0 : 60.0;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -19,7 +23,7 @@ class CricketBoard extends StatelessWidget {
         String numberStr = number == 25 ? 'B' : number.toString();
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          padding: EdgeInsets.symmetric(vertical: verticalPadding),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -36,8 +40,8 @@ class CricketBoard extends StatelessWidget {
                 children: List.generate(
                   3,
                   (i) => Container(
-                    width: 60,
-                    height: 60,
+                    width: circleSize,
+                    height: circleSize,
                     alignment: Alignment.center,
                     child: Text(
                       i < hits[number]! ? '●' : '◯',

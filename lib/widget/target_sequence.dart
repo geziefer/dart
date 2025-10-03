@@ -1,4 +1,5 @@
 import 'package:dart/styles.dart';
+import 'package:dart/utils/responsive.dart';
 import 'package:flutter/material.dart';
 
 class TargetSequence extends StatelessWidget {
@@ -15,14 +16,19 @@ class TargetSequence extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = ResponsiveUtils.isPhoneSize(context);
+    final spacing = isPhone ? 1.0 : 8.0;
+    final aspectRatio = isPhone ? 3.0 : 2.0;
+    final containerMargin = isPhone ? 2.0 : 8.0;
+    
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: EdgeInsets.all(containerMargin),
       child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          childAspectRatio: 2.0,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
+          childAspectRatio: aspectRatio,
+          crossAxisSpacing: spacing,
+          mainAxisSpacing: spacing,
         ),
         itemCount: targets.length,
         itemBuilder: (context, index) {

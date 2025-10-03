@@ -167,6 +167,10 @@ class _ViewFinishesState extends State<ViewFinishes> {
                             // Ensure minimum and maximum bounds based on device type
                             radius = radius.clamp(minRadius, maxRadius);
 
+                            // Responsive undo button size
+                            final undoButtonSize = isPhone ? 40.0 : 80.0;
+                            final undoIconSize = isPhone ? 18.0 : 36.0;
+
                             return Stack(
                               children: [
                                 // Undo button at very left and bottom corner of the area
@@ -174,8 +178,8 @@ class _ViewFinishesState extends State<ViewFinishes> {
                                   left: 15,
                                   bottom: 15,
                                   child: Container(
-                                    width: 80,
-                                    height: 80,
+                                    width: undoButtonSize,
+                                    height: undoButtonSize,
                                     decoration: BoxDecoration(
                                       color: Colors.grey[800],
                                       shape: BoxShape.circle,
@@ -191,7 +195,7 @@ class _ViewFinishesState extends State<ViewFinishes> {
                                         color: controller.canUndo()
                                             ? Colors.white
                                             : Colors.grey[600],
-                                        size: 36,
+                                        size: undoIconSize,
                                       ),
                                     ),
                                   ),

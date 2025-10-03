@@ -249,7 +249,7 @@ class Menu extends StatelessWidget {
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset('assets/images/dartquiz.jpg', height: 100, fit: BoxFit.fitHeight),
+                      child: Image.asset('assets/images/dartquiz.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 50 : 100, fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),
@@ -262,7 +262,7 @@ class Menu extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => const ViewStats()),
                         );
                       },
-                      child: Image.asset('assets/images/logo.png', width: 500, fit: BoxFit.fitWidth),
+                      child: Image.asset('assets/images/logo.png', width: ResponsiveUtils.isPhoneSize(context) ? 250 : 500, fit: BoxFit.fitWidth),
                     ),
                   ),
                 ),
@@ -285,7 +285,7 @@ class Menu extends StatelessWidget {
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset('assets/images/bdv.jpg', height: 100, fit: BoxFit.fitHeight),
+                      child: Image.asset('assets/images/bdv.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 50 : 100, fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),
