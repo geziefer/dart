@@ -307,10 +307,25 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Menu widget functionality, navigation logic, controller management, and game categorization. Tests verify the consolidated FinishQuest game structure (single game with ID 'FQ' instead of multiple range-specific games), "Frei" placeholder games pointing to 501x5 checkout, and proper MenuItem validation for all 20 games in the 4x5 grid layout.
 
+### 17. Across Board Game Widget Tests
+**Test Class**: `acrossboard_widget_test.dart`
+
+**Test Cases**:
+- Across Board game initialization
+- Across Board target progression
+- Across Board undo functionality
+- Across Board input validation
+- Across Board game completion
+- Across Board summary creation
+- Across Board statistics calculation
+- Across Board opposite number mapping
+
+**What is tested**: Random start number generation (1-20), target sequence creation with 11 targets (D→BS→T→SS→SB→DB→SB→SS→T→BS→D), opposite number mapping validation using dartboard layout pairs, target progression and hit tracking, undo functionality including zero-hit rounds, input validation with smart button disabling, game completion detection, checkout dialog integration, and comprehensive statistics calculation testing (darts per target average in various scenarios including initial state, progressive hits, and zero-hit rounds).
+
 ## Test Coverage Summary
 
 The widget tests provide comprehensive coverage of:
-- Game logic validation for all dart games (215 total tests)
+- Game logic validation for all dart games (223 total tests)
 - Input validation and error handling
 - Undo functionality across all games
 - Statistics calculation and persistence
