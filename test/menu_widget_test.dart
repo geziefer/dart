@@ -305,13 +305,13 @@ void main() {
       }
 
       final finishQuestGames = Menu.games
-          .where((game) => game.id == 'FQ')
+          .where((game) => game.id == 'CREDITFINISH')
           .toList();
       expect(finishQuestGames.length, greaterThan(0));
 
       for (final game in finishQuestGames) {
-        expect(game.id, equals('FQ'));
-        expect(game.name, equals('FinishQuest'));
+        expect(game.id, equals('CREDITFINISH'));
+        expect(game.name, equals('Credit\nFinish'));
       }
     });
 
@@ -453,7 +453,7 @@ void main() {
       for (final game in Menu.games) {
         if (game.params.containsKey('xxx')) {
           xxxCheckoutGames.add(game);
-        } else if (game.id == 'FQ') {
+        } else if (game.id == 'CREDITFINISH') {
           finishQuestGames.add(game);
         } else if (game.id.startsWith('RTC')) {
           rtcGames.add(game);
@@ -476,10 +476,10 @@ void main() {
         expect(game.params['end'], greaterThan(0));
       }
 
-      // Test FinishQuest games have valid ranges
+      // Test Credit Finish games have valid properties
       for (final game in finishQuestGames) {
-        expect(game.id, equals('FQ'));
-        expect(game.name, equals('FinishQuest'));
+        expect(game.id, equals('CREDITFINISH'));
+        expect(game.name, equals('Credit\nFinish'));
       }
     });
 
@@ -498,12 +498,12 @@ void main() {
 
       expect(game170.params['xxx'], lessThan(game501.params['xxx']));
 
-      // Test FinishQuest game exists
+      // Test Credit Finish game exists
       final finishGames = Menu.games
-          .where((game) => game.id == 'FQ')
+          .where((game) => game.id == 'CREDITFINISH')
           .toList();
       expect(finishGames.length, equals(1));
-      expect(finishGames.first.name, equals('FinishQuest'));
+      expect(finishGames.first.name, equals('Credit\nFinish'));
     });
 
     /// Tests Menu widget parameter validation business logic
