@@ -336,6 +336,61 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Random start number generation (1-20), target sequence creation with 11 targets (D→BS→T→SS→SB→DB→SB→SS→T→BS→D), opposite number mapping validation using dartboard layout pairs, target progression and hit tracking, undo functionality including zero-hit rounds, input validation with smart button disabling, game completion detection, checkout dialog integration, and comprehensive statistics calculation testing (darts per target average in various scenarios including initial state, progressive hits, and zero-hit rounds).
 
+### 19. FullCircle Widget Tests
+**Test Class**: `fullcircle_widget_test.dart`
+
+**Test Cases**:
+- FullCircle widget constructor and properties
+- FullCircle widget build method execution
+- FullCircle arc section calculations
+- FullCircle dartboard interaction logic
+
+**What is tested**: Widget constructor validation, arc section configuration for dartboard rings (outer single, triple, inner single, double), radius calculations, controller integration for dartboard field interactions, and proper rendering of circular dartboard sections.
+
+### 20. Challenge Widget Tests
+**Test Class**: `challenge_widget_test.dart`
+
+**Test Cases**:
+- Challenge controller initialization
+- Challenge badge calculation logic
+- Challenge state reset functionality
+- Challenge stage advancement
+- Challenge summary creation
+
+**What is tested**: Multi-stage challenge workflow, badge calculation based on performance thresholds (bronze, silver, gold, gold+), stage progression through 5 different dart games, result tracking and final summary generation with badge display.
+
+## Service and Utility Tests
+
+### Summary Service Tests
+**Test Class**: `summary_service_test.dart`
+
+**Test Cases**:
+- Summary line creation and formatting
+- Statistics calculation utilities
+- Data aggregation methods
+
+**What is tested**: Service layer functionality for creating game summary displays, statistical calculations, and data formatting utilities used across multiple games.
+
+### Stats Formatter Tests
+**Test Class**: `stats_formatter_test.dart`
+
+**Test Cases**:
+- Number formatting methods
+- Percentage calculations
+- Display string generation
+
+**What is tested**: Utility functions for formatting statistics displays, percentage calculations, and consistent number formatting across the application.
+
+### Controller Stats Tests
+**Test Class**: `controller_stats_test.dart`
+
+**Test Cases**:
+- Statistics controller functionality
+- Data persistence and retrieval
+- Cross-game statistics tracking
+
+**What is tested**: Central statistics management, data persistence operations, and aggregated statistics tracking across different game types.
+
 ## Test Coverage Summary
 
 The widget tests provide comprehensive coverage of:
