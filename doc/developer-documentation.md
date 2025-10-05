@@ -14,21 +14,25 @@ The DART Training App is a Flutter-based mobile application designed for dart tr
 
 ```
 lib/
-├── controller/          # Game logic controllers (16 files)
-├── view/               # UI screens for each game (15 files)
-├── widget/             # Reusable UI components (9 files)
+├── controller/          # Game logic controllers (20 files)
+├── view/               # UI screens for each game (19 files)
+├── widget/             # Reusable UI components (13 files)
 ├── interfaces/         # Abstract interfaces and contracts (3 files)
 ├── services/           # Business logic services (3 files)
-├── utils/              # Utility functions (2 files)
+├── utils/              # Utility functions (4 files)
 │   ├── responsive.dart # Responsive design utilities
-│   └── [other utils]
+│   ├── stats_formatter.dart # Statistics formatting utilities
+│   ├── web_helper_stub.dart # Web platform stub
+│   └── web_helper_web.dart # Web platform implementation
 ├── main.dart          # Application entry point
 └── styles.dart        # Global styling definitions
 
 test/
-├── *_widget_test.dart  # Widget tests for each game (includes Challenge)
+├── *_widget_test.dart  # Widget tests for each game (26 test files)
 ├── *.mocks.dart       # Generated mock files
-└── comprehensive test coverage across all games
+├── service tests      # Unit tests for services
+├── utility tests      # Tests for utility functions
+└── comprehensive test coverage across all games and components
 ```
 
 ### Core Components
@@ -46,10 +50,13 @@ test/
 
 **Controller Files:**
 - `controller_base.dart` - Abstract base class with common functionality
+- `controller_acrossboard.dart` - Across the Board game
 - `controller_bigts.dart` - Big Ts triple hitting practice
 - `controller_bobs27.dart` - Bob's 27 double round the clock
 - `controller_catchxx.dart` - Catch 40 finishing practice
+- `controller_challenge.dart` - Challenge mode with multi-stage progression
 - `controller_check121.dart` - Check 121 specific scenario
+- `controller_creditfinish.dart` - Credit Finish game
 - `controller_cricket.dart` - Cricket game with target completion tracking
 - `controller_doublepath.dart` - Double finishing sequences
 - `controller_finishes.dart` - Finish knowledge training with range selection dialog
@@ -58,6 +65,7 @@ test/
 - `controller_rtcx.dart` - Round the Clock variants
 - `controller_shootx.dart` - Scoring practice games
 - `controller_speedbull.dart` - Timed bull hitting
+- `controller_stats.dart` - Statistics overview controller
 - `controller_twodarts.dart` - Two-dart finishing
 - `controller_updown.dart` - 10 Up 1 Down progression
 - `controller_xxxcheckout.dart` - Checkout practice games
@@ -69,10 +77,13 @@ test/
 - **Initialization**: Route-based controller initialization with test compatibility
 
 **View Files:**
+- `view_acrossboard.dart` - Across the Board UI
 - `view_bigts.dart` - Big Ts UI
 - `view_bobs27.dart` - Bob's 27 UI
 - `view_catchxx.dart` - Catch XX UI
+- `view_challenge.dart` - Challenge mode UI
 - `view_check121.dart` - Check 121 UI
+- `view_creditfinish.dart` - Credit Finish UI
 - `view_cricket.dart` - Cricket UI
 - `view_doublepath.dart` - Double Path UI
 - `view_finishes.dart` - Finishes UI
@@ -81,6 +92,7 @@ test/
 - `view_rtcx.dart` - Round the Clock UI
 - `view_shootx.dart` - Shoot X UI
 - `view_speedbull.dart` - Speed Bull UI
+- `view_stats.dart` - Statistics overview UI
 - `view_twodarts.dart` - Two Darts UI
 - `view_updown.dart` - Up Down UI
 - `view_xxxcheckout.dart` - XXX Checkout UI
@@ -106,6 +118,9 @@ test/
   - `FullCircle` - Dartboard visualization
   - `ArcSection` - Dartboard segment component
   - `CheckNumber` - Number validation widget
+  - `CricketBoard` - Cricket game board display
+  - `TargetSequence` - Target sequence display widget
+  - `VersionInfo` - Application version information
 
 #### Interfaces (`/interfaces`)
 - **Purpose**: Define contracts for controllers and components
@@ -117,7 +132,10 @@ test/
 #### Utils (`/utils`)
 - **Purpose**: Utility functions and helpers
 - **Components**:
+  - `ResponsiveUtils` - Responsive design scaling calculations
   - `StatsFormatter` - Statistics formatting utilities
+  - `WebHelperStub` - Web platform abstraction stub
+  - `WebHelperWeb` - Web platform specific implementations
 
 ## Architectural Patterns
 
@@ -195,11 +213,13 @@ Services Setup → Game Ready
 
 ## Game Types and Categories
 
-### Training Games (20 Total Games)
+### Training Games (22 Total Games)
 - **Checkout Games**: 170x10 (max 3), 501x5, 501x5 (max 7) - Practice finishing combinations
-- **Accuracy Games**: Round the Clock Single/Double/Triple - Precision training
-- **Finish Training**: FinishQuest (with range selection dialog) - Learn finishing routes for ranges 61-80, 81-107, 108-135, 136-170
+- **Accuracy Games**: Round the Clock Single/Double/Triple, Across the Board - Precision training
+- **Finish Training**: FinishQuest (with range selection dialog), Credit Finish - Learn finishing routes and credit systems
 - **Specialty Games**: Kill Bull, Speed Bull, Big Ts (triple hitting practice) - Specific skill focus
+- **Challenge Mode**: Multi-stage progression system with badge rewards
+- **Statistics Overview**: Comprehensive performance tracking and analysis
 
 ### Skill Development Games
 - **Double Path**: Practice common double finishing sequences
@@ -213,6 +233,8 @@ Services Setup → Game Ready
 - **Catch 40**: Finishing from various scores (61-100)
 - **99 x 20**: Scoring practice on 20 segment
 - **Big Ts**: Triple hitting assessment and practice
+- **Across the Board**: Sequential target hitting
+- **Credit Finish**: Credit-based finishing system
 
 ## Technical Implementation Details
 
@@ -404,6 +426,9 @@ Some games implement a two-dialog workflow where an intermediate dialog is shown
 - **Button States**: Dynamic button enabling/disabling (e.g., Bull mode restrictions)
 - **Statistics**: Game statistics calculation and persistence
 - **Navigation**: Menu navigation and controller initialization
+- **Game Coverage**: Tests for all 22 games including Across the Board and Credit Finish
+- **Component Tests**: Individual widget and utility function tests
+- **Service Tests**: Unit tests for all service layer components
 
 ### Test Architecture
 - **Mock Generation**: Automated with build_runner and Mockito
