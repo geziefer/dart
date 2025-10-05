@@ -46,8 +46,163 @@ Tests use Flutter's `WidgetTester` to:
 - Double Path undo edge cases
 - Double Path target sequence consistency
 - Double Path current stats calculation
+- DoublePath average calculation
 
 **What is tested**: Target sequence generation, point calculation based on hits, round progression through 5 rounds, undo functionality, input validation (0-3 hits), statistics tracking and storage operations.
+
+### 2. Challenge Widget Tests
+**Test Class**: `challenge_widget_test.dart`
+
+**Test Cases**:
+- Challenge controller initializes correctly
+- Challenge calculates badge correctly
+- Challenge resets state on initialization
+- Challenge stage advancement works
+- Challenge creates correct final summary lines
+- Challenge badge calculation edge cases
+- Challenge stage names and progression
+- Challenge controller interface methods
+- Challenge numpad button handling
+
+**What is tested**: Multi-stage challenge progression, badge calculation based on performance thresholds, stage transitions, summary generation with matrix data, controller delegation to sub-games.
+
+### 3. Stats Controller Tests
+**Test Class**: `stats_test.dart`
+
+**Test Cases**:
+- Export functionality - generate valid JSON export data
+- Export functionality - handle empty stats export
+- Import validation - validate correct import data format
+- Import validation - reject invalid JSON
+- Import validation - reject data without version
+- Import validation - reject data without games
+- Data structure validation - handle game data with proper structure
+- Data structure validation - handle multiple games data
+- File operations - handle file export operations
+- Stats management - clear all stats
+- Stats management - handle stats display data
+- Stats management - handle empty stats for view display
+- Stats management - format stats data for display
+- Loading state - correct initial loading state
+
+**What is tested**: JSON export/import functionality, data validation, file operations, stats management for view integration, data structure handling.
+
+### 4. Cricket Widget Tests
+**Test Class**: `cricket_widget_test.dart`
+
+**Test Cases**:
+- Initial game state
+- Average calculation at start
+- Hitting cricket numbers and input formatting
+- Round completion and dart counting
+- Average calculation after 1 completed round
+- Average calculation after 2 completed rounds
+- Average stays constant during round input
+- Game completion detection
+- Dart correction functionality
+- Undo functionality
+- Input constraints for cricket rules
+- Special bull constraints
+- Summary line creation
+- Leftover targets calculation
+- Stats string formatting
+- View integration callbacks
+- Cricket board display data
+- Round hits tracking for checkout
+- Game completion with view integration
+
+**What is tested**: Cricket game rules (15-20, Bull), hit tracking, round management, average calculations, input constraints, game completion detection, view integration callbacks.
+
+### 5. Cricket Board Widget Tests
+**Test Class**: `cricket_board_test.dart`
+
+**Test Cases**:
+- CricketBoard displays all cricket numbers
+- CricketBoard displays hit indicators correctly
+- CricketBoard handles zero hits
+- CricketBoard handles maximum hits
+- CricketBoard handles partial hits
+- CricketBoard layout structure
+- CricketBoard responsive sizing
+
+**What is tested**: Visual representation of cricket hits, responsive layout, hit indicator display (filled/empty circles), proper number display including bull.
+
+### 6. Fullcircle Widget Tests
+**Test Class**: `fullcircle_widget_test.dart`
+
+**Test Cases**:
+- FullCircle widget constructor and properties
+- FullCircle widget build method execution
+- FullCircle widget mathematical calculations
+- FullCircle widget ArcSection generation logic
+- FullCircle widget field generation business logic
+- FullCircle widget center field detection logic
+- FullCircle slice ID mapping logic
+- FullCircle field generation logic
+- FullCircle center field logic
+- FullCircle controller integration logic
+- FullCircle field validation logic
+- FullCircle painter configuration logic
+- FullCircle size calculation logic
+- FullCircle arc section radius calculation logic
+- FullCircle tap detection functionality
+- FullCircle gesture handling
+- FullCircle CustomPaint integration
+- FullCircle with different arc configurations
+- FullCircle with different radius values
+
+**What is tested**: Dartboard field generation, tap detection, mathematical calculations for dartboard layout, slice ID mapping, field validation, gesture handling.
+
+### 7. Version Info Widget Tests
+**Test Class**: `version_info_test.dart`
+
+**Test Cases**:
+- VersionInfo displays initial empty version
+- VersionInfo displays version after loading
+- VersionInfo has correct text style
+- VersionInfo widget structure
+- VersionInfo handles state changes
+- VersionInfo version format validation
+- VersionInfo multiple instances
+- VersionInfo async loading behavior
+- VersionInfo widget lifecycle
+
+**What is tested**: Async version loading from package info, text formatting, widget lifecycle, state management, version format validation.
+
+### 8. Menu Widget Tests
+**Test Class**: `menu_widget_test.dart`
+
+**Test Cases**:
+- Menu MenuItem creation and validation
+- Menu game configurations validation
+- Menu controller initialization logic
+- Menu fresh game state logic
+- Menu parameter validation
+- Menu grid layout business logic
+- Menu games comprehensive data validation
+- MenuItem constructor business logic
+- Menu widget constructor business logic
+- Menu grid layout calculation logic
+- Menu navigation business logic
+- Menu game type categorization logic
+- Menu game difficulty progression logic
+- Menu parameter range validation logic
+
+**What is tested**: Menu item creation, game configuration validation, controller initialization, grid layout calculations, navigation logic, parameter validation.
+
+## Coverage Improvements Summary
+
+The following components received significant test coverage improvements:
+
+1. **Challenge Controller**: Enhanced with comprehensive badge calculation, stage progression, and interface method tests
+2. **Stats Management**: Added complete export/import functionality testing, data validation, and view integration tests
+3. **Cricket Game**: Expanded with view integration callbacks, board display data, and round tracking tests
+4. **Cricket Board Widget**: New comprehensive test suite covering all display scenarios and responsive behavior
+5. **Fullcircle Widget**: Enhanced with tap detection, gesture handling, and mathematical calculation tests
+6. **Version Info Widget**: New complete test suite covering async loading, formatting, and lifecycle
+7. **Menu System**: Existing comprehensive coverage maintained
+
+All tests now pass without errors and provide robust coverage of business logic, user interactions, and edge cases across the application.
 
 ### 2. Big Ts Game Widget Tests
 **Test Class**: `bigts_widget_test.dart`

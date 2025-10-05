@@ -111,5 +111,50 @@ void main() {
       // Badge should be calculated based on the results
       expect(summaryLines[1].value, isNotEmpty);
     });
+
+    testWidgets('Challenge badge calculation edge cases', (WidgetTester tester) async {
+      final controller = ControllerChallenge();
+      
+      // Test silver badge - need to meet all requirements at index 2
+      // RTCX: 6+6=12 (≥6), Shoot20: 6 (≥6), ShootBull: 4 (≥4), Checkout: 48 (≤48)
+      controller.stageResults = [6, 6, 6, 4, 48];
+      expect(controller.calculateBadge(), equals('🥈'));
+      
+      // Test silver+ badge - higher requirements at index 3
+      // RTCX: 12+12=24 (≥12), Shoot20: 12 (≥12), ShootBull: 8 (≥8), Checkout: 39 (≤39)
+      controller.stageResults = [12, 12, 12, 8, 39];
+      expect(controller.calculateBadge(), equals('🥈+'));
+    });
+
+    testWidgets('Challenge stage names and progression', (WidgetTester tester) async {
+      final controller = ControllerChallenge();
+      
+      expect(controller.stageNames.length, equals(5));
+      expect(controller.stageNames[0], contains('RTCX'));
+      expect(controller.stageNames[4], contains('501'));
+    });
+
+    testWidgets('Challenge controller interface methods', (WidgetTester tester) async {
+      final controller = ControllerChallenge();
+      
+      expect(controller.getInput(), equals(''));
+      expect(controller.getStats(), isNotEmpty);
+      expect(controller.getCurrentStats(), isA<Map<String, String>>());
+    });
+
+    testWidgets('Challenge numpad button handling', (WidgetTester tester) async {
+      final controller = ControllerChallenge();
+      final menuItem = MenuItem(
+        id: 'challenge',
+        name: 'Challenge',
+        view: const SizedBox(),
+        getController: (_) => controller,
+        params: {},
+      );
+      controller.init(menuItem);
+      
+      // Test that numpad buttons are delegated to current controller
+      expect(controller.currentController, isNotNull);
+    });
   });
 }

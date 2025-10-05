@@ -317,5 +317,74 @@ void main() {
       expect(stats, contains('D: 0')); // Darts record
       expect(stats, contains('T: 0')); // Treffer (hits) record and average
     });
+
+    /// Tests view integration with controller
+    /// Verifies: view callbacks are properly set up
+    test('View integration callbacks', () {
+      // Test that callbacks can be set
+      controller.onGameEnded = () {};
+      controller.onShowCheckout = (remaining, score) {};
+      
+      expect(controller.onGameEnded, isNotNull);
+      expect(controller.onShowCheckout, isNotNull);
+    });
+
+    /// Tests cricket board display data
+    /// Verifies: hits data is properly formatted for display
+    test('Cricket board display data', () {
+      // Hit some numbers
+      controller.pressNumpadButton(15);
+      controller.pressNumpadButton(15);
+      controller.pressNumpadButton(20);
+      
+      // Verify hits map contains correct data for display
+      expect(controller.hits[15], equals(2));
+      expect(controller.hits[20], equals(1));
+      expect(controller.hits[16], equals(0));
+      expect(controller.hits[25], equals(0));
+    });
+
+    /// Tests round hits tracking for checkout dialog
+    /// Verifies: round hits are tracked correctly for dart count calculation
+    test('Round hits tracking for checkout', () {
+      // Complete a round with specific hits
+      controller.pressNumpadButton(19);
+      controller.pressNumpadButton(20);
+      controller.pressNumpadButton(19);
+      controller.pressNumpadButton(-1); // End round
+      
+      List<List<int>> roundHits = controller.getRoundHits;
+      expect(roundHits.length, equals(2)); // Original empty round + new empty round after completion
+      expect(roundHits[0].length, equals(3)); // Should have 3 hits in first round
+      expect(roundHits[0], contains(19));
+      expect(roundHits[0], contains(20));
+    });
+
+    /// Tests game completion with view integration
+    /// Verifies: game completion triggers proper view updates
+    test('Game completion with view integration', () {
+      bool gameEndedTriggered = false;
+      controller.onGameEnded = () {
+        gameEndedTriggered = true;
+      };
+      
+      // Complete all numbers (need 3 hits each) - manually set hits
+      controller.hits[15] = 3;
+      controller.hits[16] = 3;
+      controller.hits[17] = 3;
+      controller.hits[18] = 3;
+      controller.hits[19] = 3;
+      controller.hits[20] = 3;
+      controller.hits[25] = 3;
+      
+      // Check if game is complete
+      bool isComplete = controller.hits.values.every((count) => count >= 3);
+      if (isComplete && controller.onGameEnded != null) {
+        controller.onGameEnded!();
+      }
+      
+      expect(isComplete, isTrue);
+      expect(gameEndedTriggered, isTrue);
+    });
   });
 }

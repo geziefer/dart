@@ -446,5 +446,151 @@ void main() {
         }
       }
     });
+    /// Tests FullCircle widget tap detection functionality
+    /// Verifies: Tap coordinates are properly converted to dartboard fields
+    testWidgets('FullCircle tap detection functionality', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: FullCircle(
+                controller: mockController,
+                radius: 100.0,
+                arcSections: testArcSections,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Test tapping on the widget
+      await tester.tap(find.byType(FullCircle));
+      await tester.pump();
+
+      // Controller should have received a field press
+      expect(mockController.lastPressedField, isNotNull);
+    });
+
+    /// Tests FullCircle widget gesture handling
+    /// Verifies: GestureDetector properly handles tap events
+    testWidgets('FullCircle gesture handling', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FullCircle(
+              controller: mockController,
+              radius: 100.0,
+              arcSections: testArcSections,
+            ),
+          ),
+        ),
+      );
+
+      final gestureDetector = find.byType(GestureDetector);
+      expect(gestureDetector, findsOneWidget);
+
+      // Test multiple taps
+      await tester.tap(gestureDetector);
+      await tester.pump();
+      final firstField = mockController.lastPressedField;
+
+      await tester.tap(gestureDetector);
+      await tester.pump();
+      final secondField = mockController.lastPressedField;
+
+      expect(firstField, isNotNull);
+      expect(secondField, isNotNull);
+    });
+
+    /// Tests FullCircle widget CustomPaint integration
+    /// Verifies: CustomPaint widget is properly configured
+    testWidgets('FullCircle CustomPaint integration', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FullCircle(
+              controller: mockController,
+              radius: 150.0,
+              arcSections: testArcSections,
+            ),
+          ),
+        ),
+      );
+
+      // Should contain CustomPaint for drawing the dartboard
+      expect(find.byType(CustomPaint), findsWidgets);
+      
+      // Verify the widget structure
+      expect(find.byType(FullCircle), findsOneWidget);
+      expect(find.byType(GestureDetector), findsOneWidget);
+    });
+
+    /// Tests FullCircle widget with different arc section configurations
+    /// Verifies: Widget handles various arc section setups
+    testWidgets('FullCircle with different arc configurations', (WidgetTester tester) async {
+      // Test with minimal arc sections
+      final minimalArcSections = [
+        ArcSection(startPercent: 0.5),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FullCircle(
+              controller: mockController,
+              radius: 100.0,
+              arcSections: minimalArcSections,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(FullCircle), findsOneWidget);
+
+      // Test with many arc sections
+      final manyArcSections = List.generate(
+        6,
+        (index) => ArcSection(startPercent: (index + 1) * 0.15),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FullCircle(
+              controller: mockController,
+              radius: 100.0,
+              arcSections: manyArcSections,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(FullCircle), findsOneWidget);
+    });
+
+    /// Tests FullCircle widget with different radius values
+    /// Verifies: Widget scales properly with different sizes
+    testWidgets('FullCircle with different radius values', (WidgetTester tester) async {
+      final radiusValues = [50.0, 100.0, 150.0, 200.0];
+
+      for (final radius in radiusValues) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: FullCircle(
+                controller: mockController,
+                radius: radius,
+                arcSections: testArcSections,
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(FullCircle), findsOneWidget);
+        
+        final widget = tester.widget<FullCircle>(find.byType(FullCircle));
+        expect(widget.radius, equals(radius));
+      }
+    });
   });
 }
