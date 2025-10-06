@@ -1,6 +1,6 @@
 import 'package:dart/controller/controller_doublepath.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/header.dart';
+import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
@@ -25,136 +25,114 @@ class ViewDoublePath extends StatelessWidget {
     };
     String stats = controller.getStats();
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 17, 17, 17),
-      body: Column(
+    return GameLayout(
+      title: title,
+      mainContent: Column(
         children: [
-          // ########## Top row with logo, game title, stats and back button
-          const SizedBox(height: 20),
           Expanded(
-            flex: 10,
-            child: Header(gameName: title),
-          ),
-
-          // ########## Main part with game results and num pad
-          Expanded(
-            flex: 70,
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(color: Colors.white, thickness: 3),
                 Expanded(
+                  flex: 5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        flex: 5,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // ########## Target sequences
-                            ScoreColumn(
-                                label: 'Z',
-                                content: controller.getCurrentTargets(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
+                      // ########## Target sequences
+                      ScoreColumn(
+                          label: 'Z',
+                          content: controller.getCurrentTargets(),
+                          color:
+                              const Color.fromARGB(255, 215, 198, 132)),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
 
-                            // ########## Points per round
-                            ScoreColumn(
-                              label: 'C',
-                              content: controller.getCurrentPoints(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Total points
-                            ScoreColumn(
-                              label: 'P',
-                              content: controller.getCurrentTotalPoints(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
+                      // ########## Points per round
+                      ScoreColumn(
+                        label: 'C',
+                        content: controller.getCurrentPoints(),
+                        color: Colors.white,
                       ),
-                      const VerticalDivider(color: Colors.white, thickness: 3),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
 
-                      // ########## Right column with custom num pad
-                      Expanded(
-                        flex: 5,
-                        child: Numpad(
-                          controller: controller,
-                          showUpper: false,
-                          showMiddle: false,
-                          showLower: true, // shows 1, 2, 3
-                          showExtraButtons: false,
-                          showYesNo: false,
-                        ),
+                      // ########## Total points
+                      ScoreColumn(
+                        label: 'P',
+                        content: controller.getCurrentTotalPoints(),
+                        color: Colors.white,
                       ),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
                     ],
                   ),
                 ),
-                const Divider(color: Colors.white, thickness: 3),
-              ],
-            ),
-          ),
+                const VerticalDivider(color: Colors.white, thickness: 3),
 
-          // ########## Bottom row with stats
-          Expanded(
-            flex: 20,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "  Punkte: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      (controller.totalPoints.isNotEmpty
-                              ? controller.totalPoints.last
-                              : 0)
-                          .toString(),
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  ØPunkte: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      controller.currentRound > 0
-                          ? ((controller.totalPoints.isNotEmpty
-                                      ? controller.totalPoints.last
-                                      : 0) /
-                                  controller.currentRound)
-                              .toStringAsFixed(1)
-                          : '0.0',
-                      style: statsNumberTextStyle(context),
-                    ),
-                  ],
+                // ########## Right column with custom num pad
+                Expanded(
+                  flex: 5,
+                  child: Numpad(
+                    controller: controller,
+                    showUpper: false,
+                    showMiddle: false,
+                    showLower: true, // shows 1, 2, 3
+                    showExtraButtons: false,
+                    showYesNo: false,
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      stats,
-                      style: statsSummaryTextStyle(context),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
+        ],
+      ),
+      statsContent: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "  Punkte: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                (controller.totalPoints.isNotEmpty
+                        ? controller.totalPoints.last
+                        : 0)
+                    .toString(),
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  ØPunkte: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                controller.currentRound > 0
+                    ? ((controller.totalPoints.isNotEmpty
+                                ? controller.totalPoints.last
+                                : 0) /
+                            controller.currentRound)
+                        .toStringAsFixed(1)
+                    : '0.0',
+                style: statsNumberTextStyle(context),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                stats,
+                style: statsSummaryTextStyle(context),
+              ),
+            ],
+          )
         ],
       ),
     );

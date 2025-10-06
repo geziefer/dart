@@ -1,6 +1,6 @@
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/header.dart';
+import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:dart/widget/menu.dart';
@@ -34,135 +34,114 @@ class ViewCatchXX extends StatelessWidget {
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 17, 17, 17),
-      body: Column(
+    
+    return GameLayout(
+      title: title,
+      mainContent: Column(
         children: [
-          // ########## Top row with logo, game title, stats and back button
-          const SizedBox(height: 20),
           Expanded(
-            flex: 10,
-            child: Header(gameName: title),
-          ),
-
-          // ########## Main part with game results and num pad
-          Expanded(
-            flex: 70,
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(color: Colors.white, thickness: 3),
                 Expanded(
+                  flex: 5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        flex: 5,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // ########## Target
-                            ScoreColumn(
-                                label: 'Z',
-                                content: controller.getCurrentTargets(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
+                      // ########## Target
+                      ScoreColumn(
+                          label: 'Z',
+                          content: controller.getCurrentTargets(),
+                          color:
+                              const Color.fromARGB(255, 215, 198, 132)),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
 
-                            // ########## Thrown points in round
-                            ScoreColumn(
-                              label: 'C',
-                              content: controller.getCurrentThrownPoints(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Score total
-                            ScoreColumn(
-                              label: 'P',
-                              content: controller.getCurrentTotalPoints(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
+                      // ########## Thrown points in round
+                      ScoreColumn(
+                        label: 'C',
+                        content: controller.getCurrentThrownPoints(),
+                        color: Colors.white,
                       ),
-                      const VerticalDivider(color: Colors.white, thickness: 3),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
 
-                      // ########## Right column with num pad
-                      Expanded(
-                        flex: 5,
-                        child: Numpad(
-                          controller: controller,
-                          showUpper: false,
-                          showMiddle: true,
-                          showLower: true,
-                          showExtraButtons: false,
-                          showYesNo: false,
-                        ),
+                      // ########## Score total
+                      ScoreColumn(
+                        label: 'P',
+                        content: controller.getCurrentTotalPoints(),
+                        color: Colors.white,
                       ),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
                     ],
                   ),
                 ),
-                const Divider(color: Colors.white, thickness: 3),
-              ],
-            ),
-          ),
+                const VerticalDivider(color: Colors.white, thickness: 3),
 
-          // ########## Bottom row with stats
-          Expanded(
-            flex: 20,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "  Checks: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['hits']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  Punkte: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['points']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "   ØPunkte: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['avgPoints']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                  ],
+                // ########## Right column with num pad
+                Expanded(
+                  flex: 5,
+                  child: Numpad(
+                    controller: controller,
+                    showUpper: false,
+                    showMiddle: true,
+                    showLower: true,
+                    showExtraButtons: false,
+                    showYesNo: false,
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      stats,
-                      style: statsSummaryTextStyle(context),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
+        ],
+      ),
+      statsContent: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "  Checks: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['hits']}",
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  Punkte: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['points']}",
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "   ØPunkte: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['avgPoints']}",
+                style: statsNumberTextStyle(context),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                stats,
+                style: statsSummaryTextStyle(context),
+              ),
+            ],
+          )
         ],
       ),
     );

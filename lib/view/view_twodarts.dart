@@ -1,6 +1,6 @@
 import 'package:dart/controller/controller_twodarts.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/header.dart';
+import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
@@ -33,116 +33,95 @@ class ViewTwoDarts extends StatelessWidget {
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 17, 17, 17),
-      body: Column(
+    
+    return GameLayout(
+      title: title,
+      mainContent: Column(
         children: [
-          // ########## Top row with logo, game title, stats and back button
-          const SizedBox(height: 20),
           Expanded(
-            flex: 10,
-            child: Header(gameName: title),
-          ),
-
-          // ########## Main part with game results and num pad
-          Expanded(
-            flex: 70,
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(color: Colors.white, thickness: 3),
                 Expanded(
+                  flex: 5,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        flex: 5,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // ########## Target numbers
-                            ScoreColumn(
-                                label: 'Z',
-                                content: controller.getCurrentTargets(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
+                      // ########## Target numbers
+                      ScoreColumn(
+                          label: 'Z',
+                          content: controller.getCurrentTargets(),
+                          color:
+                              const Color.fromARGB(255, 215, 198, 132)),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
 
-                            // ########## Results (success/failure symbols)
-                            ScoreColumn(
-                              label: 'C',
-                              content: controller.getCurrentResults(),
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
+                      // ########## Results (success/failure symbols)
+                      ScoreColumn(
+                        label: 'C',
+                        content: controller.getCurrentResults(),
+                        color: Colors.white,
                       ),
-                      const VerticalDivider(color: Colors.white, thickness: 3),
-
-                      // ########## Right column with num pad
-                      Expanded(
-                        flex: 5,
-                        child: Numpad(
-                          controller: controller,
-                          showUpper: false,
-                          showMiddle: false,
-                          showLower: false,
-                          showExtraButtons: false,
-                          showYesNo: true,
-                        ),
-                      ),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
                     ],
                   ),
                 ),
-                const Divider(color: Colors.white, thickness: 3),
-              ],
-            ),
-          ),
+                const VerticalDivider(color: Colors.white, thickness: 3),
 
-          // ########## Bottom row with stats
-          Expanded(
-            flex: 20,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "  Checks: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['checks']}",
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  ØChecks: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      "${currentStats['avgChecks'].toStringAsFixed(1)}%",
-                      style: statsNumberTextStyle(context),
-                    ),
-                  ],
+                // ########## Right column with num pad
+                Expanded(
+                  flex: 5,
+                  child: Numpad(
+                    controller: controller,
+                    showUpper: false,
+                    showMiddle: false,
+                    showLower: false,
+                    showExtraButtons: false,
+                    showYesNo: true,
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      stats,
-                      style: statsSummaryTextStyle(context),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
+        ],
+      ),
+      statsContent: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "  Checks: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['checks']}",
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  ØChecks: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['avgChecks'].toStringAsFixed(1)}%",
+                style: statsNumberTextStyle(context),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                stats,
+                style: statsSummaryTextStyle(context),
+              ),
+            ],
+          )
         ],
       ),
     );

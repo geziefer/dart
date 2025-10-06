@@ -1,6 +1,6 @@
 import 'package:dart/controller/controller_updown.dart';
 import 'package:dart/styles.dart';
-import 'package:dart/widget/header.dart';
+import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:flutter/material.dart';
@@ -34,144 +34,116 @@ class ViewUpDown extends StatelessWidget {
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 17, 17, 17),
-      body: Column(
+    return GameLayout(
+      title: title,
+      mainContent: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // ########## Top row with logo, game title, stats and back button
-          const SizedBox(height: 20),
           Expanded(
-            flex: 10,
-            child: Header(gameName: title),
-          ),
-
-          // ########## Main part with game results and num pad
-          Expanded(
-            flex: 70,
-            child: Column(
+            flex: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Divider(color: Colors.white, thickness: 3),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // ########## Round numbers
-                            ScoreColumn(
-                                label: 'R',
-                                content: controller.getCurrentRounds(),
-                                color:
-                                    const Color.fromARGB(255, 215, 198, 132)),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
+                // ########## Round numbers
+                ScoreColumn(
+                    label: 'R',
+                    content: controller.getCurrentRounds(),
+                    color:
+                        const Color.fromARGB(255, 215, 198, 132)),
+                const SizedBox(width: 10),
+                const VerticalDivider(
+                    color: Colors.white, thickness: 1),
+                const SizedBox(width: 10),
 
-                            // ########## Target values
-                            ScoreColumn(
-                              label: 'Z',
-                              content: controller.getCurrentTargets(),
-                              color: const Color.fromARGB(255, 215, 198, 132),
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-
-                            // ########## Results (success/failure emojis)
-                            ScoreColumn(
-                              label: 'C',
-                              content: controller.getCurrentResults(),
-                              color: const Color.fromARGB(255, 132, 215, 132),
-                            ),
-                            const SizedBox(width: 10),
-                            const VerticalDivider(
-                                color: Colors.white, thickness: 1),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
-                      ),
-                      const VerticalDivider(color: Colors.white, thickness: 3),
-
-                      // ########## Right column with yes/no numpad
-                      Expanded(
-                        flex: 5,
-                        child: Numpad(
-                          controller: controller,
-                          showUpper: false,
-                          showMiddle: false,
-                          showLower: false,
-                          showExtraButtons: false,
-                          showYesNo: true, // Only yes/no buttons plus undo
-                        ),
-                      ),
-                    ],
-                  ),
+                // ########## Target values
+                ScoreColumn(
+                  label: 'Z',
+                  content: controller.getCurrentTargets(),
+                  color: const Color.fromARGB(255, 215, 198, 132),
                 ),
-                const Divider(color: Colors.white, thickness: 3),
+                const SizedBox(width: 10),
+                const VerticalDivider(
+                    color: Colors.white, thickness: 1),
+                const SizedBox(width: 10),
+
+                // ########## Results (success/failure emojis)
+                ScoreColumn(
+                  label: 'C',
+                  content: controller.getCurrentResults(),
+                  color: const Color.fromARGB(255, 132, 215, 132),
+                ),
+                const SizedBox(width: 10),
+                const VerticalDivider(
+                    color: Colors.white, thickness: 1),
+                const SizedBox(width: 10),
               ],
             ),
           ),
+          const VerticalDivider(color: Colors.white, thickness: 3),
 
-          // ########## Bottom row with stats
+          // ########## Right column with yes/no numpad
           Expanded(
-            flex: 20,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Runde: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      currentStats['round'].toString(),
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  Ziel: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      currentStats['target'].toString(),
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  Checks: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      currentStats['successes'].toString(),
-                      style: statsNumberTextStyle(context),
-                    ),
-                    Text(
-                      "  ØChecks: ",
-                      style: statsTextStyle(context),
-                    ),
-                    Text(
-                      (currentStats['averageSuccess'] as double)
-                          .toStringAsFixed(1),
-                      style: statsNumberTextStyle(context),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      stats,
-                      style: statsSummaryTextStyle(context),
-                    ),
-                  ],
-                )
-              ],
+            flex: 5,
+            child: Numpad(
+              controller: controller,
+              showUpper: false,
+              showMiddle: false,
+              showLower: false,
+              showExtraButtons: false,
+              showYesNo: true, // Only yes/no buttons plus undo
             ),
           ),
+        ],
+      ),
+      statsContent: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Runde: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                currentStats['round'].toString(),
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  Ziel: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                currentStats['target'].toString(),
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  Checks: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                currentStats['successes'].toString(),
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "  ØChecks: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                (currentStats['averageSuccess'] as double)
+                    .toStringAsFixed(1),
+                style: statsNumberTextStyle(context),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                stats,
+                style: statsSummaryTextStyle(context),
+              ),
+            ],
+          )
         ],
       ),
     );
