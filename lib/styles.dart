@@ -204,15 +204,17 @@ TextStyle boardTextStyle(BuildContext context) {
 }
 
 TextStyle outputTextStyle(BuildContext context) {
+  final baseSize = ResponsiveUtils.isPhoneSize(context) ? 55.0 : 45.0;
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, baseSize),
     color: const Color.fromARGB(255, 215, 198, 132),
   );
 }
 
 TextStyle inputTextStyle(BuildContext context) {
+  final baseSize = ResponsiveUtils.isPhoneSize(context) ? 55.0 : 45.0;
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 45),
+    fontSize: ResponsiveUtils.getResponsiveFontSize(context, baseSize),
     color: Colors.white,
   );
 }
