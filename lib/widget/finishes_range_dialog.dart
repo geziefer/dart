@@ -22,7 +22,7 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
   @override
   Widget build(BuildContext context) {
     final isPhone = ResponsiveUtils.isPhoneSize(context);
-    final itemMargin = isPhone ? 5.0 : 10.0;
+    final itemMargin = isPhone ? 2.0 : 10.0;
     final containerPadding = isPhone ? 10.0 : 20.0;
     
     return Dialog(
@@ -30,11 +30,15 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
         borderRadius: BorderRadius.all(Radius.circular(2)),
       ),
       child: IntrinsicWidth(
-        child: Container(
-          padding: EdgeInsets.all(containerPadding),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: isPhone ? 400.0 : 0.0, // Add minimum height for phones
+          ),
+          child: Container(
+            padding: EdgeInsets.all(containerPadding),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
             Container(
               margin: EdgeInsets.all(itemMargin),
               child: Text(
@@ -119,10 +123,11 @@ class _FinishesRangeDialogState extends State<FinishesRangeDialog> {
                 ],
               ),
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
-    ),
     );
   }
 }

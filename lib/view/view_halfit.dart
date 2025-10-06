@@ -47,7 +47,7 @@ class ViewHalfit extends StatelessWidget {
 
           // ########## Main part with game results and num pad
           Expanded(
-            flex: 72,
+            flex: 70,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -119,7 +119,7 @@ class ViewHalfit extends StatelessWidget {
 
           // ########## Bottom row with stats
           Expanded(
-            flex: 18,
+            flex: 20,
             child: Column(
               children: [
                 Row(

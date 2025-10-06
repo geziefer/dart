@@ -24,7 +24,7 @@ class Header extends StatelessWidget {
           child: Text(
             gameName,
             style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+              fontSize: 50 * ResponsiveUtils.getHeaderTextScale(context),
               fontWeight: FontWeight.bold,
               color: const Color.fromARGB(255, 215, 198, 132),
             ),

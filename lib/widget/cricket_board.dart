@@ -14,7 +14,7 @@ class CricketBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     final numbers = [15, 16, 17, 18, 19, 20, 25];
     final isPhone = ResponsiveUtils.isPhoneSize(context);
-    final verticalPadding = isPhone ? 0.2 : 2.0;
+    final verticalPadding = isPhone ? 0.1 : 1.0;
     final circleSize = isPhone ? 35.0 : 60.0;
 
     return Column(

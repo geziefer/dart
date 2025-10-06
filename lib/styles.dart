@@ -63,7 +63,7 @@ ButtonStyle finishButtonStyle(BuildContext context) {
 
 TextStyle finishButtonTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 50),
+    fontSize: 50 * ResponsiveUtils.getCheckoutDialogTextScale(context),
     color: Colors.white,
   );
 }
@@ -91,21 +91,21 @@ TextStyle statsSummaryTextStyle(BuildContext context) {
 
 TextStyle endSummaryHeaderTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 42),
+    fontSize: 42 * ResponsiveUtils.getCheckoutDialogTextScale(context),
     color: Colors.black,
   );
 }
 
 TextStyle endSummaryTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
+    fontSize: 32 * ResponsiveUtils.getCheckoutDialogTextScale(context),
     color: Colors.black,
   );
 }
 
 TextStyle endSummaryEmphasizedTextStyle(BuildContext context) {
   return TextStyle(
-    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 35),
+    fontSize: 35 * ResponsiveUtils.getCheckoutDialogTextScale(context),
     color: Colors.red,
   );
 }
@@ -113,7 +113,7 @@ TextStyle endSummaryEmphasizedTextStyle(BuildContext context) {
 TextStyle checkNumberStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
-          0.85 // Increased from 0.75 for better readability
+          1.2 // Increased from 0.85 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 50 * scaleFactor,
@@ -169,7 +169,7 @@ TextStyle numpadScoreButtonSmallDisabledTextStyle(BuildContext context) {
 TextStyle scoreLabelTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
-          0.85 // Increased from 0.75 for better readability
+          1.2 // Increased from 1.1 for better readability on small screens
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
@@ -180,7 +180,7 @@ TextStyle scoreLabelTextStyle(BuildContext context) {
 TextStyle scoreTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
-          0.85 // Increased from 0.75 for better readability
+          1.2 // Increased from 1.1 for better readability on small screens
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
@@ -221,7 +221,7 @@ TextStyle emojiTextStyle(BuildContext context) {
   // Use same scaling as checkNumberStyle for consistent alignment in RTCX
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
-          0.85 // Updated to match checkNumberStyle
+          1.2 // Updated to match checkNumberStyle
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 50 * scaleFactor, // Match checkNumberStyle font size
@@ -263,7 +263,7 @@ TextStyle matrixGameNameTextStyle(BuildContext context) {
 TextStyle emojiLargeTextStyle(BuildContext context) {
   final scaleFactor = ResponsiveUtils.isPhoneSize(context)
       ? ResponsiveUtils.getTextScaleFactor(context) *
-          0.85 // Same scaling as scoreTextStyle
+          1.2 // Updated to match scoreTextStyle scaling
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
     fontSize: 60 * scaleFactor, // Same base size as scoreTextStyle

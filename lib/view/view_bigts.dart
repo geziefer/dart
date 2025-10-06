@@ -33,7 +33,7 @@ class ViewBigTs extends StatelessWidget {
             child: Header(gameName: title),
           ),
           Expanded(
-            flex: 75,
+            flex: 70,
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
@@ -92,7 +92,7 @@ class ViewBigTs extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 15,
+            flex: 20,
             child: Column(
               children: [
                 Row(

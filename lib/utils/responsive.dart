@@ -47,33 +47,45 @@ class ResponsiveUtils {
     return smallerDimension < 600;
   }
 
+  static double getCheckoutDialogTextScale(BuildContext context) {
+    final baseScale = getTextScaleFactor(context);
+    // Increase checkout dialog text size on small screens for better readability
+    return isPhoneSize(context) ? baseScale * 1.4 : baseScale;
+  }
+
+  static double getHeaderTextScale(BuildContext context) {
+    final baseScale = getTextScaleFactor(context);
+    // Increase header text size by 50% on small screens for better visibility
+    return isPhoneSize(context) ? baseScale * 1.5 : baseScale;
+  }
+
   // Specific scaling for different UI elements based on your feedback
   static double getMenuButtonTextScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
     // Menu buttons now use single line on phones, so can be larger
-    return isPhoneSize(context) ? baseScale * 0.85 : baseScale;
+    return isPhoneSize(context) ? baseScale * 1.4 : baseScale;
   }
 
   static double getNumpadLargeButtonScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
     // Increase scaling for better readability - there's space on buttons
     return isPhoneSize(context)
-        ? baseScale * 0.95
-        : baseScale; // Increased from 0.85
+        ? baseScale * 1.3
+        : baseScale; // Increased from 0.95
   }
 
   static double getNumpadSmallButtonScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
     // Increase scaling for better readability - there's space on buttons
     return isPhoneSize(context)
-        ? baseScale * 0.85
-        : baseScale; // Increased from 0.75
+        ? baseScale * 1.4
+        : baseScale; // Increased from 1.2
   }
 
   static double getStatsScale(BuildContext context) {
     final baseScale = getTextScaleFactor(context);
-    // Stats section needs slight reduction
-    return isPhoneSize(context) ? baseScale * 0.9 : baseScale;
+    // Increase stats text size for better readability on small screens
+    return isPhoneSize(context) ? baseScale * 1.2 : baseScale;
   }
 
   // Utility function for responsive margins

@@ -210,8 +210,8 @@ class _ViewFinishesState extends State<ViewFinishes> {
                                         radius: radius,
                                         arcSections: [
                                           ArcSection(startPercent: 0.2),
-                                          ArcSection(startPercent: 0.4),
-                                          ArcSection(startPercent: 0.6),
+                                          ArcSection(startPercent: 0.35),
+                                          ArcSection(startPercent: 0.55),
                                           ArcSection(startPercent: 0.8),
                                         ],
                                       ),
