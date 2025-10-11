@@ -341,6 +341,7 @@ void main() {
       // Assert: Should show last 5 rounds (3-7)
       String rounds = controller.getCurrentRounds();
       String scores = controller.getCurrentScores();
+      String credits = controller.getCurrentCredits();
       String results = controller.getCurrentResults();
 
       // Should contain rounds 3,4,5,6,7 (last 5)
@@ -351,7 +352,11 @@ void main() {
       expect(rounds, isNot(contains('2')));
 
       expect(scores.split('\n').length, equals(5));
+      expect(credits.split('\n').length, equals(5));
       expect(results.split('\n').length, equals(5));
+      
+      // Credits should show "2" for each 100-point score
+      expect(credits, contains('2'));
     });
   });
 }

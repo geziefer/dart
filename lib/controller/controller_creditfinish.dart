@@ -273,6 +273,10 @@ class ControllerCreditFinish extends ControllerBase
     return createMultilineString(scores, [], '', '', [], 5, false);
   }
 
+  String getCurrentCredits() {
+    return createMultilineString(credits, [], '', '', [], 5, false);
+  }
+
   String getCurrentResults() {
     List<String> results = [];
     for (int i = 0; i < finishResults.length; i++) {

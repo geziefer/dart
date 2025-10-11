@@ -70,9 +70,19 @@ class ViewCreditFinish extends StatelessWidget {
                       const VerticalDivider(color: Colors.white, thickness: 1),
                       const SizedBox(width: 10),
                       
-                      // ########## Result
+                      // ########## Credits
                       ScoreColumn(
                         label: 'C',
+                        content: controller.getCurrentCredits(),
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
+                      
+                      // ########## Result
+                      ScoreColumn(
+                        label: 'F',
                         content: controller.getCurrentResults(),
                         color: Colors.white,
                       ),
