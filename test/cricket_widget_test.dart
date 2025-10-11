@@ -69,7 +69,7 @@ void main() {
     /// Tests hitting cricket numbers and input formatting
     /// Verifies: hits are recorded, input is formatted correctly with sorting and grouping
     test('Hitting cricket numbers and input formatting', () {
-      // Hit 19, 20, 19 - should display as "19-19 | 20"
+      // Hit 19, 20, 19 - should display as "D19 | 20"
       controller.pressNumpadButton(19);
       controller.pressNumpadButton(20);
       controller.pressNumpadButton(19);
@@ -77,12 +77,12 @@ void main() {
       expect(controller.hits[19], equals(2));
       expect(controller.hits[20], equals(1));
       expect(controller.totalHits, equals(3));
-      expect(controller.getInput(), equals('19-19 | 20'));
+      expect(controller.getInput(), equals('D19 | 20'));
       
-      // Add bull - should display as "19-19 | 20 | B"
+      // Add bull - should display as "D19 | 20 | B"
       controller.pressNumpadButton(25);
       expect(controller.hits[25], equals(1));
-      expect(controller.getInput(), equals('19-19 | 20 | B'));
+      expect(controller.getInput(), equals('D19 | 20 | B'));
     });
 
     /// Tests round completion and dart counting

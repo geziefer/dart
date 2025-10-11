@@ -198,19 +198,31 @@ class ControllerCricket extends ControllerBase
         if (sortedHits[i] == currentNumber) {
           count++;
         } else {
-          // Add current group
-          String numberStr = currentNumber == 25 ? 'B' : currentNumber.toString();
-          groups.add(List.filled(count, numberStr).join('-'));
+          // Add current group with prefix notation
+          groups.add(_formatGroup(currentNumber, count));
           currentNumber = sortedHits[i];
           count = 1;
         }
       }
       
       // Add final group
-      String numberStr = currentNumber == 25 ? 'B' : currentNumber.toString();
-      groups.add(List.filled(count, numberStr).join('-'));
+      groups.add(_formatGroup(currentNumber, count));
       
       input = groups.join(' | ');
+    }
+  }
+
+  String _formatGroup(int number, int count) {
+    String numberStr = number == 25 ? 'B' : number.toString();
+    if (count == 1) {
+      return numberStr;
+    } else if (count == 2) {
+      return 'D$numberStr';
+    } else if (count == 3) {
+      return 'T$numberStr';
+    } else {
+      // Fallback for more than 3 (shouldn't happen in cricket)
+      return List.filled(count, numberStr).join('-');
     }
   }
 
