@@ -32,20 +32,42 @@ class ControllerAcrossBoard extends ControllerBase
 
   // Opposite number pairs on dartboard
   static const Map<int, int> oppositeNumbers = {
-    20: 3, 3: 20,
-    19: 2, 2: 19,
-    18: 7, 7: 18,
-    17: 6, 6: 17,
-    16: 8, 8: 16,
-    15: 10, 10: 15,
-    14: 9, 9: 14,
-    13: 11, 11: 13,
-    12: 5, 5: 12,
-    1: 4, 4: 1,
+    20: 3,
+    3: 20,
+    19: 1,
+    1: 19,
+    18: 7,
+    7: 18,
+    17: 5,
+    5: 17,
+    16: 4,
+    4: 16,
+    15: 9,
+    9: 15,
+    14: 10,
+    10: 14,
+    13: 8,
+    8: 13,
+    12: 2,
+    2: 12,
+    11: 6,
+    6: 11,
   };
 
   // Target types
-  static const List<String> targetTypes = ['D', 'BS', 'T', 'SS', 'SB', 'DB', 'SB', 'SS', 'T', 'BS', 'D'];
+  static const List<String> targetTypes = [
+    'D',
+    'BS',
+    'T',
+    'SS',
+    'SB',
+    'DB',
+    'SB',
+    'SS',
+    'T',
+    'BS',
+    'D'
+  ];
 
   int startNumber = 1; // randomly selected start number
   int oppositeNumber = 1; // opposite of start number
@@ -59,7 +81,8 @@ class ControllerAcrossBoard extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+    _storageService =
+        StorageService(item.id, injectedStorage: _injectedStorage);
     initializeServices(_storageService!);
 
     // Generate random start number and create target sequence
@@ -73,22 +96,22 @@ class ControllerAcrossBoard extends ControllerBase
     // Select random start number (1-20)
     startNumber = Random().nextInt(20) + 1;
     oppositeNumber = oppositeNumbers[startNumber]!;
-    
+
     // Create target sequence
     targetSequence = [
       'D$startNumber',
-      'BS$startNumber', 
+      'BS$startNumber',
       'T$startNumber',
       'SS$startNumber',
       'SB',
-      'DB', 
+      'DB',
       'SB',
       'SS$oppositeNumber',
       'T$oppositeNumber',
       'BS$oppositeNumber',
       'D$oppositeNumber'
     ];
-    
+
     // Initialize hit tracking
     targetsHit = List.filled(11, false);
     roundHits = [];
@@ -107,11 +130,12 @@ class ControllerAcrossBoard extends ControllerBase
   void pressNumpadButton(int value) {
     if (finished) return;
 
-    if (value == -2) { // Undo
+    if (value == -2) {
+      // Undo
       if (roundHits.isNotEmpty) {
         // Get the last round's hits
         int lastRoundHits = roundHits.removeLast();
-        
+
         // Revert the targets hit in that round
         for (int i = 0; i < lastRoundHits; i++) {
           if (currentTargetIndex > 0) {
@@ -119,7 +143,7 @@ class ControllerAcrossBoard extends ControllerBase
             targetsHit[currentTargetIndex] = false;
           }
         }
-        
+
         // Revert round and dart counters
         round--;
         dart -= 3;
@@ -128,20 +152,21 @@ class ControllerAcrossBoard extends ControllerBase
       return;
     }
 
-    if (value == -1) { // Enter (0 hits)
+    if (value == -1) {
+      // Enter (0 hits)
       value = 0;
     }
 
     if (value >= 0 && value <= 3) {
       // Calculate remaining targets
       int remainingTargets = 11 - currentTargetIndex;
-      
+
       // Limit hits to remaining targets
       int actualHits = value > remainingTargets ? remainingTargets : value;
-      
+
       // Store this round's hits for undo functionality
       roundHits.add(actualHits);
-      
+
       // Mark targets as hit
       for (int i = 0; i < actualHits; i++) {
         if (currentTargetIndex < 11) {
@@ -149,15 +174,15 @@ class ControllerAcrossBoard extends ControllerBase
           currentTargetIndex++;
         }
       }
-      
+
       dart += 3;
       round++;
-      
+
       // Check if game is finished
       if (currentTargetIndex >= 11) {
         finished = true;
         notifyListeners();
-        
+
         // Show checkout dialog for last round darts
         onShowCheckout?.call(actualHits, 0);
       } else {
@@ -176,7 +201,9 @@ class ControllerAcrossBoard extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     return [
       SummaryService.createValueLine('Anzahl Darts', dart),
-      SummaryService.createValueLine('Darts/Target', _getAvgDartsPerTarget().toStringAsFixed(1), emphasized: true),
+      SummaryService.createValueLine(
+          'Darts/Target', _getAvgDartsPerTarget().toStringAsFixed(1),
+          emphasized: true),
     ];
   }
 
@@ -188,10 +215,12 @@ class ControllerAcrossBoard extends ControllerBase
     double avgDartsPerTarget = _getAvgDartsPerTarget();
 
     if (finished) {
-      int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+      int numberFinishes =
+          statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
       statsService.updateStats({'numberFinishes': numberFinishes + 1});
-      
-      int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+
+      int recordDarts =
+          statsService.getStat<int>('recordDarts', defaultValue: 0)!;
       if (recordDarts == 0 || dart < recordDarts) {
         statsService.updateStats({'recordDarts': dart});
       }
@@ -218,7 +247,7 @@ class ControllerAcrossBoard extends ControllerBase
   @override
   bool isButtonDisabled(int value) {
     if (finished) return true;
-    
+
     if (value > 0) {
       int remainingTargets = 11 - currentTargetIndex;
       return value > remainingTargets;
@@ -235,10 +264,14 @@ class ControllerAcrossBoard extends ControllerBase
   }
 
   String getStats() {
-    int numberGames = statsService.getStat<int>('numberGames', defaultValue: 0)!;
-    int numberFinishes = statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
-    int recordDarts = statsService.getStat<int>('recordDarts', defaultValue: 0)!;
-    double longtermChecks = statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
+    int numberGames =
+        statsService.getStat<int>('numberGames', defaultValue: 0)!;
+    int numberFinishes =
+        statsService.getStat<int>('numberFinishes', defaultValue: 0)!;
+    int recordDarts =
+        statsService.getStat<int>('recordDarts', defaultValue: 0)!;
+    double longtermChecks =
+        statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
 
     return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
   }
