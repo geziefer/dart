@@ -282,6 +282,12 @@ class ControllerCreditFinish extends ControllerBase
     for (int i = 0; i < finishResults.length; i++) {
       results.add(finishResults[i] ? '✅' : '❌');
     }
+    
+    // If we're in finish input phase, add empty string for current round
+    if (currentPhase == GamePhase.finishInput && results.length < scores.length) {
+      results.add('');
+    }
+    
     return createMultilineString(results, [], '', '', [], 5, false);
   }
 }
