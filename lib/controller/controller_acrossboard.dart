@@ -273,7 +273,7 @@ class ControllerAcrossBoard extends ControllerBase
     double longtermChecks =
         statsService.getStat<double>('longtermChecks', defaultValue: 0.0)!;
 
-    return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
+    return '#S: $numberGames  ♛D: $recordDarts  ♛G: $numberFinishes  ØT: ${longtermChecks.toStringAsFixed(1)}';
   }
 
   // Getters for the view
