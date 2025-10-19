@@ -55,6 +55,8 @@ class ControllerXXXCheckout extends ControllerBase
   int totalRounds = 0; // total rounds played in all legs
   int avgScore = 0; // average of score in all legs
   int avgDarts = 0; // average number of darts used in all legs
+  double currentRoundAvg = 0.0; // current round 3-dart average
+  double highestAvg = 0.0; // highest 3-dart average achieved in game
   String input = ""; // current input from numbpad
 
   @override
@@ -86,6 +88,8 @@ class ControllerXXXCheckout extends ControllerBase
     totalRounds = 0;
     avgScore = 0;
     avgDarts = 0;
+    currentRoundAvg = 0.0;
+    highestAvg = 0.0;
     input = "";
   }
 
@@ -115,6 +119,8 @@ class ControllerXXXCheckout extends ControllerBase
         if (remainings.isEmpty) {
           remainings.add(xxx);
         }
+        // Recalculate current round average after undo
+        _updateCurrentRoundAverage();
       }
       input = "";
       // return button or pre defined value pressed or long press return
@@ -164,6 +170,10 @@ class ControllerXXXCheckout extends ControllerBase
       totalScore += score;
       scores.add(score);
       remainings.add(remaining);
+      
+      // Update current round average
+      _updateCurrentRoundAverage();
+      
       input = "";
       int lastScore = score;
       score = 0;
@@ -185,6 +195,7 @@ class ControllerXXXCheckout extends ControllerBase
         remaining = xxx;
         lastTotalDarts = totalDarts;
         dart = 0;
+        currentRoundAvg = 0.0; // Reset current round average for new leg
         rounds.clear();
         scores.clear();
         remainings.clear();
@@ -268,6 +279,11 @@ class ControllerXXXCheckout extends ControllerBase
         'ØDarts', getCurrentStats()['avgDarts'],
         emphasized: true));
 
+    // Add highest average line
+    lines.add(SummaryService.createValueLine(
+        '♛Runde', getCurrentStats()['highestAvg'],
+        emphasized: true));
+
     return lines;
   }
 
@@ -292,6 +308,7 @@ class ControllerXXXCheckout extends ControllerBase
     statsService.updateRecord<int>('recordFinishes', finishCount);
     statsService.updateRecord<double>('recordScore', avgScore);
     statsService.updateRecord<double>('recordDarts', avgDarts);
+    statsService.updateRecord<double>('recordHighestAvg', highestAvg);
 
     // Update long-term averages
     statsService.updateLongTermAverage('longtermScore', avgScore);
@@ -327,11 +344,27 @@ class ControllerXXXCheckout extends ControllerBase
     return completedLegs == 0 ? 0 : (lastTotalDarts / completedLegs);
   }
 
+  void _updateCurrentRoundAverage() {
+    if (scores.isNotEmpty) {
+      double sum = scores.fold(0.0, (sum, score) => sum + score);
+      currentRoundAvg = sum / scores.length;
+      
+      // Update highest average if current is higher
+      if (currentRoundAvg > highestAvg) {
+        highestAvg = currentRoundAvg;
+      }
+    } else {
+      currentRoundAvg = 0.0;
+    }
+  }
+
   Map getCurrentStats() {
     return {
       'round': leg,
       'avgScore': _getAvgScore().toStringAsFixed(1),
-      'avgDarts': _getAvgDarts().toStringAsFixed(1)
+      'avgDarts': _getAvgDarts().toStringAsFixed(1),
+      'currentRoundAvg': currentRoundAvg.toStringAsFixed(1),
+      'highestAvg': highestAvg.toStringAsFixed(1)
     };
   }
 
@@ -374,6 +407,8 @@ class ControllerXXXCheckout extends ControllerBase
         statsService.getStat<double>('recordScore', defaultValue: 0.0)!;
     double recordDarts =
         statsService.getStat<double>('recordDarts', defaultValue: 0.0)!;
+    double recordHighestAvg =
+        statsService.getStat<double>('recordHighestAvg', defaultValue: 0.0)!;
     double longtermScore =
         statsService.getStat<double>('longtermScore', defaultValue: 0.0)!;
     double longtermDarts =
@@ -382,7 +417,7 @@ class ControllerXXXCheckout extends ControllerBase
     if (isChallengeMode) {
       return challengeStepInfo ?? "Challenge Mode";
     } else {
-      return '#S: $numberGames  ♛C: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
+      return '#S: $numberGames  ♛C: $recordFinishes  ♛P: ${recordScore.toStringAsFixed(1)}  ♛D: ${recordDarts.toStringAsFixed(1)}  ♛R: ${recordHighestAvg.toStringAsFixed(1)}  ØP: ${longtermScore.toStringAsFixed(1)}  ØD: ${longtermDarts.toStringAsFixed(1)}';
     }
   }
 }

@@ -570,7 +570,7 @@ void main() {
       List<SummaryLine> summary = controller.createSummaryLines();
 
       // Assert: Summary contains expected lines
-      expect(summary.length, equals(3));
+      expect(summary.length, equals(4));
 
       // Check finished legs line
       expect(summary.any((line) => line.label == 'Finished'), isTrue);
@@ -578,6 +578,7 @@ void main() {
       // Check average lines
       expect(summary.any((line) => line.label == 'ØPunkte'), isTrue);
       expect(summary.any((line) => line.label == 'ØDarts'), isTrue);
+      expect(summary.any((line) => line.label == '♛Runde'), isTrue);
     });
 
     /// Tests XXXCheckout with existing statistics
@@ -644,6 +645,57 @@ void main() {
       await tester.pump();
 
       expect(controller.input, equals("180")); // Should be accepted
+    });
+
+    /// Tests current round average and highest average tracking
+    /// Verifies: averages are calculated correctly and highest is tracked
+    testWidgets('XXXCheckout current round and highest average tracking',
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider<ControllerXXXCheckout>(
+            create: (_) => controller,
+            child: const ViewXXXCheckout(title: 'Test'),
+          ),
+        ),
+      );
+
+      // Initial state - averages should be 0
+      var stats = controller.getCurrentStats();
+      expect(stats['currentRoundAvg'], equals('0.0'));
+      expect(stats['highestAvg'], equals('0.0'));
+
+      // Throw first score: 60
+      controller.pressNumpadButton(6);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Enter
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      expect(stats['currentRoundAvg'], equals('60.0'));
+      expect(stats['highestAvg'], equals('60.0'));
+
+      // Throw second score: 80
+      controller.pressNumpadButton(8);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Enter
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      expect(stats['currentRoundAvg'], equals('70.0')); // (60+80)/2
+      expect(stats['highestAvg'], equals('70.0'));
+
+      // Throw third score: 40 (lower average)
+      controller.pressNumpadButton(4);
+      controller.pressNumpadButton(0);
+      controller.pressNumpadButton(-1); // Enter
+      await tester.pump();
+
+      stats = controller.getCurrentStats();
+      expect(stats['currentRoundAvg'], equals('60.0')); // (60+80+40)/3
+      expect(stats['highestAvg'], equals('70.0')); // Should remain highest
     });
   });
 }

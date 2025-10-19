@@ -50,7 +50,7 @@ class ViewXXXCheckout extends StatelessWidget {
     };
     Map currentStats = controller.getCurrentStats();
     String stats = controller.getStats();
-    
+
     return GameLayout(
       title: title,
       mainContent: Column(
@@ -69,11 +69,9 @@ class ViewXXXCheckout extends StatelessWidget {
                       ScoreColumn(
                           label: 'A',
                           content: controller.getCurrentRounds(),
-                          color:
-                              const Color.fromARGB(255, 215, 198, 132)),
+                          color: const Color.fromARGB(255, 215, 198, 132)),
                       const SizedBox(width: 10),
-                      const VerticalDivider(
-                          color: Colors.white, thickness: 1),
+                      const VerticalDivider(color: Colors.white, thickness: 1),
                       const SizedBox(width: 10),
 
                       // ########## Thrown score in round
@@ -83,8 +81,7 @@ class ViewXXXCheckout extends StatelessWidget {
                         color: Colors.white,
                       ),
                       const SizedBox(width: 10),
-                      const VerticalDivider(
-                          color: Colors.white, thickness: 1),
+                      const VerticalDivider(color: Colors.white, thickness: 1),
                       const SizedBox(width: 10),
 
                       // ########## Score left
@@ -94,16 +91,14 @@ class ViewXXXCheckout extends StatelessWidget {
                         color: Colors.white,
                       ),
                       const SizedBox(width: 10),
-                      const VerticalDivider(
-                          color: Colors.white, thickness: 1),
+                      const VerticalDivider(color: Colors.white, thickness: 1),
                       const SizedBox(width: 10),
 
                       // ########## Darts thrown
                       ScoreColumn(
                           label: 'D',
                           content: controller.getCurrentDarts(),
-                          color:
-                              const Color.fromARGB(255, 215, 198, 132)),
+                          color: const Color.fromARGB(255, 215, 198, 132)),
                     ],
                   ),
                 ),
@@ -132,11 +127,19 @@ class ViewXXXCheckout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Runde: ",
+                "Leg: ",
                 style: statsTextStyle(context),
               ),
               Text(
                 "${currentStats['round']}",
+                style: statsNumberTextStyle(context),
+              ),
+              Text(
+                "   ØRunde: ",
+                style: statsTextStyle(context),
+              ),
+              Text(
+                "${currentStats['currentRoundAvg']}",
                 style: statsNumberTextStyle(context),
               ),
               Text(
