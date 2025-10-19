@@ -323,8 +323,8 @@ void main() {
         // Assert: Correct opposite mapping (spot check a few known pairs)
         if (startNumber == 20) expect(oppositeNumber, equals(3));
         if (startNumber == 3) expect(oppositeNumber, equals(20));
-        if (startNumber == 19) expect(oppositeNumber, equals(2));
-        if (startNumber == 2) expect(oppositeNumber, equals(19));
+        if (startNumber == 19) expect(oppositeNumber, equals(1));
+        if (startNumber == 2) expect(oppositeNumber, equals(12));
         
         // Assert: Target sequence structure
         List<String> targets = controller.getTargetSequence();
