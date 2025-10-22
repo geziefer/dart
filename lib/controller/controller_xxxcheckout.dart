@@ -191,6 +191,12 @@ class ControllerXXXCheckout extends ControllerBase
         } else {
           finishes.add(false);
         }
+        
+        // Update highest average with completed round average
+        if (currentRoundAvg > highestAvg) {
+          highestAvg = currentRoundAvg;
+        }
+        
         round = 1;
         remaining = xxx;
         lastTotalDarts = totalDarts;
@@ -347,12 +353,8 @@ class ControllerXXXCheckout extends ControllerBase
   void _updateCurrentRoundAverage() {
     if (scores.isNotEmpty) {
       double sum = scores.fold(0.0, (sum, score) => sum + score);
+      // Current round average is the average of scores in current leg
       currentRoundAvg = sum / scores.length;
-      
-      // Update highest average if current is higher
-      if (currentRoundAvg > highestAvg) {
-        highestAvg = currentRoundAvg;
-      }
     } else {
       currentRoundAvg = 0.0;
     }

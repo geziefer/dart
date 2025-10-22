@@ -675,7 +675,7 @@ void main() {
 
       stats = controller.getCurrentStats();
       expect(stats['currentRoundAvg'], equals('60.0'));
-      expect(stats['highestAvg'], equals('60.0'));
+      expect(stats['highestAvg'], equals('0.0')); // Not updated until leg completes
 
       // Throw second score: 80
       controller.pressNumpadButton(8);
@@ -685,7 +685,7 @@ void main() {
 
       stats = controller.getCurrentStats();
       expect(stats['currentRoundAvg'], equals('70.0')); // (60+80)/2
-      expect(stats['highestAvg'], equals('70.0'));
+      expect(stats['highestAvg'], equals('0.0')); // Still not updated until leg completes
 
       // Throw third score: 40 (lower average)
       controller.pressNumpadButton(4);
@@ -695,7 +695,7 @@ void main() {
 
       stats = controller.getCurrentStats();
       expect(stats['currentRoundAvg'], equals('60.0')); // (60+80+40)/3
-      expect(stats['highestAvg'], equals('70.0')); // Should remain highest
+      expect(stats['highestAvg'], equals('0.0')); // Still not updated until leg completes
     });
   });
 }
