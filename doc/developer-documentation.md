@@ -62,6 +62,7 @@ test/
 - `controller_finishes.dart` - Finish knowledge training with range selection dialog
 - `controller_halfit.dart` - Half It accuracy game
 - `controller_killbull.dart` - Bull hitting practice
+- `controller_planhit.dart` - Plan Hit accuracy training
 - `controller_rtcx.dart` - Round the Clock variants
 - `controller_shootx.dart` - Scoring practice games
 - `controller_speedbull.dart` - Timed bull hitting
@@ -89,6 +90,7 @@ test/
 - `view_finishes.dart` - Finishes UI
 - `view_halfit.dart` - Half It UI
 - `view_killbull.dart` - Kill Bull UI
+- `view_planhit.dart` - Plan Hit UI
 - `view_rtcx.dart` - Round the Clock UI
 - `view_shootx.dart` - Shoot X UI
 - `view_speedbull.dart` - Speed Bull UI
@@ -225,6 +227,7 @@ Services Setup → Game Ready
 - **Double Path**: Practice common double finishing sequences
 - **10 Up 1 Down**: Progressive target challenge
 - **2 Darts**: Two-dart finishing practice with Double Bull
+- **Plan Hit**: Random target accuracy training (10 rounds)
 - **Check 121**: Specific checkout scenario training with save points
 
 ### Assessment Games

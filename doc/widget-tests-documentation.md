@@ -50,7 +50,19 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target sequence generation, point calculation based on hits, round progression through 5 rounds, undo functionality, input validation (0-3 hits), statistics tracking and storage operations.
 
-### 2. Challenge Widget Tests
+### 2. Plan Hit Game Widget Tests
+**Test Class**: `planhit_widget_test.dart`
+
+**Test Cases**:
+- Complete Plan Hit game workflow - all 10 rounds
+- Plan Hit undo functionality test
+- Plan Hit target generation and hit tracking
+- Plan Hit return button for zero hits
+- Plan Hit stats calculation verification
+
+**What is tested**: Random target generation (3 numbers 1-20), hit counting and total accumulation, round progression through 10 rounds, undo functionality, input validation (0-3 hits), statistics tracking with record keeping and long-term averages.
+
+### 3. Challenge Widget Tests
 **Test Class**: `challenge_widget_test.dart`
 
 **Test Cases**:
