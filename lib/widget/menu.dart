@@ -16,6 +16,7 @@ import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_challenge.dart';
 import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
+import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
@@ -35,6 +36,7 @@ import 'package:dart/view/view_cricket.dart';
 import 'package:dart/view/view_challenge.dart';
 import 'package:dart/view/view_acrossboard.dart';
 import 'package:dart/view/view_creditfinish.dart';
+import 'package:dart/view/view_planhit.dart';
 import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
@@ -98,12 +100,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 20, 'needsModeSelection': true},
     ),
     MenuItem(
-      id: 'RTCT',
-      name: 'RTC Triple\nmax 20',
-      view: const ViewRTCX(title: 'Round the Clock Triple'),
+      id: 'PLANHIT',
+      name: 'Plan Hit',
+      view: const ViewPlanHit(title: 'Plan Hit'),
       getController: (context) =>
-          Provider.of<ControllerRTCX>(context, listen: false),
-      params: const {'max': 20},
+          Provider.of<ControllerPlanHit>(context, listen: false),
+      params: const {},
     ),
     MenuItem(
       id: 'HI',

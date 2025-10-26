@@ -16,6 +16,17 @@ class Numpad extends StatelessWidget {
     this.cricketMode = false,
   });
 
+  // Convenience constructor for Plan Hit game (only 0-3 buttons)
+  const Numpad.planHit({
+    super.key,
+    required this.controller,
+  }) : showUpper = false,
+       showMiddle = false,
+       showLower = true,
+       showExtraButtons = false,
+       showYesNo = false,
+       cricketMode = false;
+
   final NumpadController controller; // controller class which supports Numpad
   final bool showUpper; // flag if upper row 7-9 should be shown
   final bool showMiddle; // flag if middle row 4-6 should be shown

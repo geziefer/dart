@@ -16,6 +16,7 @@ import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_challenge.dart';
 import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
+import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/controller/controller_stats.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerChallenge()),
         ChangeNotifierProvider(create: (context) => ControllerAcrossBoard()),
         ChangeNotifierProvider(create: (context) => ControllerCreditFinish.create()),
+        ChangeNotifierProvider(create: (context) => ControllerPlanHit.create()),
         ChangeNotifierProvider(create: (context) => ControllerStats()),
       ],
       child: const MaterialApp(
