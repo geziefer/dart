@@ -28,6 +28,8 @@ class ControllerRTCX extends ControllerBase
 
   MenuItem? item; // item which created the controller
   int max = -1; // limit of rounds per leg (-1 = unlimited)
+  String selectedMode = ''; // Selected mode: 'RTCD' or 'RTCT'
+  bool _dialogShown = false; // Flag to prevent multiple dialog displays
 
   bool isChallengeMode = false; // if true, running in challenge mode
   Function(int)? onGameCompleted; // callback to report score to parent controller
@@ -42,16 +44,54 @@ class ControllerRTCX extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    _storageService =
-        StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
     max = item.params['max'];
+
+    // Check if mode selection is needed
+    if (item.params['needsModeSelection'] == true) {
+      selectedMode = ''; // Reset mode selection
+      _dialogShown = false; // Reset dialog flag
+      // Don't initialize storage service yet - wait for mode selection
+    } else {
+      selectedMode = item.id; // Use the item ID as mode
+      _dialogShown = true; // No dialog needed
+      _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
+      initializeServices(_storageService!);
+    }
 
     throws = <int>[];
     currentNumber = 1;
     round = 1;
     dart = 0;
     finished = false;
+  }
+
+  void setMode(String mode, int maxValue) {
+    selectedMode = mode;
+    max = maxValue;
+    _dialogShown = true;
+    
+    // Update storage service with the selected mode
+    _storageService = StorageService(mode, injectedStorage: _injectedStorage);
+    initializeServices(_storageService!);
+    
+    notifyListeners();
+  }
+
+  void markDialogShown() {
+    _dialogShown = true;
+  }
+
+  bool get needsModeSelection => selectedMode.isEmpty && !_dialogShown;
+
+  String get gameTitle {
+    switch (selectedMode) {
+      case 'RTCD':
+        return 'Round the Clock Double';
+      case 'RTCT':
+        return 'Round the Clock Triple';
+      default:
+        return 'Round the Clock';
+    }
   }
 
   @override
@@ -99,14 +139,17 @@ class ControllerRTCX extends ControllerBase
             // Challenge mode: skip checkout dialog, count 2 darts for last round
             dart -= 1; // Correct from 3 to 2 darts
             triggerGameEnd();
-          } else {
-            // Normal mode: show checkout dialog with correct options
+          } else if (finished) {
+            // Normal mode: only show checkout dialog if game was actually completed
             // Calculate how many targets were actually hit in this final input
             int targetsHit = advancement;
             
             // Show checkout dialog - pass the number of targets hit as remaining parameter
             // This ensures the checkout dialog shows the correct dart options
             onShowCheckout?.call(targetsHit, 0);
+          } else {
+            // Game not completed but hit round limit - go straight to game end
+            triggerGameEnd();
           }
         } else {
           // Normal round - just update state
@@ -160,6 +203,11 @@ class ControllerRTCX extends ControllerBase
 
   @override
   void updateSpecificStats() {
+    // Don't update stats if services not initialized yet
+    if (_storageService == null) {
+      return;
+    }
+
     if (isChallengeMode) {
       // Report score to parent controller if callback is set
       // In Challenge mode, always call the callback when game ends (finished or not)
@@ -233,6 +281,11 @@ class ControllerRTCX extends ControllerBase
   }
 
   String getStats() {
+    // Return empty stats if services not initialized yet (waiting for mode selection)
+    if (_storageService == null) {
+      return 'Wähle Spielmodus...';
+    }
+
     int numberGames =
         statsService.getStat<int>('numberGames', defaultValue: 0)!;
     int numberFinishes =

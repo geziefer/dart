@@ -4,6 +4,7 @@ import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
 import 'package:dart/widget/checkout.dart';
+import 'package:dart/widget/rtcx_mode_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/menu.dart';
@@ -28,10 +29,20 @@ class ViewRTCX extends StatelessWidget {
     if (controller.item == null && menuItem != null) {
       controller.init(menuItem);
     }
+
     // Set up callbacks for UI interactions
     controller.onGameEnded = () {
       controller.showSummaryDialog(context);
     };
+
+    // Show mode selection dialog if needed
+    if (controller.needsModeSelection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.markDialogShown();
+        _showModeSelectionDialog(context, controller);
+      });
+    }
+
     controller.onShowCheckout = (remaining, score) {
       // Show checkout dialog in target mode
       showDialog(
@@ -62,7 +73,7 @@ class ViewRTCX extends StatelessWidget {
     String stats = controller.getStats();
     
     return GameLayout(
-      title: title,
+      title: controller.gameTitle,
       mainContent: Column(
         children: [
           Expanded(
@@ -147,5 +158,22 @@ class ViewRTCX extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showModeSelectionDialog(BuildContext context, ControllerRTCX controller) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const RTCXModeDialog();
+      },
+    );
+
+    if (result != null && context.mounted) {
+      controller.setMode(result['id'], result['max']);
+    } else if (context.mounted) {
+      // User cancelled - go back to menu
+      Navigator.of(context).pop();
+    }
   }
 }

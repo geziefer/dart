@@ -9,6 +9,7 @@ import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/widget/rtcx_mode_dialog.dart';
 
 import 'rtcx_widget_test.mocks.dart';
 
@@ -39,6 +40,58 @@ void main() {
         getController: (_) => controller,
         params: {'max': -1}, // Unlimited rounds
       ));
+    });
+
+    /// Tests RTCX mode selection dialog functionality
+    /// Verifies: dialog shows when needsModeSelection is true, mode is set correctly
+    testWidgets('RTCX mode selection dialog functionality',
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      // Create controller that needs mode selection
+      final modeController = ControllerRTCX.forTesting(mockStorage);
+      modeController.init(MenuItem(
+        id: 'RTCDT',
+        name: 'RTC D/T max 20',
+        view: const ViewRTCX(title: 'Round the Clock Double/Triple'),
+        getController: (_) => modeController,
+        params: {'max': 20, 'needsModeSelection': true},
+      ));
+
+      // Verify controller needs mode selection
+      expect(modeController.needsModeSelection, isTrue);
+      expect(modeController.selectedMode, isEmpty);
+
+      // Test mode selection dialog
+      await tester.pumpWidget(
+        MaterialApp(
+          home: const RTCXModeDialog(),
+        ),
+      );
+
+      // Verify dialog shows correct title and options
+      expect(find.text('Welcher Spielmodus?'), findsOneWidget);
+      expect(find.text('Double'), findsOneWidget);
+      expect(find.text('Triple'), findsOneWidget);
+
+      // Select Double mode
+      await tester.tap(find.text('Double'));
+      await tester.pumpAndSettle();
+
+      // Tap Start button
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+
+      // Test setMode functionality
+      modeController.setMode('RTCD', 20);
+      expect(modeController.selectedMode, equals('RTCD'));
+      expect(modeController.needsModeSelection, isFalse);
+      expect(modeController.gameTitle, equals('Round the Clock Double'));
+
+      // Test Triple mode
+      modeController.setMode('RTCT', 20);
+      expect(modeController.selectedMode, equals('RTCT'));
+      expect(modeController.gameTitle, equals('Round the Clock Triple'));
     });
 
     /// Tests complete RTCX game workflow - hitting numbers 1-20 in sequence

@@ -90,12 +90,12 @@ class Menu extends StatelessWidget {
       params: const {'max': 10},
     ),
     MenuItem(
-      id: 'RTCD',
-      name: 'RTC Double\nmax 20',
-      view: const ViewRTCX(title: 'Round the Clock Double'),
+      id: 'RTCDT',
+      name: 'RTC D/T\nmax 20',
+      view: const ViewRTCX(title: 'Round the Clock Double/Triple'),
       getController: (context) =>
           Provider.of<ControllerRTCX>(context, listen: false),
-      params: const {'max': 20},
+      params: const {'max': 20, 'needsModeSelection': true},
     ),
     MenuItem(
       id: 'RTCT',

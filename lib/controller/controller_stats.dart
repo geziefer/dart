@@ -35,8 +35,14 @@ class ControllerStats extends ChangeNotifier {
   Future<void> loadAllStats() async {
     _allStats.clear();
 
-    for (final game in Menu.games) {
-      final storage = GetStorage(game.id);
+    // Get all current menu games
+    final allGameIds = Menu.games.map((game) => game.id).toList();
+    
+    // Add legacy/split game IDs that might have stats but aren't in current menu
+    allGameIds.addAll(['RTCD', 'RTCT']);
+
+    for (final gameId in allGameIds) {
+      final storage = GetStorage(gameId);
       final stats = <String, dynamic>{};
 
       final keys = storage.getKeys();
@@ -45,8 +51,28 @@ class ControllerStats extends ChangeNotifier {
       }
 
       if (stats.isNotEmpty) {
-        _allStats[game.id] = {
-          'name': game.name.replaceAll('\n', ' '),
+        // Try to find the game name from menu first
+        final menuGame = Menu.games.where((game) => game.id == gameId).firstOrNull;
+        String gameName;
+        
+        if (menuGame != null) {
+          gameName = menuGame.name.replaceAll('\n', ' ');
+        } else {
+          // Fallback names for legacy IDs
+          switch (gameId) {
+            case 'RTCD':
+              gameName = 'RTC Double max 20';
+              break;
+            case 'RTCT':
+              gameName = 'RTC Triple max 20';
+              break;
+            default:
+              gameName = gameId;
+          }
+        }
+
+        _allStats[gameId] = {
+          'name': gameName,
           'stats': stats,
         };
       }
