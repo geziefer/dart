@@ -33,7 +33,7 @@ Tests use Flutter's `WidgetTester` to:
 
 ## Game Test Classes
 
-### 1. Double Path Game Widget Tests
+### Double Path Game Widget Tests
 **Test Class**: `doublepath_widget_test.dart`
 
 **Test Cases**:
@@ -50,7 +50,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Target sequence generation, point calculation based on hits, round progression through 5 rounds, undo functionality, input validation (0-3 hits), statistics tracking and storage operations.
 
-### 2. Plan Hit Game Widget Tests
+### Plan Hit Game Widget Tests
 **Test Class**: `planhit_widget_test.dart`
 
 **Test Cases**:
@@ -62,7 +62,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Random target generation (3 numbers 1-20), hit counting and total accumulation, round progression through 10 rounds, undo functionality, input validation (0-3 hits), statistics tracking with record keeping and long-term averages.
 
-### 3. Challenge Widget Tests
+### Challenge Widget Tests
 **Test Class**: `challenge_widget_test.dart`
 
 **Test Cases**:
@@ -78,7 +78,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Multi-stage challenge progression, badge calculation based on performance thresholds, stage transitions, summary generation with matrix data, controller delegation to sub-games.
 
-### 3. Stats Controller Tests
+### Stats Controller Tests
 **Test Class**: `stats_test.dart`
 
 **Test Cases**:
@@ -99,7 +99,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: JSON export/import functionality, data validation, file operations, stats management for view integration, data structure handling.
 
-### 4. Cricket Widget Tests
+### Cricket Widget Tests
 **Test Class**: `cricket_widget_test.dart`
 
 **Test Cases**:
@@ -125,7 +125,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Cricket game rules (15-20, Bull), hit tracking, round management, average calculations, input constraints, game completion detection, view integration callbacks.
 
-### 5. Cricket Board Widget Tests
+### Cricket Board Widget Tests
 **Test Class**: `cricket_board_test.dart`
 
 **Test Cases**:
@@ -139,7 +139,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Visual representation of cricket hits, responsive layout, hit indicator display (filled/empty circles), proper number display including bull.
 
-### 6. Fullcircle Widget Tests
+### Fullcircle Widget Tests
 **Test Class**: `fullcircle_widget_test.dart`
 
 **Test Cases**:
@@ -165,7 +165,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Dartboard field generation, tap detection, mathematical calculations for dartboard layout, slice ID mapping, field validation, gesture handling.
 
-### 7. Version Info Widget Tests
+### Version Info Widget Tests
 **Test Class**: `version_info_test.dart`
 
 **Test Cases**:
@@ -181,7 +181,7 @@ Tests use Flutter's `WidgetTester` to:
 
 **What is tested**: Async version loading from package info, text formatting, widget lifecycle, state management, version format validation.
 
-### 8. Menu Widget Tests
+### Menu Widget Tests
 **Test Class**: `menu_widget_test.dart`
 
 **Test Cases**:
@@ -216,7 +216,7 @@ The following components received significant test coverage improvements:
 
 All tests now pass without errors and provide robust coverage of business logic, user interactions, and edge cases across the application.
 
-### 2. Big Ts Game Widget Tests
+### Big Ts Game Widget Tests
 **Test Class**: `bigts_widget_test.dart`
 
 **Test Cases**:
@@ -230,7 +230,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Triple hitting practice (T20, T19, T18), point calculation based on hits (0→0, 1→1, 2→3, 3→6 points), round progression through 10 rounds, undo functionality, input validation (0-3 hits), average calculation at different game stages, and statistics tracking.
 
-### 3. Two Darts Game Widget Tests
+### Two Darts Game Widget Tests
 **Test Class**: `twodarts_widget_test.dart`
 
 **Test Cases**:
@@ -246,7 +246,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Target sequence progression, success/failure tracking, game completion after 10 targets, undo functionality, input validation, and statistics calculation.
 
-### 4. CatchXX Game Widget Tests
+### CatchXX Game Widget Tests
 **Test Class**: `catchxx_widget_test.dart`
 
 **Test Cases**:
@@ -266,7 +266,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Scoring based on dart count (2-6 darts), special cases for impossible finishes, target 99 special handling, undo functionality, and statistics tracking.
 
-### 5. Credit Finish Game Widget Tests
+### Credit Finish Game Widget Tests
 **Test Class**: `creditfinish_widget_test.dart`
 
 **Test Cases**:
@@ -280,7 +280,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Two-phase gameplay (score input then finish confirmation), credit calculation system (0-3 credits based on score ranges), input validation during typing (prevents invalid scores like xxxcheckout), automatic miss for scores <57, game end after 10 misses, undo functionality (clears input first then removes complete rounds, disabled in finish phase), statistics tracking as percentage of successful finishes, and table scrolling showing last 5 rounds.
 
-### 6. Speed Bull Game Widget Tests
+### Speed Bull Game Widget Tests
 **Test Class**: `speedbull_widget_test.dart`
 
 **Test Cases**:
@@ -296,7 +296,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Timer-based gameplay, hit counting during timed rounds, game duration handling, pre-game state management, and statistics calculation.
 
-### 7. HalfIt Game Widget Tests
+### HalfIt Game Widget Tests
 **Test Class**: `halfit_widget_test.dart`
 
 **Test Cases**:
@@ -319,7 +319,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Target sequence (20, 19, 18, 17, 16, 15, Bull, 14, 13), score halving logic when missing targets, input validation, game progression through 9 rounds, and statistics calculation.
 
-### 8. Bobs 27 Game Widget Tests
+### Bobs 27 Game Widget Tests
 **Test Class**: `bobs27_widget_test.dart`
 
 **Test Cases**:
@@ -337,7 +337,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Score reduction from 27 points, target progression (1-20, Bull), win/lose conditions, score validation, statistics tracking, and averaging logic that sums only positive scores but divides by total rounds (same behavior as HalfIt game).
 
-### 9. Check 121 Game Widget Tests
+### Check 121 Game Widget Tests
 **Test Class**: `check121_widget_test.dart`
 
 **Test Cases**:
@@ -354,7 +354,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Target progression with save points, miss counting (game ends after 10 misses), highest target reached tracking, and statistics calculation.
 
-### 10. Finishes Game Widget Tests
+### Finishes Game Widget Tests
 **Test Class**: `finishes_widget_test.dart`
 
 **Test Cases**:
@@ -371,7 +371,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Range selection dialog integration, random finish generation within user-selected ranges (61-80, 81-107, 108-135, 136-170), finish data structure validation, statistics tracking, text formatting methods, and dynamic title generation based on selected range. Tests verify that the controller properly initializes with `setRange()` method and handles the pre-game range selection workflow.
 
-### 11. RTCX Game Widget Tests
+### RTCX Game Widget Tests
 **Test Class**: `rtcx_widget_test.dart`
 
 **Test Cases**:
@@ -386,7 +386,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Number progression (1-20), dart counting per round, round limits, input validation, checkout dialog integration for accurate dart counting in final round, and statistics calculation. The game now shows a checkout dialog before the summary to allow players to specify the exact number of darts used in the final round, ensuring accurate dart count statistics.
 
-### 12. 10 Up 1 Down Game Widget Tests
+### 10 Up 1 Down Game Widget Tests
 **Test Class**: `updown_widget_test.dart`
 
 **Test Cases**:
@@ -402,7 +402,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Target adjustment based on success/failure (up on success, down on failure), boundary conditions, game completion after 13 rounds, and statistics tracking.
 
-### 13. Kill Bull Game Widget Tests
+### Kill Bull Game Widget Tests
 **Test Class**: `killbull_widget_test.dart`
 
 **Test Cases**:
@@ -417,7 +417,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Bull hit counting, game ending when missing bulls, score calculation, immediate game end scenarios, and statistics tracking.
 
-### 14. ShootX Game Widget Tests
+### ShootX Game Widget Tests
 **Test Class**: `shootx_widget_test.dart`
 
 **Test Cases**:
@@ -434,7 +434,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Hit counting and scoring, return button functionality, undo operations, statistics calculation, and data formatting methods.
 
-### 15. XXXCheckout Game Widget Tests
+### XXXCheckout Game Widget Tests
 **Test Class**: `xxxcheckout_widget_test.dart`
 
 **Test Cases**:
@@ -459,7 +459,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Checkout game logic, bogey number validation, bust prevention, dart counting, average calculations, leg completion detection, and statistics tracking.
 
-### 16. Checkout Widget Business Logic Tests
+### Checkout Widget Business Logic Tests
 **Test Class**: `checkout_widget_test.dart`
 
 **Test Cases**:
@@ -477,7 +477,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Checkout dialog functionality for both score-based checkout games (XXXCheckout) and target-based games (RTCX). Tests cover dual-mode operation with `isCheckoutMode` flag, dart calculation logic for different score ranges, button rendering based on possible dart counts, callback integration, and dart correction functionality. The widget now supports both traditional checkout scenarios and target-count scenarios for accurate final round dart counting.
 
-### 17. Menu Widget Business Logic Tests
+### Menu Widget Business Logic Tests
 **Test Class**: `menu_widget_test.dart`
 
 **Test Cases**:
@@ -488,7 +488,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Menu widget functionality, navigation logic, controller management, and game categorization. Tests verify the consolidated FinishQuest game structure (single game with ID 'FQ' instead of multiple range-specific games), "Frei" placeholder games pointing to 501x5 checkout, and proper MenuItem validation for all 20 games in the 4x5 grid layout.
 
-### 18. Across Board Game Widget Tests
+### Across Board Game Widget Tests
 **Test Class**: `acrossboard_widget_test.dart`
 
 **Test Cases**:
@@ -503,7 +503,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Random start number generation (1-20), target sequence creation with 11 targets (D→BS→T→SS→SB→DB→SB→SS→T→BS→D), opposite number mapping validation using dartboard layout pairs, target progression and hit tracking, undo functionality including zero-hit rounds, input validation with smart button disabling, game completion detection, checkout dialog integration, and comprehensive statistics calculation testing (darts per target average in various scenarios including initial state, progressive hits, and zero-hit rounds).
 
-### 19. FullCircle Widget Tests
+### FullCircle Widget Tests
 **Test Class**: `fullcircle_widget_test.dart`
 
 **Test Cases**:
@@ -514,7 +514,7 @@ All tests now pass without errors and provide robust coverage of business logic,
 
 **What is tested**: Widget constructor validation, arc section configuration for dartboard rings (outer single, triple, inner single, double), radius calculations, controller integration for dartboard field interactions, and proper rendering of circular dartboard sections.
 
-### 20. Challenge Widget Tests
+### Challenge Widget Tests
 **Test Class**: `challenge_widget_test.dart`
 
 **Test Cases**:
