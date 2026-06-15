@@ -177,6 +177,11 @@ class ControllerCatchXX extends ControllerBase
     return round == 1 ? 0 : (points / (round - 1));
   }
 
+  String getCurrentRound() {
+    List<int> rounds = List.generate(round, (index) => index + 1);
+    return createMultilineString(rounds, [], '', '', [], 5, false);
+  }
+
   String getCurrentTargets() {
     return createMultilineString(targets, [], '', '', [], 5, false);
   }

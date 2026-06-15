@@ -360,15 +360,20 @@ void main() {
       await tester.pump();
 
       // Assert: String methods return valid data
+      expect(controller.getCurrentRound(), isA<String>());
       expect(controller.getCurrentTargets(), isA<String>());
       expect(controller.getCurrentThrownPoints(), isA<String>());
       expect(controller.getCurrentTotalPoints(), isA<String>());
 
       // Assert: String methods contain expected data patterns
+      String rounds = controller.getCurrentRound();
       String targets = controller.getCurrentTargets();
       String thrownPoints = controller.getCurrentThrownPoints();
       String totalPoints = controller.getCurrentTotalPoints();
 
+      expect(rounds, contains('1')); // First round
+      expect(rounds, contains('2')); // Second round  
+      expect(rounds, contains('3')); // Current round (should be shown)
       expect(targets, contains('61')); // Starting target
       expect(targets, contains('62')); // Second target
       expect(thrownPoints, contains('3')); // 3 points from first round

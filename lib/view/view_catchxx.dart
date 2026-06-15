@@ -48,6 +48,17 @@ class ViewCatchXX extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // ########## Rounds
+                      ScoreColumn(
+                        label: 'R',
+                        content: controller.getCurrentRound(),
+                        color: const Color.fromARGB(255, 215, 198, 132),
+                      ),
+                      const SizedBox(width: 10),
+                      const VerticalDivider(
+                          color: Colors.white, thickness: 1),
+                      const SizedBox(width: 10),
+
                       // ########## Target
                       ScoreColumn(
                           label: 'Z',
