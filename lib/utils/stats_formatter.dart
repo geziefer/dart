@@ -57,9 +57,8 @@ class StatsFormatter {
     if (value is double) {
       // Format doubles to 1 decimal place, preserving .0 for consistency
       return value.toStringAsFixed(1);
-    } else if (value is int) {
-      return value.toString();
     } else {
+      // int and other types: use their default string representation
       return value.toString();
     }
   }
