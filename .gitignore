@@ -49,3 +49,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 coverage/
+
+# Scolia API documentation — kept local only (do not redistribute vendor docs)
+doc/Scolia API*.pdf

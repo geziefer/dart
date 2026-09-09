@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_stats.dart';
+import 'package:dart/view/view_scolia_settings.dart';
 import 'package:dart/widget/game_layout.dart';
 
 class ViewStats extends StatelessWidget {
@@ -16,7 +17,7 @@ class ViewStats extends StatelessWidget {
         });
         
         return GameLayout(
-          title: 'Statistik',
+          title: 'Statistik / Einstellungen',
           mainContent: controller.allStats.isEmpty
               ? const Center(
                   child: Text(
@@ -98,6 +99,19 @@ class ViewStats extends StatelessWidget {
                             );
                           }),
                           child: const Text('Import'),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ViewScoliaSettings(),
+                            ),
+                          ),
+                          child: const Text('Scolia'),
                         ),
                       ),
                     ),

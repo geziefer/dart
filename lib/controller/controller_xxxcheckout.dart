@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerXXXCheckout extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -241,6 +243,15 @@ class ControllerXXXCheckout extends ControllerBase
   bool isBogeyNumber(int score) {
     const bogeyNumbers = {159, 162, 163, 165, 166, 168, 169};
     return bogeyNumbers.contains(score);
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    // Category 1 (score-value): the turn's total is the round score. Reuse the
+    // exact numpad "enter" path so all leg/checkout/bust/stats logic applies.
+    if (xxx == 0) return; // not initialized
+    input = turn.total.toString();
+    pressNumpadButton(-1);
   }
 
   // Checkout and summary dialogs are now handled by the view via callbacks
