@@ -202,3 +202,61 @@ starts: enter credentials in the settings page, flip input mode to Scolia, and
 validate C3 against the physical board — no further code expected beyond fixing
 any wire-format surprises (which, given v1.4 is fully documented, should be
 minimal and confined to `protocol/`).
+
+
+---
+
+## 8. Phase G — Dartboard input UI, simulator & monitor (live wiring)
+
+Design agreed after reviewing the existing `finishes` dartboard (`FullCircle` +
+`DartboardController.pressDartboard(String)` which already emits `T20`, `S1`,
+`D16`, `DB`, `SB`). The Scolia input surface is the **dartboard**, unified across
+simulator and real modes.
+
+### Design (locked)
+
+- **One input mode at a time** (no simultaneous numpad + Scolia). A global
+  **"Scolia" toggle on the start menu** decides: ON → pilot games render the
+  dartboard input; OFF → the normal numpad (unchanged behaviour).
+- **`ScoliaDartboard` widget** = the reusable Scolia input surface:
+  - Renders `FullCircle`.
+  - Shows a **status/phase banner** (connection state + Ready/Throw/Takeout).
+  - **Simulator mode:** the user's taps generate the throws.
+  - **Real mode:** the board's `THROW_DETECTED` drives it and the hit field is
+    **highlighted** (the screen mirrors the board).
+  - Both feed the identical pipeline: sector → `SectorParser` → `TurnCollector`
+    → adapter → `controller.submitScoliaTurn`.
+  - This widget **doubles as the monitor** (state banner + highlighted hits +
+    recent throws), so no separate monitor view is required — but a dedicated
+    monitor entry in settings is still provided for board-without-app testing.
+- **Simulator & Monitor live permanently in the Settings page** (expert view,
+  single user). They do not interfere with the real setup:
+  - **Simulator switch:** when ON, the source is `MockScoliaSource` (tap to
+    throw). When OFF and credentials are present, the source is the real
+    `ScoliaConnection`.
+  - **Monitor:** a diagnostic screen using the dartboard + a **colour-coded**
+    event log (states vs. throws vs. errors in distinct colours).
+- Games/controllers stay logically untouched; only each pilot **view** gets a
+  single uniform conditional in its input slot: `isScolia ? ScoliaDartboard
+  : Numpad`. The `DB`/`SB` bull notation from `FullCircle` is normalised to
+  Scolia's `Bull`/`25` at the widget boundary so the real pipeline is exercised.
+
+### Tasks
+- [x] **G1.** `ScoliaDartboard` widget: `FullCircle` + status/phase banner;
+  implements `DartboardController`; normalises `DB`->`Bull`, `SB`->`25`; feeds
+  taps (simulator) / highlights hits (real) through the pipeline.
+- [x] **G2.** Menu: global **"Scolia" toggle** (uses `InputModeHolder`),
+  persisted; shown on the start menu.
+- [x] **G3.** Wire `main.dart`: register `InputModeHolder` + a source provider
+  (mock vs. real chosen by the Simulator switch / credentials) + adapter.
+- [x] **G4.** Pilot views (`view_xxxcheckout`, `view_bobs27`): swap input slot
+  to `ScoliaDartboard` when `InputModeHolder.isScolia`, else `Numpad`.
+- [x] **G5.** Settings page: add a **Simulator** switch (mock vs. real source)
+  and a **Monitor** entry (colour-coded state/throw/error log; reuses the
+  dartboard for hit display).
+- [x] **G6.** Tests: simulator taps drive a pilot game on-screen (e.g. simulated
+  180 drops x01 remaining by 180); monitor renders a real-format frame with the
+  correct colour category. Analyze clean + full suite green.
+
+> After Phase G, the only trial-time step is flipping the Simulator switch OFF
+> with real credentials to let the physical board drive the exact same UI.

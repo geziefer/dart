@@ -3,10 +3,21 @@
 /// survives restarts.
 library;
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:dart/services/storage_service.dart';
 
 enum InputMode { numpad, scolia }
+
+/// Whether Scolia (dartboard) input is active for the current context.
+///
+/// Reads [InputModeHolder] from the widget tree and rebuilds when it changes.
+/// Falls back to `false` (numpad) if no holder is provided — so game views
+/// remain usable in tests/contexts that don't wire the holder.
+bool scoliaInputActive(BuildContext context) {
+  final holder = context.watch<InputModeHolder?>();
+  return holder?.isScolia ?? false;
+}
 
 class InputModeHolder extends ChangeNotifier {
   static const String containerName = 'scolia_settings';

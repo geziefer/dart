@@ -18,6 +18,7 @@ import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
@@ -226,6 +227,22 @@ class Menu extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Global Scolia input toggle: ON -> games use the dartboard
+                  // input instead of the numpad.
+                  Consumer<InputModeHolder>(
+                    builder: (context, inputMode, _) => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Scolia',
+                            style: TextStyle(color: Colors.white70)),
+                        Switch(
+                          value: inputMode.isScolia,
+                          onChanged: (_) => inputMode.toggle(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
                   const VersionInfo(),
                 ],
               ),

@@ -12,6 +12,7 @@ class ScoliaSettings {
   static const String containerName = 'scolia_settings';
   static const String _keySerial = 'serialNumber';
   static const String _keyToken = 'accessToken';
+  static const String _keySimulator = 'simulatorEnabled';
 
   final StorageService _storage;
 
@@ -23,6 +24,14 @@ class ScoliaSettings {
 
   String get accessToken =>
       _storage.read<String>(_keyToken, defaultValue: '') ?? '';
+
+  /// When true, use the on-screen dartboard simulator instead of a real board.
+  /// Defaults to true so the feature is usable without hardware.
+  bool get simulatorEnabled =>
+      _storage.read<bool>(_keySimulator, defaultValue: true) ?? true;
+
+  set simulatorEnabled(bool value) =>
+      _storage.write<bool>(_keySimulator, value);
 
   /// True once both credentials are present.
   bool get isConfigured =>

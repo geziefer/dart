@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:dart/scolia/mock_scolia_source.dart';
+import 'package:dart/scolia/scolia_connection.dart';
+import 'package:dart/scolia/scolia_event_source.dart';
 import 'package:dart/scolia/scolia_settings.dart';
+import 'package:dart/view/view_scolia_monitor.dart';
 import 'package:dart/widget/game_layout.dart';
 
 /// Settings page for entering the local-only Scolia credentials (board serial
@@ -21,6 +25,7 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
   late final TextEditingController _serialController;
   late final TextEditingController _tokenController;
   bool _obscureToken = true;
+  bool _simulator = true;
 
   @override
   void initState() {
@@ -28,6 +33,7 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
     _settings = widget.settings ?? ScoliaSettings();
     _serialController = TextEditingController(text: _settings.serialNumber);
     _tokenController = TextEditingController(text: _settings.accessToken);
+    _simulator = _settings.simulatorEnabled;
   }
 
   @override
@@ -94,10 +100,48 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
               onPressed: _save,
               child: const Text('Speichern'),
             ),
+            const Divider(height: 40, color: Colors.white24),
+            // Simulator switch: mock (on-screen dartboard) vs. real board.
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Simulator-Modus',
+                  style: TextStyle(color: Colors.white)),
+              subtitle: const Text(
+                'An: Eingabe über Dartscheibe am Bildschirm. Aus: echtes Scolia-Board.',
+                style: TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+              value: _simulator,
+              onChanged: (v) {
+                setState(() => _simulator = v);
+                _settings.simulatorEnabled = v;
+              },
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.monitor_heart),
+              label: const Text('Monitor öffnen'),
+              onPressed: _openMonitor,
+            ),
           ],
         ),
       ),
       statsContent: const SizedBox(),
+    );
+  }
+
+  void _openMonitor() {
+    // In simulator mode use the mock source; otherwise a real connection.
+    final ScoliaEventSource source = _simulator || !_settings.isConfigured
+        ? MockScoliaSource()
+        : ScoliaConnection(
+            serialNumber: _settings.serialNumber,
+            accessToken: _settings.accessToken,
+          );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            ViewScoliaMonitor(source: source, simulator: _simulator || !_settings.isConfigured),
+      ),
     );
   }
 }
