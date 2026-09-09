@@ -166,19 +166,19 @@ class ControllerStats extends ChangeNotifier {
 
   Future<void> importStatsFromFile(BuildContext context, Function(String) onValidDataSelected) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      PlatformFile? pickedFile = await FilePicker.pickFile(
         type: FileType.any,
         dialogTitle: 'Statistik importieren',
       );
 
-      if (result != null) {
+      if (pickedFile != null) {
         String jsonData;
 
         if (kIsWeb) {
-          final bytes = result.files.single.bytes!;
+          final bytes = await pickedFile.readAsBytes();
           jsonData = String.fromCharCodes(bytes);
         } else {
-          final file = File(result.files.single.path!);
+          final file = File(pickedFile.path!);
           jsonData = await file.readAsString();
         }
 
