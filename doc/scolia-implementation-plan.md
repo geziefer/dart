@@ -260,3 +260,303 @@ simulator and real modes.
 
 > After Phase G, the only trial-time step is flipping the Simulator switch OFF
 > with real credentials to let the physical board drive the exact same UI.
+
+---
+
+## 9. Phase H — Scolia integration for all remaining games
+
+Each game gets its own `submitScoliaTurn(TurnResult)` implementation and a
+corresponding swap of its input slot in the view (identical pattern to the
+two existing pilots: `scoliaInputActive(context) ? ScoliaDartboard(...) :
+Numpad(...)`). Numpad paths are **never touched**. Tests must prove the Scolia
+path produces identical controller state to the equivalent numpad input.
+
+Each task below is one self-contained unit: implement + view-wire + test +
+commit after manual in-app verification. Order is roughly complexity ascending.
+
+---
+
+### H1 — Cricket
+
+**Translation:** Each Scolia dart that hits a cricket number (15–20 or 25/bull)
+calls `pressNumpadButton(number)` once, twice, or three times according to the
+ring multiplier (single→1, double→2, triple→3). After all 3 darts processed,
+call `pressNumpadButton(0)` to end the round. Darts hitting non-cricket numbers
+are ignored. The existing `_canAddHit` guard in the controller handles
+over-hitting (max 3 hits per number, max 3 darts per round).
+
+**View:** `view_cricket.dart` — swap numpad (cricketMode:true) for
+`ScoliaDartboard`.
+
+---
+
+### H2 — Kill Bull
+
+**Translation:** Count bull hits in the turn. Inner bull (50/DB) = **2 bulls**,
+outer bull (25/SB) = **1 bull**. Max 6 per round (3×DB). Submit that total via
+`pressNumpadButton(total)`.
+
+**View:** `view_killbull.dart`.
+
+---
+
+### H3 — Speed Bull
+
+**Translation:** Same count logic as Kill Bull (inner=2, outer=1). Additionally:
+first `THROW_DETECTED` event in Scolia mode **auto-starts** the game (call the
+start logic) if `!gameStarted`. Respect `gameEnded`/`lastThrowAllowed` gating.
+
+**View:** `view_speedbull.dart`. The START button remains visible but is
+optional — the first dart starts the game automatically.
+
+---
+
+### H4 — Big Ts
+
+**Targets (rotating):** round 1→T20, round 2→T19, round 3→T18, round 4→T20,
+... i.e. target triple segment = `[20, 19, 18][currentRound % 3]`. Only triples
+of that number count as a hit; everything else is a miss.
+
+**Translation:** Count darts where `ring==triple && segment==targetSegment`,
+submit 0–3 via `pressNumpadButton(count)`.
+
+**View:** `view_bigts.dart`.
+
+---
+
+### H5 — Shoot X (99×20)
+
+**Target:** param `x` (always 20 in the menu). Ring multiplier matters: a
+single-20 = 1 hit, D20 = 2 hits, T20 = 3 hits. Sum across 3 darts (max 9,
+typically 0–6 for standard throws). Submit total via `pressNumpadButton(total)`.
+
+**View:** `view_shootx.dart`.
+
+---
+
+### H6 — Round the Clock Single (RTCS)
+
+**Target:** `currentNumber` (sequential 1→20). Each dart that hits `currentNumber`
+in **any ring (single, double, or triple)** counts as... wait — confirmed
+clarification: **only singles count** in RTCS. D1 or T1 is a miss. Each dart
+hitting S(currentNumber) advances the counter by 1. Max 3 per round. Submit count.
+
+**Note:** RTCX uses `selectedMode`. For RTCS (params `max:10`, no
+`needsModeSelection`) the mode is always Single.
+
+**Translation:** Count darts where `ring==single && segment==currentNumber`
+(both S and s qualify — same score). Submit 0–3 via `pressNumpadButton(count)`.
+
+**View:** `view_rtcx.dart`.
+
+---
+
+### H7 — Round the Clock D/T (RTCDT)
+
+**Target:** `currentNumber`. Mode: Double or Triple (selected in dialog).
+Only the exact required ring on `currentNumber` counts. One advance per qualifying
+dart. Submit 0–3.
+
+**Translation:** for Double mode, count darts where `isDoubleOf(currentNumber)`;
+for Triple mode, count darts where `ring==triple && segment==currentNumber`.
+
+**Note:** `selectedMode` is set by the in-app mode-selection dialog; the Scolia
+adapter reads it from the controller.
+
+**View:** same `view_rtcx.dart` as H6.
+
+---
+
+### H8 — Plan Hit
+
+**Target:** `targets[currentRound]` = a "a-b-c" string of 3 numbers (e.g.
+`"4-15-5"`). Order matters: dart 1 must hit target[0], dart 2 must hit target[1],
+dart 3 must hit target[2]. A miss means that position is skipped — the player
+moves on regardless. **Only singles** count (any single ring, S or s). A double
+or triple of the required number is a miss.
+
+**Translation:** For each dart `i` (0,1,2), check if `ring==single &&
+segment==int.parse(targets[currentRound].split('-')[i])`. Count successes (0–3).
+Submit via `pressNumpadButton(count)`.
+
+**View:** `view_planhit.dart`.
+
+---
+
+### H9 — Double Path
+
+**Targets:** fixed sequences `['16-8-4','20-10-5','4-2-1','12-6-3','18-9-B']`.
+Order matters (same in-order rule as Plan Hit). **Only doubles** of each required
+number count; singles/triples of that number are a miss. Last round: 'B' = inner
+bull (double bull / DB).
+
+**Translation:** For dart `i`, check `isDoubleOf(target[i])` where the last
+round's bull target maps to `isDoubleOf(25)` (inner bull). Count 0–3. Submit via
+`pressNumpadButton(count)`.
+
+**View:** `view_doublepath.dart`.
+
+---
+
+### H10 — Across Board
+
+**Target:** `targetSequence[currentTargetIndex]` encodes exact ring+segment
+(D=double, T=triple, SS=inner-single/s, BS=outer-single/S, SB=outer-bull/25,
+DB=inner-bull/Bull). In Scolia mode we have the exact ring, so we can test the
+precise match per dart against the sequence. Count how many darts match the
+next available targets in order, submit 0–3.
+
+**Translation:** Walk through the 3 darts and the remaining sequence; for each
+dart check if it matches the next required target segment (using Scolia's ring
+info). Count advances. Submit via `pressNumpadButton(count)`.
+
+**View:** `view_acrossboard.dart`.
+
+---
+
+### H11 — Half It
+
+**Target label:** `labels[round-1]` ∈ `['15','16','D','17','18','T','19','20','B']`.
+Scoring rule per label:
+- Number label ('15'..'20'): sum of dart values only for darts hitting that
+  segment number (any ring, so T20 in a '20' round = 60).
+- 'D': sum of double-ring dart values (any number).
+- 'T': sum of triple-ring dart values (any number).
+- 'B': sum of bull values (25 for outer, 50 for inner).
+Submit the total score via the existing digit-entry enter path (set `input` and
+call `pressNumpadButton(-1)`, same as xxxcheckout category 1). Score 0 triggers
+halving.
+
+**View:** `view_halfit.dart`.
+
+---
+
+### H12 — 10 Up 1 Down (UpDown)
+
+**Success condition:** player must **finish** `currentTarget` in one round
+(exactly reach 0 from `currentTarget` using up to 3 darts, finishing on a
+double). I.e. the 3 darts must sum exactly to `currentTarget` and the last
+scoring dart must be a double or bull.
+
+**Translation:** check if `turn.total == currentTarget` and the last non-zero
+dart is a double or bull. Submit `pressNumpadButton(1)` on success, `pressNumpadButton(0)`
+on failure.
+
+**View:** `view_updown.dart`.
+
+---
+
+### H13 — 2 Darts
+
+**Targets:** 61–70 (`currentTargetIndex` + 61). Must finish in **exactly 2 darts**
+ending on a double/bull.
+
+**Translation:** Check if exactly 2 darts were thrown this turn, they sum to the
+target, and the 2nd dart is a double or bull. Submit `pressNumpadButton(1)` on
+success, `pressNumpadButton(0)` on failure.
+
+**View:** `view_twodarts.dart`.
+
+---
+
+### H14 — Catch 40
+
+**Targets:** 61–100. Each "round" may span multiple 3-dart turns until the
+checkout succeeds (up to 6 darts / 2 turns) or the player gives up.
+
+**Approach (confirmed):** The `ScoliaDartboard` widget accumulates darts across
+turns for this game (a "multi-turn mini-leg"). The controller expects **total
+darts used** (2–6), not rounds: 2-dart finish = 3 pts, 3-dart = 2 pts, 4–6 = 1 pt,
+0 = failed. When the running total from turn start reaches exactly `target`
+ending on a double, auto-submit the dart count. If after 6 accumulated darts
+(2 takeouts) the target wasn't reached, auto-submit 0 (miss). Note: button 1 is
+disabled in the controller (can't finish in 1 dart) — this is correct, never
+submit 1. The per-round dart accumulator lives in the widget's state for this
+game (a configurable `maxDartsPerRound` extended collector or a simple counter).
+
+**Translation:** Accumulate across turns; on checkout: `pressNumpadButton(dartsUsed)`;
+on 6-dart exhaustion: `pressNumpadButton(0)`.
+
+**View:** `view_catchxx.dart`.
+
+---
+
+### H15 — Check 121
+
+**Targets:** starts at 121, increments on success. Up to 3 rounds (each 3 darts)
+per attempt. The controller expects **rounds used** (1–3), not darts. Safepoint
+fires on `rounds == 1` (finished within the first round, i.e. ≤3 darts).
+
+**Translation:** Accumulate darts across turns (up to 3 turns = 9 darts). When
+the running total reaches exactly `currentTarget` ending on a double/bull:
+`pressNumpadButton(roundsUsed)` where `roundsUsed = ceil(dartsUsed / 3)`.
+If 3 turns exhausted without finishing: `pressNumpadButton(0)` (miss).
+
+**Note:** Catch 40 uses total *darts* (2–6); Check 121 uses total *rounds* (1–3).
+This is an existing inconsistency kept intentionally to preserve current game
+behaviour. Scolia adapters for both games must convert accordingly.
+
+---
+
+### H16 — Credit Finish
+
+**Phase-aware, two-step per round:**
+1. **Score phase** (`GamePhase.scoreInput`): sum the 3 darts → submit total via
+   enter path (same as xxxcheckout), respecting the existing validation and the
+   predefined score buttons (just use the numeric total directly).
+2. **Finish phase** (`GamePhase.finishInput`): the player now attempts to check
+   out the accumulated score. Scolia detects the finish: check if `turn.total ==
+   remainingScore` ending on double/bull → `pressNumpadButton(1)` (success), else
+   `pressNumpadButton(0)` (miss). Phases auto-advance as today.
+
+**View:** `view_creditfinish.dart`.
+
+---
+
+### H17 — Challenge (composite)
+
+**Translation:** No direct translation needed. The `ScoliaDartboard`'s
+`controller` field (set in the view) must be the **active sub-controller**
+(`currentController` of `ControllerChallenge`). The view wires `onUndoRound` and
+`submitScoliaTurn` to delegate to the current sub-controller. Stage advancement
+is automatic via the existing `onGameCompleted` callback chain — when a sub-game
+ends, the challenge controller swaps `currentController`; the view must rebuild
+and update `ScoliaDartboard.controller`.
+
+**View:** `view_challenge.dart`.
+
+---
+
+### Implementation rules (all H tasks)
+
+1. **Never touch the numpad path.** Only add `submitScoliaTurn` to the
+   controller and a conditional in the view's input slot.
+2. **Tests must prove equivalence:** for each game, a Scolia turn that maps to
+   a known numpad input must produce identical controller state.
+3. **STOP AND TEST before committing.** After implementing each H task, stop
+   and let the user manually test the game in Scolia mode on the device.
+   Only commit after the user confirms the game works correctly.
+   Fix any issues found during testing before moving to the next game.
+4. **One commit per game.** Each H task results in exactly one commit,
+   made only after the user has tested and confirmed.
+5. **Update this doc's checkboxes** when each task is committed.
+
+### Task checklist
+
+- [ ] H1 Cricket
+- [ ] H2 Kill Bull
+- [ ] H3 Speed Bull
+- [ ] H4 Big Ts
+- [ ] H5 Shoot X
+- [ ] H6 RTC Single
+- [ ] H7 RTC D/T
+- [ ] H8 Plan Hit
+- [ ] H9 Double Path
+- [ ] H10 Across Board
+- [ ] H11 Half It
+- [ ] H12 10 Up 1 Down
+- [ ] H13 2 Darts
+- [ ] H14 Catch 40
+- [ ] H15 Check 121
+- [ ] H16 Credit Finish
+- [ ] H17 Challenge
