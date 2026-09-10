@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -9,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerShootx extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -201,5 +203,22 @@ class ControllerShootx extends ControllerBase
     } else {
       return '#S: $numberGames  ♛T: $recordNumbers  ØT: ${longtermNumbers.toStringAsFixed(1)}';
     }
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (x == 0) return;
+    // Count hits on target x with ring multiplier: S=1, D=2, T=3.
+    int hits = 0;
+    for (final dart in turn.darts) {
+      if (dart.segment == x && dart.ring != DartRing.miss) {
+        hits += switch (dart.ring) {
+          DartRing.triple    => 3,
+          DartRing.double    => 2,
+          _                  => 1, // single (S or s), also inner/outer bull if x==25
+        };
+      }
+    }
+    pressNumpadButton(hits);
   }
 }
