@@ -31,6 +31,7 @@ class ScoliaDartboard extends StatefulWidget {
     required this.controller,
     this.source,
     this.simulator = true,
+    this.onUndoRound,
   });
 
   /// The active game controller (must support Scolia input).
@@ -43,6 +44,11 @@ class ScoliaDartboard extends StatefulWidget {
   /// True = simulator (taps generate throws). False = real board drives it.
   final bool simulator;
 
+  /// Called when the user requests to undo the last completed round. The view
+  /// wires this to the game controller's existing round-undo (numpad `-2`),
+  /// so full round-undo works identically in Scolia mode.
+  final VoidCallback? onUndoRound;
+
   @override
   State<ScoliaDartboard> createState() => _ScoliaDartboardState();
 }
@@ -54,6 +60,9 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
   BoardStatus _status = BoardStatus.ready;
   BoardPhase? _phase = BoardPhase.throwing;
+
+  /// Index of the pending dart currently selected for correction, or null.
+  int? _editIndex;
 
   @override
   void initState() {
@@ -81,7 +90,9 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
         });
         _collector.setPhase(phase);
       case ThrowDetectedMessage(:final detectedThrow):
-        _registerThrow(detectedThrow);
+        // While correcting on screen, ignore incoming board detections.
+        if (_editIndex != null) break;
+        _applyHit(detectedThrow);
       case TakeoutStartedMessage():
         _collector.onTakeoutStarted();
         setState(() => _phase = BoardPhase.takeout);
@@ -96,9 +107,11 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   // --- Simulator: dartboard taps ---
   @override
   void pressDartboard(String value) {
-    if (!widget.simulator) return; // real board is authoritative
+    // In real mode, only accept board taps when correcting a selected dart;
+    // otherwise the real board is authoritative for new throws.
+    if (!widget.simulator && _editIndex == null) return;
     final sector = _normalizeSector(value);
-    _registerThrow(SectorParser.parse(sector));
+    _applyHit(SectorParser.parse(sector));
   }
 
   /// FullCircle emits `DB` (inner bull) and `SB` (outer bull); Scolia's sector
@@ -114,19 +127,33 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// detects no throws once 3 darts are in and a takeout is pending).
   bool get _turnFull => _collector.pending.length >= 3;
 
-  void _registerThrow(DetectedThrow t) {
-    if (widget.simulator && _turnFull) return; // no more than 3 darts
+  /// Apply a hit: if a dart is selected for correction, replace it; otherwise
+  /// add it as a new throw (subject to the 3-dart cap).
+  void _applyHit(DetectedThrow t) {
+    if (_editIndex != null) {
+      _collector.replaceThrow(_editIndex!, t);
+      setState(() => _editIndex = null);
+      return;
+    }
+    if (_turnFull) return; // no more than 3 darts
     _collector.addThrow(t);
     setState(() {});
   }
 
-  /// Simulate a missed dart (Scolia would report sector "None" / bounceout).
+  /// Enter/exit correction mode for pending dart [index].
+  void _toggleEdit(int index) {
+    setState(() => _editIndex = _editIndex == index ? null : index);
+  }
+
+  /// Miss / 0 control: either corrects the selected dart to 0 (e.g. a bounced
+  /// dart that was wrongly scored) or adds a new 0-value dart.
   void _missThrow() {
-    if (_turnFull) return;
-    _registerThrow(DetectedThrow.miss());
+    if (_editIndex == null && _turnFull) return;
+    _applyHit(DetectedThrow.miss());
   }
 
   void _endTurn() {
+    setState(() => _editIndex = null);
     // Simulate a real takeout to close the turn.
     _collector.onTakeoutFinished(falseTakeout: false);
   }
@@ -182,46 +209,88 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   }
 
   Widget _rightColumn() {
+    final editing = _editIndex != null;
     return Column(
       children: [
-        // Simulator controls: miss (0) and takeout (end turn), top of column.
-        if (widget.simulator)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                tooltip: 'Fehlwurf (0)',
-                iconSize: 40,
-                onPressed: _turnFull ? null : _missThrow,
-                icon: const Icon(Icons.block, color: Colors.white),
-              ),
+        // Controls: undo round, miss/0, takeout. Shown in both modes so
+        // corrections and round-undo are always available.
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              tooltip: 'Runde zurück',
+              iconSize: 36,
+              onPressed: widget.onUndoRound,
+              icon: const Icon(Icons.undo, color: Colors.white),
+            ),
+            IconButton(
+              tooltip: editing ? 'Auf 0 korrigieren' : 'Fehlwurf (0)',
+              iconSize: 36,
+              onPressed: (!editing && _turnFull) ? null : _missThrow,
+              icon: const Icon(Icons.block, color: Colors.white),
+            ),
+            if (widget.simulator)
               IconButton(
                 tooltip: 'Darts rausnehmen',
-                iconSize: 40,
+                iconSize: 36,
                 onPressed: _endTurn,
                 icon: const Icon(Icons.pan_tool, color: Colors.white),
               ),
-            ],
+          ],
+        ),
+        if (editing)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Feld antippen zum Korrigieren',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
           ),
         const Divider(color: Colors.white24),
-        // The (up to 3) thrown darts, stacked, in a large font.
+        // The (up to 3) thrown darts, stacked, in a large font. Each is a
+        // button: tap to select it for correction (then tap the board / a
+        // ring / the 0 icon to set the corrected value).
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              for (final t in _collector.pending)
-                Text(
-                  t.ring == DartRing.miss ? '–' : '${t.value}',
-                  style: const TextStyle(
-                    color: Color.fromARGB(255, 215, 198, 132),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 56,
-                  ),
-                ),
+              for (int i = 0; i < _collector.pending.length; i++)
+                _pendingDart(i, _collector.pending[i]),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _pendingDart(int index, DetectedThrow t) {
+    final selected = _editIndex == index;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: TextButton(
+        onPressed: () => _toggleEdit(index),
+        style: TextButton.styleFrom(
+          backgroundColor:
+              selected ? const Color.fromARGB(80, 215, 198, 132) : null,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: selected
+                ? const BorderSide(
+                    color: Color.fromARGB(255, 215, 198, 132), width: 3)
+                : const BorderSide(
+                    color: Color.fromARGB(120, 215, 198, 132), width: 1.5),
+          ),
+        ),
+        child: Text(
+          t.ring == DartRing.miss ? '–' : '${t.value}',
+          style: const TextStyle(
+            color: Color.fromARGB(255, 215, 198, 132),
+            fontWeight: FontWeight.bold,
+            fontSize: 56,
+          ),
+        ),
+      ),
     );
   }
 

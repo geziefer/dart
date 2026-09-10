@@ -148,4 +148,78 @@ void main() {
 
     expect(controller.remaining, 501 - 50);
   });
+
+  testWidgets('correction: tap a thrown number, then re-tap board to fix it',
+      (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_corr',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // Throw T20, T20, T20 (would be 180).
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    await tester.pump();
+
+    // Misclick correction: select the 3rd dart (index 2) and set it to T19.
+    // Tap the last "60" button. There are three "60" texts; tap the last.
+    await tester.tap(find.text('60').last);
+    await tester.pump();
+    state.pressDartboard('T19'); // corrects selected dart to 57
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.pan_tool)); // takeout submits
+    await tester.pump();
+
+    // 60 + 60 + 57 = 177
+    expect(controller.remaining, 501 - 177);
+  });
+
+  testWidgets('round undo icon reverses the last submitted round',
+      (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_undo',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(
+          controller: controller,
+          simulator: true,
+          onUndoRound: () => controller.pressNumpadButton(-2),
+        ),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // Submit a 180 round.
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.remaining, 501 - 180);
+
+    // Undo the whole round.
+    await tester.tap(find.byIcon(Icons.undo));
+    await tester.pump();
+    expect(controller.remaining, 501);
+  });
 }

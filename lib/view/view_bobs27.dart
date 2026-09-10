@@ -91,7 +91,10 @@ class ViewBobs27 extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: scoliaInputActive(context)
-                      ? ScoliaDartboard(controller: controller)
+                      ? ScoliaDartboard(
+                          controller: controller,
+                          onUndoRound: () => controller.pressNumpadButton(-2),
+                        )
                       : Numpad(
                           controller: controller,
                           showUpper: false,

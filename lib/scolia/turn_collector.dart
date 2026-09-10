@@ -61,6 +61,16 @@ class TurnCollector {
     }
   }
 
+  /// Replace an already-buffered dart with a corrected value (before the turn
+  /// is submitted). Used for correcting a misclick or a wrong/bounced
+  /// detection. Out-of-range indices are ignored. Unlike [addThrow], this is
+  /// not subject to the full-buffer or phase guards, since it edits an existing
+  /// dart rather than adding a new one.
+  void replaceThrow(int index, DetectedThrow dart) {
+    if (index < 0 || index >= _buffer.length) return;
+    _buffer[index] = dart;
+  }
+
   /// Handle a takeout-finished event. A real takeout closes the turn; a
   /// [falseTakeout] is ignored.
   void onTakeoutFinished({required bool falseTakeout}) {

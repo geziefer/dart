@@ -105,4 +105,42 @@ void main() {
     collector.addThrow(t('T20'));
     expect(collector.pending, hasLength(1));
   });
+
+  group('replaceThrow (in-turn correction)', () {
+    test('replaces a buffered dart before submit', () {
+      collector.addThrow(t('T20'));
+      collector.addThrow(t('T20'));
+      collector.addThrow(t('T20'));
+      collector.replaceThrow(2, t('T19')); // correct last dart
+      collector.onTakeoutFinished(falseTakeout: false);
+      expect(completed.first.total, 60 + 60 + 57);
+    });
+
+    test('can correct a dart to 0 (bounced dart)', () {
+      collector.addThrow(t('T20'));
+      collector.replaceThrow(0, SectorParser.parse('None'));
+      collector.onTakeoutFinished(falseTakeout: false);
+      expect(completed.first.total, 0);
+      expect(completed.first.dartCount, 1);
+    });
+
+    test('replace is not subject to the 3-dart cap or phase', () {
+      collector.addThrow(t('T20'));
+      collector.addThrow(t('T20'));
+      collector.addThrow(t('T20')); // full
+      collector.setPhase(BoardPhase.takeout); // not throwing
+      collector.replaceThrow(0, t('D20')); // still allowed
+      collector.setPhase(BoardPhase.throwing);
+      collector.onTakeoutFinished(falseTakeout: false);
+      expect(completed.first.total, 40 + 60 + 60);
+    });
+
+    test('out-of-range index is ignored', () {
+      collector.addThrow(t('T20'));
+      collector.replaceThrow(5, t('T19'));
+      collector.replaceThrow(-1, t('T19'));
+      collector.onTakeoutFinished(falseTakeout: false);
+      expect(completed.first.total, 60);
+    });
+  });
 }

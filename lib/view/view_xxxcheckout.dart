@@ -110,7 +110,10 @@ class ViewXXXCheckout extends StatelessWidget {
                 Expanded(
                   flex: 55,
                   child: scoliaInputActive(context)
-                      ? ScoliaDartboard(controller: controller)
+                      ? ScoliaDartboard(
+                          controller: controller,
+                          onUndoRound: () => controller.pressNumpadButton(-2),
+                        )
                       : Numpad(
                           controller: controller,
                           showUpper: true,
