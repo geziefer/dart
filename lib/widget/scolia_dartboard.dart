@@ -130,11 +130,15 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     _applyHit(SectorParser.parse(sector));
   }
 
-  /// FullCircle emits `DB` (inner bull) and `SB` (outer bull); Scolia's sector
-  /// grammar uses `Bull` and `25`. Normalise so the real parser is exercised.
+  /// FullCircle emits `DB` (inner bull), `SB` (outer bull), and `s` (inner
+  /// single) for the precise hit. Normalise to what the pipeline/parser
+  /// expects: `DB`->`Bull`, `SB`->`25`, `s`->`S` (both singles score the
+  /// same; the distinction is only used for the highlight, which fires before
+  /// this normalisation).
   String _normalizeSector(String v) {
     if (v == 'DB') return 'Bull';
     if (v == 'SB') return '25';
+    if (v.startsWith('s')) return 'S${v.substring(1)}'; // s20 -> S20
     return v;
   }
 
@@ -205,7 +209,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
                       radius: radius,
                       highlightSector: _highlightSector,
                       arcSections: [
-                        ArcSection(startPercent: 0.2),
+                        ArcSection(startPercent: 0.245),
                         ArcSection(startPercent: 0.35),
                         ArcSection(startPercent: 0.55),
                         ArcSection(startPercent: 0.8),

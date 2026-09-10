@@ -594,6 +594,12 @@ class ControllerFinishes extends ControllerBase
 
   @override
   void pressDartboard(String value) {
+    // FullCircle now emits 's' for the inner/small single to enable precise
+    // highlighting; normalise to 'S' for game logic since both singles score
+    // the same and all finish sequences use uppercase 'S'.
+    if (value.startsWith('s') && value.length > 1) {
+      value = 'S${value.substring(1)}';
+    }
     switch (currentState) {
       case FinishesState.inputPreferred:
         preferredInput.add(value);
