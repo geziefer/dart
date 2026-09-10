@@ -559,4 +559,8 @@ and update `ScoliaDartboard.controller`.
 - [x] H14 Catch 40
 - [x] H15 Check 121
 - [x] H16 Credit Finish
-- [ ] H17 Challenge
+- [x] H17 Challenge
+
+### Phase H complete
+
+All 17 games implemented and tested. flutter analyze clean; full suite green.
