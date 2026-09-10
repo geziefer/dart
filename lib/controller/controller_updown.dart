@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerUpDown extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -280,5 +282,28 @@ class ControllerUpDown extends ControllerBase
       },
     );
     return baseStats;
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+    // Success: the 3 darts sum exactly to currentTarget AND the last
+    // scoring (non-zero) dart is a double or bull (checkout rules).
+    final success = _isSuccessfulCheckout(turn, currentTarget);
+    pressNumpadButton(success ? 1 : 0);
+  }
+
+  bool _isSuccessfulCheckout(TurnResult turn, int target) {
+    if (turn.total != target) return false;
+    // Find the last dart that contributed a score.
+    for (int i = turn.darts.length - 1; i >= 0; i--) {
+      final dart = turn.darts[i];
+      if (dart.value > 0) {
+        return dart.ring == DartRing.double ||
+               dart.ring == DartRing.innerBull ||
+               dart.ring == DartRing.outerBull;
+      }
+    }
+    return false;
   }
 }
