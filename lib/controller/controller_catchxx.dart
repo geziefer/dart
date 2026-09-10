@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -9,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerCatchXX extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -37,6 +39,20 @@ class ControllerCatchXX extends ControllerBase
   int round = 1; // round number in game
   int target = 61; // current finish target
 
+  // Scolia: multi-turn accumulator for one checkout attempt (up to 6 darts).
+  List<DetectedThrow> _scoliaAccDarts = [];
+  void resetScoliaAttempt() => _scoliaAccDarts = [];
+
+  /// During a Scolia multi-turn attempt, returns the remaining score still
+  /// needed (target minus accumulated score so far). Returns null when no
+  /// attempt is in progress (accumulator empty).
+  int? get scoliaRemainder {
+    if (_scoliaAccDarts.isEmpty) return null;
+    final acc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
+    final rem = target - acc;
+    return rem > 0 ? rem : null;
+  }
+
   @override
   void init(MenuItem item) {
     this.item = item;
@@ -52,6 +68,7 @@ class ControllerCatchXX extends ControllerBase
     points = 0;
     round = 1;
     target = 61;
+    _scoliaAccDarts = [];
   }
 
   @override
@@ -183,6 +200,14 @@ class ControllerCatchXX extends ControllerBase
   }
 
   String getCurrentTargets() {
+    // During a Scolia multi-turn attempt, show the remaining score instead of
+    // the original target in the last (current) row — restores after the round.
+    final rem = scoliaRemainder;
+    if (rem != null && targets.isNotEmpty) {
+      final displayTargets = List<int>.from(targets);
+      displayTargets[displayTargets.length - 1] = rem;
+      return createMultilineString(displayTargets, [], '', '', [], 5, false);
+    }
     return createMultilineString(targets, [], '', '', [], 5, false);
   }
 
@@ -249,5 +274,38 @@ class ControllerCatchXX extends ControllerBase
         'P': longtermPoints, // Durchschnittspunkte
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || target > 100) return;
+    // Accumulate darts across turns (max 6 = 2 takeouts).
+    _scoliaAccDarts.addAll(turn.darts);
+    final accTotal = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
+    final dartCount = _scoliaAccDarts.length;
+
+    // Check for successful checkout: total == target, last scoring dart is double.
+    if (accTotal == target) {
+      final lastScoring = _scoliaAccDarts.lastWhere((d) => d.value > 0,
+          orElse: () => DetectedThrow.miss());
+      final finishedOnDouble = lastScoring.ring == DartRing.double ||
+          lastScoring.ring == DartRing.innerBull ||
+          lastScoring.ring == DartRing.outerBull;
+      if (finishedOnDouble) {
+        pressNumpadButton(dartCount.clamp(2, 6));
+        _scoliaAccDarts = [];
+        return;
+      }
+    }
+
+    // Bust (overshot) or 6 darts exhausted → miss.
+    if (accTotal > target || dartCount >= 6) {
+      pressNumpadButton(0);
+      _scoliaAccDarts = [];
+      return;
+    }
+
+    // Still accumulating — notify so the view shows the updated remainder.
+    notifyListeners();
   }
 }
