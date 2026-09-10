@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerRTCX extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -299,6 +301,34 @@ class ControllerRTCX extends ControllerBase
       return challengeStepInfo ?? "Challenge Mode";
     } else {
       return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØC: ${longtermChecks.toStringAsFixed(1)}';
+    }
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || finished) return;
+    // Process darts one by one, updating the target after each hit —
+    // so hitting S1 then S2 correctly advances twice (to 1, then to 2).
+    int advances = 0;
+    int target = currentNumber;
+    for (final dart in turn.darts) {
+      if (target > 20) break;
+      if (_qualifiesFor(dart, target)) {
+        advances++;
+        target++;
+      }
+    }
+    pressNumpadButton(advances);
+  }
+
+  bool _qualifiesFor(DetectedThrow dart, int target) {
+    switch (selectedMode) {
+      case 'RTCD':
+        return dart.isDoubleOf(target);
+      case 'RTCT':
+        return dart.ring == DartRing.triple && dart.segment == target;
+      default: // RTCS: singles only
+        return dart.ring == DartRing.single && dart.segment == target;
     }
   }
 }

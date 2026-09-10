@@ -548,8 +548,8 @@ and update `ScoliaDartboard.controller`.
 - [x] H3 Speed Bull
 - [x] H4 Big Ts
 - [x] H5 Shoot X
-- [ ] H6 RTC Single
-- [ ] H7 RTC D/T
+- [x] H6 RTC Single
+- [x] H7 RTC D/T
 - [ ] H8 Plan Hit
 - [ ] H9 Double Path
 - [ ] H10 Across Board

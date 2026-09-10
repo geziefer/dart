@@ -1,8 +1,10 @@
 import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/styles.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/widget/checknumber.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scolia_dartboard.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:dart/widget/rtcx_mode_dialog.dart';
 import 'package:flutter/material.dart';
@@ -109,14 +111,19 @@ class ViewRTCX extends StatelessWidget {
                 // ########## Right column with num pad
                 Expanded(
                   flex: 5,
-                  child: Numpad(
-                    controller: controller,
-                    showUpper: false,
-                    showMiddle: false,
-                    showLower: true,
-                    showExtraButtons: false,
-                    showYesNo: false,
-                  ),
+                  child: scoliaInputActive(context)
+                      ? ScoliaDartboard(
+                          controller: controller,
+                          onUndoRound: () => controller.pressNumpadButton(-2),
+                        )
+                      : Numpad(
+                          controller: controller,
+                          showUpper: false,
+                          showMiddle: false,
+                          showLower: true,
+                          showExtraButtons: false,
+                          showYesNo: false,
+                        ),
                 ),
               ],
             ),
