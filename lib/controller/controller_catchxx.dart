@@ -279,33 +279,41 @@ class ControllerCatchXX extends ControllerBase
   @override
   void submitScoliaTurn(TurnResult turn) {
     if (item == null || target > 100) return;
-    // Accumulate darts across turns (max 6 = 2 takeouts).
-    _scoliaAccDarts.addAll(turn.darts);
-    final accTotal = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
-    final dartCount = _scoliaAccDarts.length;
+    // Accumulate darts across turns (max 6 darts = 2 takeouts).
+    // Bust or remainder-of-1: discard this turn but keep prior accumulated total.
+    final preTurnAcc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
+    final newAcc = preTurnAcc + turn.total;
+    final dartCount = _scoliaAccDarts.length + turn.dartCount;
 
-    // Check for successful checkout: total == target, last scoring dart is double.
-    if (accTotal == target) {
-      final lastScoring = _scoliaAccDarts.lastWhere((d) => d.value > 0,
-          orElse: () => DetectedThrow.miss());
-      final finishedOnDouble = lastScoring.ring == DartRing.double ||
+    // Successful checkout: accumulated total == target, last dart is double.
+    if (newAcc == target) {
+      final lastScoring = turn.darts.lastWhere(
+          (d) => d.value > 0, orElse: () => DetectedThrow.miss());
+      final onDouble = lastScoring.ring == DartRing.double ||
           lastScoring.ring == DartRing.innerBull ||
           lastScoring.ring == DartRing.outerBull;
-      if (finishedOnDouble) {
+      if (onDouble) {
+        _scoliaAccDarts.addAll(turn.darts);
         pressNumpadButton(dartCount.clamp(2, 6));
         _scoliaAccDarts = [];
         return;
       }
     }
 
-    // Bust (overshot) or 6 darts exhausted → miss.
-    if (accTotal > target || dartCount >= 6) {
+    if (newAcc > target || target - newAcc == 1) {
+      // Bust or 1 remaining: discard this turn's darts, keep prior total.
+    } else {
+      _scoliaAccDarts.addAll(turn.darts);
+    }
+
+    // 6 darts exhausted → miss.
+    if (dartCount >= 6) {
       pressNumpadButton(0);
       _scoliaAccDarts = [];
       return;
     }
 
-    // Still accumulating — notify so the view shows the updated remainder.
+    // Still attempts remaining — update view.
     notifyListeners();
   }
 }
