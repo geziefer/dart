@@ -553,7 +553,7 @@ and update `ScoliaDartboard.controller`.
 - [x] H8 Plan Hit
 - [x] H9 Double Path
 - [x] H10 Across Board
-- [ ] H11 Half It
+- [x] H11 Half It
 - [ ] H12 10 Up 1 Down
 - [ ] H13 2 Darts
 - [ ] H14 Catch 40
