@@ -154,6 +154,12 @@ class UnknownMessage extends ScoliaMessage {
   const UnknownMessage(super.id, this.type);
 }
 
+/// Synthetic message representing a frame we SENT (for logging purposes only).
+class SentMessage extends ScoliaMessage {
+  final String raw;
+  const SentMessage(this.raw) : super(null);
+}
+
 /// Builders for outgoing messages. We only send CONFIGURE_SBC.
 class ScoliaOutgoing {
   ScoliaOutgoing._();

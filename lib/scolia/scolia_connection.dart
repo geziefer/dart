@@ -71,6 +71,9 @@ class ScoliaConnection implements ScoliaEventSource {
   @override
   BoardStatus get currentStatus => _currentStatus;
 
+  /// Last connection error message, exposed for diagnostics in the Monitor.
+  String? lastError;
+
   /// The full connection URL with auth query parameters.
   Uri get connectUri => Uri.parse(baseUrl).replace(queryParameters: {
         'serialNumber': serialNumber,
@@ -81,16 +84,29 @@ class ScoliaConnection implements ScoliaEventSource {
   @override
   Future<void> connect() async {
     _connController.add(ScoliaConnectionState.connecting);
+    lastError = null;
     try {
       final channel = _channelFactory(connectUri);
       _channel = channel;
+
+      // Await ready so auth errors (close codes 4100/4102) surface immediately.
+      await channel.ready;
+
       _sub = channel.stream.listen(
         _onFrame,
         onError: (Object e) {
+          lastError = e.toString();
           _connController.add(ScoliaConnectionState.error);
         },
         onDone: () {
-          _connController.add(ScoliaConnectionState.disconnected);
+          final code = channel.closeCode;
+          final reason = channel.closeReason;
+          if (code != null && code >= 4000) {
+            lastError = 'Closed: code=$code reason=$reason';
+            _connController.add(ScoliaConnectionState.error);
+          } else {
+            _connController.add(ScoliaConnectionState.disconnected);
+          }
         },
       );
       _connController.add(ScoliaConnectionState.connected);
@@ -98,14 +114,17 @@ class ScoliaConnection implements ScoliaEventSource {
         send(ScoliaOutgoing.configureSbc(enableMessageForwardToScolia: false));
       }
     } catch (e) {
+      lastError = e.toString();
       _connController.add(ScoliaConnectionState.error);
-      rethrow;
     }
   }
 
-  /// Send a raw frame string to the board.
+  /// Send a raw frame string to the board and log it.
   void send(String frame) {
     _channel?.sink.add(frame);
+    // Echo outgoing messages as a synthetic "sent" message through the stream
+    // so the Monitor can log them.
+    _messageController.add(SentMessage(frame));
   }
 
   void _onFrame(dynamic data) {
