@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,7 +12,7 @@ import 'package:dart/services/summary_service.dart';
 enum GamePhase { scoreInput, finishInput }
 
 class ControllerCreditFinish extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -289,5 +291,28 @@ class ControllerCreditFinish extends ControllerBase
     }
     
     return createMultilineString(results, [], '', '', [], 5, false);
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || gameEnded) return;
+
+    if (currentPhase == GamePhase.scoreInput) {
+      // Phase 1: sum the 3 darts, submit via existing enter path.
+      final total = turn.total.clamp(0, 180);
+      input = total.toString();
+      pressNumpadButton(-1);
+    } else {
+      // Phase 2: finish the phase 1 score (scores.last).
+      // Success: turn total == phase 1 score AND last scoring dart is double/bull.
+      final target = scores.isNotEmpty ? scores.last : 0;
+      final lastScoring = turn.darts.lastWhere(
+          (d) => d.value > 0, orElse: () => DetectedThrow.miss());
+      final success = turn.total == target &&
+          (lastScoring.ring == DartRing.double ||
+           lastScoring.ring == DartRing.innerBull ||
+           lastScoring.ring == DartRing.outerBull);
+      pressNumpadButton(success ? 1 : 0);
+    }
   }
 }

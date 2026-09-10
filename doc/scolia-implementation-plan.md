@@ -558,5 +558,5 @@ and update `ScoliaDartboard.controller`.
 - [x] H13 2 Darts
 - [x] H14 Catch 40
 - [x] H15 Check 121
-- [ ] H16 Credit Finish
+- [x] H16 Credit Finish
 - [ ] H17 Challenge
