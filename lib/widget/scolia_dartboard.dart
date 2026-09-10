@@ -64,6 +64,19 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// Index of the pending dart currently selected for correction, or null.
   int? _editIndex;
 
+  /// Sector currently flashed on the board (brief white highlight), or null.
+  String? _highlightSector;
+  Timer? _flashTimer;
+
+  /// Briefly flash [sector] on the board (like the numpad key highlight).
+  void _flash(String sector) {
+    _flashTimer?.cancel();
+    setState(() => _highlightSector = sector);
+    _flashTimer = Timer(const Duration(milliseconds: 600), () {
+      if (mounted) setState(() => _highlightSector = null);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +88,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
   @override
   void dispose() {
+    _flashTimer?.cancel();
     _sub?.cancel();
     super.dispose();
   }
@@ -89,9 +103,10 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
           _phase = phase;
         });
         _collector.setPhase(phase);
-      case ThrowDetectedMessage(:final detectedThrow):
+      case ThrowDetectedMessage(:final detectedThrow, :final sector):
         // While correcting on screen, ignore incoming board detections.
         if (_editIndex != null) break;
+        _flash(sector ?? 'None'); // mirror the board: flash the detected sector
         _applyHit(detectedThrow);
       case TakeoutStartedMessage():
         _collector.onTakeoutStarted();
@@ -110,6 +125,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     // In real mode, only accept board taps when correcting a selected dart;
     // otherwise the real board is authoritative for new throws.
     if (!widget.simulator && _editIndex == null) return;
+    _flash(value); // brief white highlight of the pressed sector
     final sector = _normalizeSector(value);
     _applyHit(SectorParser.parse(sector));
   }
@@ -149,6 +165,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// dart that was wrongly scored) or adds a new 0-value dart.
   void _missThrow() {
     if (_editIndex == null && _turnFull) return;
+    _flash('None');
     _applyHit(DetectedThrow.miss());
   }
 
@@ -186,6 +203,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
                     return FullCircle(
                       controller: this,
                       radius: radius,
+                      highlightSector: _highlightSector,
                       arcSections: [
                         ArcSection(startPercent: 0.2),
                         ArcSection(startPercent: 0.35),

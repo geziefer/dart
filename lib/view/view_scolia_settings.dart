@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:dart/scolia/mock_scolia_source.dart';
 import 'package:dart/scolia/scolia_connection.dart';
-import 'package:dart/scolia/scolia_event_source.dart';
 import 'package:dart/scolia/scolia_settings.dart';
 import 'package:dart/view/view_scolia_monitor.dart';
 import 'package:dart/widget/game_layout.dart';
@@ -49,6 +47,7 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
       accessToken: _tokenController.text,
     );
     if (mounted) {
+      setState(() {}); // re-evaluate canMonitor with the new credentials
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Scolia-Zugangsdaten gespeichert')),
       );
@@ -117,11 +116,29 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
               },
             ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.monitor_heart),
-              label: const Text('Monitor öffnen'),
-              onPressed: _openMonitor,
-            ),
+            // The Monitor only makes sense with the real board (not simulator).
+            Builder(builder: (context) {
+              final canMonitor = !_simulator && _settings.isConfigured;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.monitor_heart),
+                    label: const Text('Monitor öffnen'),
+                    onPressed: canMonitor ? _openMonitor : null,
+                  ),
+                  if (!canMonitor)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: Text(
+                        'Monitor nur mit echtem Board verfügbar '
+                        '(Simulator aus + Zugangsdaten gesetzt).',
+                        style: TextStyle(color: Colors.white54, fontSize: 12),
+                      ),
+                    ),
+                ],
+              );
+            }),
           ],
         ),
       ),
@@ -130,17 +147,14 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
   }
 
   void _openMonitor() {
-    // In simulator mode use the mock source; otherwise a real connection.
-    final ScoliaEventSource source = _simulator || !_settings.isConfigured
-        ? MockScoliaSource()
-        : ScoliaConnection(
-            serialNumber: _settings.serialNumber,
-            accessToken: _settings.accessToken,
-          );
+    // Real board only: connect with the stored credentials.
+    final source = ScoliaConnection(
+      serialNumber: _settings.serialNumber,
+      accessToken: _settings.accessToken,
+    );
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) =>
-            ViewScoliaMonitor(source: source, simulator: _simulator || !_settings.isConfigured),
+        builder: (context) => ViewScoliaMonitor(source: source),
       ),
     );
   }

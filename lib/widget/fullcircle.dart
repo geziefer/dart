@@ -35,7 +35,14 @@ class FullCircle extends StatelessWidget {
     required this.controller,
     required this.radius,
     required this.arcSections,
+    this.highlightSector,
   });
+
+  /// Optional sector to highlight (flash white), e.g. "T20", "S1", "D16",
+  /// "25"/"SB" (outer bull), "Bull"/"DB" (inner bull), or "None"/"0"/miss
+  /// (highlights a ring around the whole board). When null, nothing is
+  /// highlighted (default; unchanged behaviour for existing callers).
+  final String? highlightSector;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +132,7 @@ class FullCircle extends StatelessWidget {
           sliceAngle: sliceAngle,
           rotationAngle: rotationAngle,
           sliceIDs: sliceIDs,
+          highlightSector: highlightSector,
         ),
       ),
     );
@@ -137,6 +145,7 @@ class FullCirclePainter extends CustomPainter {
   final double sliceAngle;
   final double rotationAngle;
   final List<String> sliceIDs;
+  final String? highlightSector;
 
   FullCirclePainter({
     required this.radius,
@@ -144,6 +153,7 @@ class FullCirclePainter extends CustomPainter {
     required this.sliceAngle,
     required this.rotationAngle,
     required this.sliceIDs,
+    this.highlightSector,
   });
 
   @override
@@ -225,10 +235,86 @@ class FullCirclePainter extends CustomPainter {
         radius:
             centerCircleRadius * 1.75); // Larger radius for bigger outer bull
     canvas.drawArc(centerArcRect, 0, 2 * pi, false, centerArcPaint);
+
+    // Optional highlight (white flash) of the hit sector.
+    if (highlightSector != null) {
+      _drawHighlight(canvas, size, highlightSector!);
+    }
+  }
+
+  /// Paint a translucent white highlight over the given sector. Segment hits
+  /// highlight the matching slice+ring; bull hits highlight the centre;
+  /// a miss / "None" / "0" highlights a ring around the whole board.
+  void _drawHighlight(Canvas canvas, Size size, String sector) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final white = Paint()
+      ..color = Colors.white.withValues(alpha: 0.85)
+      ..style = PaintingStyle.fill;
+
+    // Bull cases.
+    if (sector == 'Bull' || sector == 'DB') {
+      canvas.drawCircle(center, radius * 0.1, white);
+      return;
+    }
+    if (sector == '25' || sector == 'SB') {
+      final ring = Paint()
+        ..color = Colors.white.withValues(alpha: 0.85)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = radius * 0.15;
+      canvas.drawArc(
+          Rect.fromCircle(center: center, radius: radius * 0.1 * 1.75),
+          0, 2 * pi, false, ring);
+      return;
+    }
+    // Miss / 0 / None: highlight a ring around the whole board.
+    if (sector == 'None' || sector == '0' || sector.isEmpty) {
+      final ring = Paint()
+        ..color = Colors.white.withValues(alpha: 0.85)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = radius * 0.06;
+      canvas.drawCircle(center, radius * 1.05, ring);
+      return;
+    }
+
+    // Segment: parse ring char + number, e.g. "T20", "S1", "D16" (also 's').
+    final match = RegExp(r'^([SsDT])(\d{1,2})$').firstMatch(sector);
+    if (match == null) return;
+    final ringChar = match.group(1)!;
+    final number = match.group(2)!;
+    final sliceIndex = sliceIDs.indexOf(number);
+    if (sliceIndex < 0) return;
+
+    // Arc index mapping mirrors FullCircle's tap detection:
+    // 0 -> S (outer single), 1 -> T, 2 -> S (inner single), 3 -> D.
+    final int arcIndex = switch (ringChar) {
+      'S' => 0, // outer single (either single band highlights acceptably)
+      's' => 2, // inner single
+      'T' => 1,
+      'D' => 3,
+      _ => -1,
+    };
+    if (arcIndex < 0) return;
+
+    final double innerRadius = radius * arcSections[arcIndex].startPercent;
+    final double outerRadius = (arcIndex < arcSections.length - 1)
+        ? radius * arcSections[arcIndex + 1].startPercent
+        : radius;
+
+    final double sliceAngleRad = sliceAngle * pi / 180;
+    final double startAngle = rotationAngle + sliceIndex * sliceAngleRad;
+
+    final highlight = Paint()
+      ..color = Colors.white.withValues(alpha: 0.85)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = outerRadius - innerRadius;
+    final rect = Rect.fromCircle(
+        center: center, radius: (innerRadius + outerRadius) / 2);
+    canvas.drawArc(rect, startAngle, sliceAngleRad, false, highlight);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(covariant FullCirclePainter oldDelegate) {
+    return oldDelegate.highlightSector != highlightSector ||
+        oldDelegate.radius != radius;
   }
 }
