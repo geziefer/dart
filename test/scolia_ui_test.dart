@@ -23,6 +23,19 @@ MockGetStorage _freshStorage() {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // The dartboard input targets a landscape tablet; give tests a matching
+  // surface so the responsive layout has room (avoids RenderFlex overflow).
+  setUp(() {
+    final view = TestWidgetsFlutterBinding.instance.platformDispatcher.views.first;
+    view.physicalSize = const Size(2000, 1400);
+    view.devicePixelRatio = 1.0;
+  });
+  tearDown(() {
+    final view = TestWidgetsFlutterBinding.instance.platformDispatcher.views.first;
+    view.resetPhysicalSize();
+    view.resetDevicePixelRatio();
+  });
+
   testWidgets(
       'ScoliaDartboard simulator: tapping T20 x3 then end-turn drives x01 by 180',
       (tester) async {
@@ -49,13 +62,65 @@ void main() {
     state.pressDartboard('T20');
     state.pressDartboard('T20');
     state.pressDartboard('T20');
-    // Turn not submitted until "Wurf beenden".
+    // Turn not submitted until takeout.
     expect(controller.remaining, 501);
 
-    await tester.tap(find.text('Wurf beenden'));
+    await tester.tap(find.byIcon(Icons.pan_tool));
     await tester.pump();
 
     expect(controller.remaining, 501 - 180);
+  });
+
+  testWidgets('ScoliaDartboard caps a turn at 3 darts', (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_cap',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+    // Four darts thrown, only the first three count.
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20'); // ignored (turn full)
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.remaining, 501 - 180);
+  });
+
+  testWidgets('ScoliaDartboard miss button adds a 0-value dart',
+      (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_miss',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+    state.pressDartboard('T20'); // 60
+    await tester.tap(find.byIcon(Icons.block)); // miss = 0
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.pan_tool)); // end turn
+    await tester.pump();
+    // 60 + 0 = 60
+    expect(controller.remaining, 501 - 60);
   });
 
   testWidgets('ScoliaDartboard normalises DB->Bull (inner bull = 50)',
@@ -78,7 +143,7 @@ void main() {
     final state = tester.state(find.byType(ScoliaDartboard))
         as DartboardController;
     state.pressDartboard('DB'); // inner bull
-    await tester.tap(find.text('Wurf beenden'));
+    await tester.tap(find.byIcon(Icons.pan_tool));
     await tester.pump();
 
     expect(controller.remaining, 501 - 50);

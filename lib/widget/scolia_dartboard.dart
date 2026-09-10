@@ -52,7 +52,6 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   late final TurnCollector _collector;
   StreamSubscription<ScoliaMessage>? _sub;
 
-  final List<DetectedThrow> _recent = <DetectedThrow>[];
   BoardStatus _status = BoardStatus.ready;
   BoardPhase? _phase = BoardPhase.throwing;
 
@@ -110,12 +109,21 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     return v;
   }
 
+  /// True once the current turn already has the maximum darts; further throws
+  /// are ignored until a takeout closes the turn (mirrors the real board, which
+  /// detects no throws once 3 darts are in and a takeout is pending).
+  bool get _turnFull => _collector.pending.length >= 3;
+
   void _registerThrow(DetectedThrow t) {
+    if (widget.simulator && _turnFull) return; // no more than 3 darts
     _collector.addThrow(t);
-    setState(() {
-      _recent.insert(0, t);
-      if (_recent.length > 6) _recent.removeLast();
-    });
+    setState(() {});
+  }
+
+  /// Simulate a missed dart (Scolia would report sector "None" / bounceout).
+  void _missThrow() {
+    if (_turnFull) return;
+    _registerThrow(DetectedThrow.miss());
   }
 
   void _endTurn() {
@@ -125,7 +133,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
   void _onTurnComplete(TurnResult turn) {
     widget.controller.submitScoliaTurn(turn);
-    setState(() => _recent.clear());
+    setState(() {});
   }
 
   @override
@@ -134,35 +142,85 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
       children: [
         _statusBanner(),
         Expanded(
-          child: Center(
-            child: LayoutBuilder(builder: (context, constraints) {
-              final maxSize = (constraints.maxWidth < constraints.maxHeight
-                      ? constraints.maxWidth
-                      : constraints.maxHeight) -
-                  40;
-              final radius = ((maxSize - 60) / 2).clamp(110.0, 260.0);
-              return FullCircle(
-                controller: this,
-                radius: radius,
-                arcSections: [
-                  ArcSection(startPercent: 0.2),
-                  ArcSection(startPercent: 0.35),
-                  ArcSection(startPercent: 0.55),
-                  ArcSection(startPercent: 0.8),
-                ],
-              );
-            }),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ########## Dartboard
+              Expanded(
+                flex: 7,
+                child: Center(
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    final maxSize =
+                        (constraints.maxWidth < constraints.maxHeight
+                                ? constraints.maxWidth
+                                : constraints.maxHeight) -
+                            40;
+                    final radius = ((maxSize - 60) / 2).clamp(110.0, 260.0);
+                    return FullCircle(
+                      controller: this,
+                      radius: radius,
+                      arcSections: [
+                        ArcSection(startPercent: 0.2),
+                        ArcSection(startPercent: 0.35),
+                        ArcSection(startPercent: 0.55),
+                        ArcSection(startPercent: 0.8),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+              // ########## Right column: icons on top, thrown numbers below
+              Expanded(
+                flex: 3,
+                child: _rightColumn(),
+              ),
+            ],
           ),
         ),
-        _recentThrows(),
+      ],
+    );
+  }
+
+  Widget _rightColumn() {
+    return Column(
+      children: [
+        // Simulator controls: miss (0) and takeout (end turn), top of column.
         if (widget.simulator)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: _endTurn,
-              child: const Text('Wurf beenden'),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                tooltip: 'Fehlwurf (0)',
+                iconSize: 40,
+                onPressed: _turnFull ? null : _missThrow,
+                icon: const Icon(Icons.block, color: Colors.white),
+              ),
+              IconButton(
+                tooltip: 'Darts rausnehmen',
+                iconSize: 40,
+                onPressed: _endTurn,
+                icon: const Icon(Icons.pan_tool, color: Colors.white),
+              ),
+            ],
           ),
+        const Divider(color: Colors.white24),
+        // The (up to 3) thrown darts, stacked, in a large font.
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (final t in _collector.pending)
+                Text(
+                  t.ring == DartRing.miss ? '–' : '${t.value}',
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 215, 198, 132),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 56,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -174,39 +232,18 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     final statusColor =
         _status == BoardStatus.ready ? Colors.green : Colors.orange;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       color: Colors.black26,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.circle, size: 12, color: statusColor),
-          const SizedBox(width: 6),
+          Icon(Icons.circle, size: 20, color: statusColor),
+          const SizedBox(width: 8),
           Text(
             '${widget.simulator ? 'Simulator' : 'Scolia'} · Status: '
             '${_status.name} · Phase: $phaseText',
-            style: const TextStyle(color: Colors.white, fontSize: 13),
+            style: const TextStyle(color: Colors.white, fontSize: 26),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _recentThrows() {
-    return SizedBox(
-      height: 28,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (final t in _recent.reversed)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                t.ring == DartRing.miss ? '–' : '${t.value}',
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 215, 198, 132),
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
         ],
       ),
     );
