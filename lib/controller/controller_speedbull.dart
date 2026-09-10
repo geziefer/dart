@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -10,7 +12,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerSpeedBull extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -261,5 +263,34 @@ class ControllerSpeedBull extends ControllerBase
   void dispose() {
     gameTimer?.cancel();
     super.dispose();
+  }
+
+  /// Pause the countdown (e.g. while the player is correcting a dart).
+  void pauseTimer() {
+    gameTimer?.cancel();
+    gameTimer = null;
+  }
+
+  /// Resume the countdown after a pause.
+  void resumeTimer() {
+    if (!gameStarted || gameEnded || lastThrowAllowed) return;
+    if (gameTimer != null) return; // already running
+    gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      remainingSeconds--;
+      notifyListeners();
+      if (remainingSeconds <= 0) {
+        timer.cancel();
+        lastThrowAllowed = true;
+        notifyListeners();
+      }
+    });
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || gameEnded) return;
+    // Count bull hits: each dart on bull (inner or outer) = 1 hit. Max 3.
+    int bulls = turn.darts.where((d) => d.isBull).length;
+    pressNumpadButton(bulls);
   }
 }

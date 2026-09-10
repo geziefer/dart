@@ -32,6 +32,8 @@ class ScoliaDartboard extends StatefulWidget {
     this.source,
     this.simulator = true,
     this.onUndoRound,
+    this.onCorrectionModeChanged,
+    this.onFirstDart,
   });
 
   /// The active game controller (must support Scolia input).
@@ -48,6 +50,15 @@ class ScoliaDartboard extends StatefulWidget {
   /// wires this to the game controller's existing round-undo (numpad `-2`),
   /// so full round-undo works identically in Scolia mode.
   final VoidCallback? onUndoRound;
+
+  /// Called when correction mode is entered (true) or exited (false).
+  /// Allows time-sensitive games (e.g. Speed Bull) to pause/resume their timer.
+  final void Function(bool correcting)? onCorrectionModeChanged;
+
+  /// Called when the very first dart of a turn is registered. Fires before the
+  /// turn completes — allows time-sensitive games to start their timer on the
+  /// first throw rather than waiting for the takeout.
+  final VoidCallback? onFirstDart;
 
   @override
   State<ScoliaDartboard> createState() => _ScoliaDartboardState();
@@ -153,16 +164,23 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     if (_editIndex != null) {
       _collector.replaceThrow(_editIndex!, t);
       setState(() => _editIndex = null);
+      widget.onCorrectionModeChanged?.call(false);
       return;
     }
     if (_turnFull) return; // no more than 3 darts
+    // Fire onFirstDart when the buffer transitions from empty to 1 dart.
+    if (_collector.pending.isEmpty) {
+      widget.onFirstDart?.call();
+    }
     _collector.addThrow(t);
     setState(() {});
   }
 
   /// Enter/exit correction mode for pending dart [index].
   void _toggleEdit(int index) {
-    setState(() => _editIndex = _editIndex == index ? null : index);
+    final newIndex = _editIndex == index ? null : index;
+    setState(() => _editIndex = newIndex);
+    widget.onCorrectionModeChanged?.call(newIndex != null);
   }
 
   /// Miss / 0 control: either corrects the selected dart to 0 (e.g. a bounced
@@ -174,7 +192,10 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   }
 
   void _endTurn() {
-    setState(() => _editIndex = null);
+    if (_editIndex != null) {
+      setState(() => _editIndex = null);
+      widget.onCorrectionModeChanged?.call(false);
+    }
     // Simulate a real takeout to close the turn.
     _collector.onTakeoutFinished(falseTakeout: false);
   }
