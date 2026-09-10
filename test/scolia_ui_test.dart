@@ -222,4 +222,130 @@ void main() {
     await tester.pump();
     expect(controller.remaining, 501);
   });
+
+  testWidgets('mid-round finish on a single dart wins the leg', (tester) async {
+    // Start at 20 so one dart (D10 = 20) checks out.
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_finish',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 20, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    expect(controller.wins, 0);
+    // One dart only, then take out (finish mid-round).
+    state.pressDartboard('D10'); // 20
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+
+    expect(controller.wins, 1); // leg won on a single-dart turn
+  });
+
+  testWidgets('Scolia checkout auto-corrects the dart count (no dialog)',
+      (tester) async {
+    // Start at 20; finish with a single dart (D10). No checkout dialog should
+    // be needed; the dart count is taken from the turn (1 dart).
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_autoco',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 20, 'max': -1, 'end': 5},
+    ));
+    // If the dialog were used, the view would set onShowCheckout; leaving it
+    // null proves the leg completes without any dialog interaction.
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    state.pressDartboard('D10'); // 20, single dart
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+
+    expect(controller.wins, 1);
+    // totalDarts should reflect 1 dart used (3 counted, corrected by 2), not 3.
+    expect(controller.totalDarts, 1);
+  });
+
+  testWidgets('170 game: 138 then single-dart 32 finish -> 4-dart average',
+      (tester) async {
+    // Reproduces the reported scenario: a 170 x01 variant, round 1 = 138,
+    // round 2 finishes on a single D16 (32). The leg used 3 + 1 = 4 darts,
+    // so the darts average must be 4.0, not 6.0.
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_170',
+      name: '170',
+      view: const ViewXXXCheckout(title: '170'),
+      getController: (_) => controller,
+      params: const {'xxx': 170, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // Round 1: 138 (T20 T20 D9 = 60+60+18). Three darts.
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('D9');
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.remaining, 170 - 138); // 32
+
+    // Round 2: finish 32 on a single D16.
+    state.pressDartboard('D16'); // 32
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+
+    expect(controller.wins, 1);
+    // Leg used 4 darts total; average over 1 completed leg = 4.0.
+    expect(controller.getCurrentStats()['avgDarts'], '4.0');
+  });
+
+  testWidgets('bust mid-round leaves the score unchanged for the leg',
+      (tester) async {
+    // Start at 20; a single T20 (60) busts.
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_bust',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 20, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // The digit-by-digit input guard prevents entering a score that busts,
+    // so a 60 turn is rejected and the leg score stays at 20 (no win).
+    state.pressDartboard('T20'); // 60 > 20
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+
+    expect(controller.wins, 0);
+    expect(controller.remaining, 20); // unchanged: bust/rejected
+  });
 }

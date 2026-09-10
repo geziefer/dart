@@ -61,6 +61,11 @@ class ControllerXXXCheckout extends ControllerBase
   double highestAvg = 0.0; // highest 3-dart average achieved in game
   String input = ""; // current input from numbpad
 
+  // Scolia mode: when submitting a turn we know the real dart count, so we
+  // auto-handle the checkout (correct dart count + skip the dialog).
+  bool _scoliaAutoCheckout = false;
+  int _scoliaDartCount = 3;
+
   @override
   void init(MenuItem item) {
     this.item = item;
@@ -182,8 +187,13 @@ class ControllerXXXCheckout extends ControllerBase
 
       // check for checkout or limit of rounds
       if (remaining == 0 || (max != -1 && round > max)) {
-        // Use callback to trigger checkout dialog - pass remaining and the score that was just thrown
-        onShowCheckout?.call(remaining, lastScore);
+        final bool wasCheckout = remaining == 0;
+
+        if (!_scoliaAutoCheckout) {
+          // Normal (numpad) mode: ask the view to show the checkout dialog,
+          // which will call correctDarts() with the user-entered dart count.
+          onShowCheckout?.call(remaining, lastScore);
+        }
 
         // Process checkout results (logic moved from dialog callback)
         results.add(dart);
@@ -220,6 +230,15 @@ class ControllerXXXCheckout extends ControllerBase
           leg++;
         }
 
+        if (_scoliaAutoCheckout) {
+          // Scolia mode: we know the real dart count, so correct the assumed
+          // 3 darts automatically (no dialog) and drive the close logic.
+          if (wasCheckout && _scoliaDartCount >= 1 && _scoliaDartCount <= 3) {
+            correctDarts(3 - _scoliaDartCount);
+          }
+          handleCheckoutClosed();
+        }
+
         // Don't trigger game end here - let it be triggered by checkout dialog callback
         return; // Return early to prevent further processing
       }
@@ -250,8 +269,26 @@ class ControllerXXXCheckout extends ControllerBase
     // Category 1 (score-value): the turn's total is the round score. Reuse the
     // exact numpad "enter" path so all leg/checkout/bust/stats logic applies.
     if (xxx == 0) return; // not initialized
-    input = turn.total.toString();
+
+    final total = turn.total;
+    // Apply the same validity rules the numpad enforces during digit entry, so
+    // an impossible/bust total is rejected rather than driving remaining
+    // negative. (A real board bust: you simply take the darts out and re-throw
+    // the leg; nothing is scored.)
+    if (total > 180 ||
+        total > remaining ||
+        isBogeyNumber(total) ||
+        remaining - total == 1) {
+      return; // reject: leave the leg state unchanged
+    }
+
+    // In Scolia mode we know the real dart count, so on a checkout we correct
+    // the assumed 3 darts automatically and skip the checkout dialog.
+    _scoliaAutoCheckout = true;
+    _scoliaDartCount = turn.dartCount;
+    input = total.toString();
     pressNumpadButton(-1);
+    _scoliaAutoCheckout = false;
   }
 
   // Checkout and summary dialogs are now handled by the view via callbacks
@@ -385,6 +422,11 @@ class ControllerXXXCheckout extends ControllerBase
   void correctDarts(int value) {
     // Update total darts count
     totalDarts -= value;
+
+    // lastTotalDarts is captured at leg-end (before this correction runs), and
+    // the darts average uses it. Apply the same correction so a mid-round
+    // finish (fewer than 3 darts) is reflected in the average.
+    lastTotalDarts -= value;
 
     // Update the results array for the most recent leg (last entry)
     // Subtract the correction from the stored result
