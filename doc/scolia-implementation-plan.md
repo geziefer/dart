@@ -551,7 +551,7 @@ and update `ScoliaDartboard.controller`.
 - [x] H6 RTC Single
 - [x] H7 RTC D/T
 - [x] H8 Plan Hit
-- [ ] H9 Double Path
+- [x] H9 Double Path
 - [ ] H10 Across Board
 - [ ] H11 Half It
 - [ ] H12 10 Up 1 Down
