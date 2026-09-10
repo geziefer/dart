@@ -543,8 +543,8 @@ and update `ScoliaDartboard.controller`.
 
 ### Task checklist
 
-- [ ] H1 Cricket
-- [ ] H2 Kill Bull
+- [x] H1 Cricket
+- [x] H2 Kill Bull
 - [ ] H3 Speed Bull
 - [ ] H4 Big Ts
 - [ ] H5 Shoot X
