@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class ControllerAcrossBoard extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -77,6 +79,8 @@ class ControllerAcrossBoard extends ControllerBase
   int round = 1;
   int dart = 0;
   bool finished = false;
+  bool _scoliaAutoCheckout = false;
+  int _scoliaDartCount = 3;
 
   @override
   void init(MenuItem item) {
@@ -182,9 +186,15 @@ class ControllerAcrossBoard extends ControllerBase
       if (currentTargetIndex >= 11) {
         finished = true;
         notifyListeners();
-
-        // Show checkout dialog for last round darts
-        onShowCheckout?.call(actualHits, 0);
+        if (_scoliaAutoCheckout) {
+          if (_scoliaDartCount >= 1 && _scoliaDartCount <= 3) {
+            correctDarts(3 - _scoliaDartCount);
+          }
+          handleCheckoutClosed();
+        } else {
+          // Show checkout dialog for last round darts
+          onShowCheckout?.call(actualHits, 0);
+        }
       } else {
         notifyListeners();
       }
@@ -282,4 +292,49 @@ class ControllerAcrossBoard extends ControllerBase
   int getCurrentTargetIndex() => currentTargetIndex;
   int getStartNumber() => startNumber;
   int getOppositeNumber() => oppositeNumber;
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || finished) return;
+    _scoliaAutoCheckout = true;
+    _scoliaDartCount = turn.dartCount;
+    int advances = 0;
+    int idx = currentTargetIndex;
+    for (final dart in turn.darts) {
+      if (idx >= targetSequence.length) break;
+      if (_matchesTarget(dart, targetSequence[idx])) {
+        advances++;
+        idx++;
+      }
+    }
+    pressNumpadButton(advances);
+    _scoliaAutoCheckout = false;
+  }
+
+  /// Check whether [dart] matches the encoded target string.
+  /// Target encoding: D=double, T=triple, BS=outer single, SS=inner single,
+  /// SB=outer bull (25), DB=inner bull (50/Bull).
+  bool _matchesTarget(DetectedThrow dart, String target) {
+    if (target == 'DB') return dart.ring == DartRing.innerBull;
+    if (target == 'SB') return dart.ring == DartRing.outerBull;
+    if (target.startsWith('D')) {
+      final seg = int.tryParse(target.substring(1));
+      return seg != null && dart.isDoubleOf(seg);
+    }
+    if (target.startsWith('T')) {
+      final seg = int.tryParse(target.substring(1));
+      return seg != null && dart.ring == DartRing.triple && dart.segment == seg;
+    }
+    if (target.startsWith('BS')) {
+      final seg = int.tryParse(target.substring(2));
+      // BS = outer/big single (ring S, FullCircle emits 'S')
+      return seg != null && dart.ring == DartRing.single && dart.segment == seg;
+    }
+    if (target.startsWith('SS')) {
+      final seg = int.tryParse(target.substring(2));
+      // SS = inner/small single (ring s from Scolia, also mapped to single)
+      return seg != null && dart.ring == DartRing.single && dart.segment == seg;
+    }
+    return false;
+  }
 }
