@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,7 +10,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerCricket extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -49,6 +51,10 @@ class ControllerCricket extends ControllerBase
   List<int> get currentRoundHits => roundHits[round - 1];
 
   String input = ""; // current input from numbpad
+
+  // Scolia mode: auto-handle the dart-count dialog on game completion.
+  bool _scoliaAutoCheckout = false;
+  int _scoliaDartCount = 3;
 
   @override
   void init(MenuItem item) {
@@ -103,9 +109,19 @@ class ControllerCricket extends ControllerBase
         if (hits.values.every((count) => count >= 3)) {
           // Game completed - add darts for current round and trigger checkout dialog
           totalDarts += 3;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            onShowCheckout?.call(0, 0); // remaining=0, score=0 for cricket
-          });
+          if (!_scoliaAutoCheckout) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              onShowCheckout?.call(0, 0); // remaining=0, score=0 for cricket
+            });
+          } else {
+            // Scolia: auto-correct dart count and skip dialog.
+            if (_scoliaDartCount >= 1 && _scoliaDartCount <= 3) {
+              correctDarts(3 - _scoliaDartCount);
+            }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              handleCheckoutClosed();
+            });
+          }
         }
       }
     }
@@ -351,6 +367,53 @@ class ControllerCricket extends ControllerBase
     WidgetsBinding.instance.addPostFrameCallback((_) {
       triggerGameEnd();
     });
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+
+    // Cricket (per-dart): each dart that hits a cricket number (15-20 or 25)
+    // registers as 1 hit per ring multiplier (single=1, double=2, triple=3).
+    // After processing all darts, end the round with pressNumpadButton(0).
+    _scoliaAutoCheckout = true;
+    _scoliaDartCount = turn.dartCount;
+
+    for (final dart in turn.darts) {
+      final number = _cricketNumber(dart);
+      if (number != null) {
+        final multiplier = _ringMultiplier(dart);
+        for (int i = 0; i < multiplier; i++) {
+          pressNumpadButton(number);
+          // Stop early if game just completed (hits all filled)
+          if (hits.values.every((c) => c >= 3)) break;
+        }
+      }
+    }
+    // End the round.
+    pressNumpadButton(0);
+
+    _scoliaAutoCheckout = false;
+  }
+
+  /// Returns the cricket number (15–20, 25) for a dart, or null if not cricket.
+  int? _cricketNumber(DetectedThrow dart) {
+    if (dart.ring == DartRing.miss) return null;
+    if (dart.segment == 25) return 25; // bull (any ring)
+    if (dart.segment >= 15 && dart.segment <= 20) return dart.segment;
+    return null;
+  }
+
+  /// How many hits this dart contributes (single=1, double=2, triple=3).
+  int _ringMultiplier(DetectedThrow dart) {
+    switch (dart.ring) {
+      case DartRing.double:
+        return 2;
+      case DartRing.triple:
+        return 3;
+      default:
+        return 1; // single, outerBull, innerBull
+    }
   }
 
 }

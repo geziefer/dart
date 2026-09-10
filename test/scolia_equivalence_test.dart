@@ -4,10 +4,12 @@ import 'package:mockito/annotations.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:dart/controller/controller_bobs27.dart';
+import 'package:dart/controller/controller_cricket.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/protocol/sector_parser.dart';
 import 'package:dart/view/view_bobs27.dart';
+import 'package:dart/view/view_cricket.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:dart/widget/menu.dart';
 
@@ -25,6 +27,76 @@ DetectedThrow t(String sector) => SectorParser.parse(sector);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('Cricket (H1)', () {
+    ControllerCricket make() {
+      final s = MockGetStorage();
+      when(s.read(any)).thenReturn(null);
+      when(s.write(any, any)).thenAnswer((_) async {});
+      final c = ControllerCricket.forTesting(s);
+      c.init(MenuItem(
+        id: 'test_cr',
+        name: 'Cricket',
+        view: const ViewCricket(title: 'Cricket'),
+        getController: (_) => c,
+        params: const {},
+      ));
+      return c;
+    }
+
+    test('T20 counts as 3 hits on 20', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('T20')]));
+      expect(c.hits[20], 3);
+    });
+
+    test('D20 counts as 2 hits on 20', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('D20')]));
+      expect(c.hits[20], 2);
+    });
+
+    test('S20 counts as 1 hit on 20', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('S20')]));
+      expect(c.hits[20], 1);
+    });
+
+    test('non-cricket numbers are ignored', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('T10'), t('S5')]));
+      expect(c.hits.values.every((v) => v == 0), isTrue);
+    });
+
+    test('Bull (inner) counts as 1 hit on 25', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('Bull')]));
+      expect(c.hits[25], 1);
+    });
+
+    test('endRound advances round on each turn', () {
+      final c = make();
+      c.submitScoliaTurn(TurnResult([t('S20')]));
+      expect(c.round, 2);
+    });
+
+    test('Scolia path == numpad path for S20 D19 S18', () {
+      final numpad = make();
+      numpad.pressNumpadButton(20);
+      numpad.pressNumpadButton(19);
+      numpad.pressNumpadButton(19);
+      numpad.pressNumpadButton(18);
+      numpad.pressNumpadButton(0);
+
+      final scolia = make();
+      scolia.submitScoliaTurn(TurnResult([t('S20'), t('D19'), t('S18')]));
+
+      expect(scolia.hits[20], numpad.hits[20]);
+      expect(scolia.hits[19], numpad.hits[19]);
+      expect(scolia.hits[18], numpad.hits[18]);
+      expect(scolia.round, numpad.round);
+    });
+  });
 
   group('xxxcheckout: Scolia turn == numpad entry', () {
     ControllerXXXCheckout make() {

@@ -1,7 +1,9 @@
 import 'package:dart/controller/controller_cricket.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scolia_dartboard.dart';
 import 'package:dart/widget/cricket_board.dart';
 import 'package:dart/widget/checkout.dart';
 import 'package:flutter/material.dart';
@@ -93,18 +95,23 @@ class ViewCricket extends StatelessWidget {
                 ),
                 const VerticalDivider(color: Colors.white, thickness: 3),
 
-                // ########## Right column with num pad
+                // ########## Right column with num pad or Scolia dartboard
                 Expanded(
                   flex: 55,
-                  child: Numpad(
-                    controller: controller,
-                    showUpper: true,
-                    showMiddle: true,
-                    showLower: true,
-                    showExtraButtons: false,
-                    showYesNo: false,
-                    cricketMode: true,
-                  ),
+                  child: scoliaInputActive(context)
+                      ? ScoliaDartboard(
+                          controller: controller,
+                          onUndoRound: () => controller.pressNumpadButton(-2),
+                        )
+                      : Numpad(
+                          controller: controller,
+                          showUpper: true,
+                          showMiddle: true,
+                          showLower: true,
+                          showExtraButtons: false,
+                          showYesNo: false,
+                          cricketMode: true,
+                        ),
                 ),
               ],
             ),
