@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerBigTs extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -202,5 +204,18 @@ class ControllerBigTs extends ControllerBase
         'P': longtermAverage,
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+    // Target rotates T20 → T19 → T18 per round (repeating).
+    const targets = [20, 19, 18];
+    final targetSegment = targets[currentRound % 3];
+    // Only triples of the target segment count as a hit.
+    final hits = turn.darts
+        .where((d) => d.ring == DartRing.triple && d.segment == targetSegment)
+        .length;
+    pressNumpadButton(hits);
   }
 }

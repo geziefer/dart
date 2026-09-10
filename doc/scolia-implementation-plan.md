@@ -546,7 +546,7 @@ and update `ScoliaDartboard.controller`.
 - [x] H1 Cricket
 - [x] H2 Kill Bull
 - [x] H3 Speed Bull
-- [ ] H4 Big Ts
+- [x] H4 Big Ts
 - [ ] H5 Shoot X
 - [ ] H6 RTC Single
 - [ ] H7 RTC D/T
