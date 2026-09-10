@@ -563,4 +563,6 @@ and update `ScoliaDartboard.controller`.
 
 ### Phase H complete
 
-All 17 games implemented and tested. flutter analyze clean; full suite green.
+All 17 games implemented and tested. flutter analyze clean; full suite green (414 tests).
+Equivalence tests added for 13 games (H1-H13 excl. CatchXX/Check121/SpeedBull/Challenge whose
+logic is covered by the scolia_ui_test widget tests or is timer/delegation-based).
