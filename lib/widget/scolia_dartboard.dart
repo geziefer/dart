@@ -9,7 +9,9 @@ import 'package:dart/scolia/protocol/message.dart';
 import 'package:dart/scolia/protocol/sector_parser.dart';
 import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/scolia/scolia_event_source.dart';
+import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/turn_collector.dart';
+import 'package:provider/provider.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:dart/widget/fullcircle.dart';
 
@@ -92,8 +94,23 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   void initState() {
     super.initState();
     _collector = TurnCollector(onTurnComplete: _onTurnComplete);
-    if (!widget.simulator && widget.source != null) {
-      _sub = widget.source!.messages.listen(_onMessage);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Wire the event source: use explicit source if provided, otherwise read
+    // from ScoliaService in the widget tree (real board or mock).
+    _sub?.cancel();
+    final effectiveSource = widget.source ??
+        context.read<ScoliaService?>()?.source;
+    final effectiveSimulator = widget.source != null
+        ? widget.simulator
+        : (context.read<ScoliaService?>()?.isSimulator ?? true);
+
+    if (!effectiveSimulator && effectiveSource != null) {
+      _sub = effectiveSource.messages.listen(_onMessage);
+      effectiveSource.connect();
     }
   }
 
@@ -352,7 +369,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
           Icon(Icons.circle, size: 20, color: statusColor),
           const SizedBox(width: 8),
           Text(
-            '${widget.simulator ? 'Simulator' : 'Scolia'} · Status: '
+            '${(context.read<ScoliaService?>()?.isSimulator ?? widget.simulator) ? 'Simulator' : 'Scolia'} · Status: '
             '${_status.name} · Phase: $phaseText',
             style: const TextStyle(color: Colors.white, fontSize: 26),
           ),
