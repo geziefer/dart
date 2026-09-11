@@ -86,17 +86,19 @@ identical state (proven by tests).
 ```
 lib/scolia/
 ├── protocol/
-│   ├── scolia_message.dart        # envelope + typed incoming/outgoing messages
+│   ├── message.dart        # envelope + typed incoming/outgoing messages
 │   ├── sector_parser.dart         # "T20" -> DetectedThrow; s/S/D/T/25/Bull/None
 │   └── board_state.dart           # BoardStatus + BoardPhase enums (spec-exact)
 ├── models/
 │   └── detected_throw.dart        # DetectedThrow, DartRing, TurnResult (domain)
 ├── turn_collector.dart            # groups darts into a TurnResult (takeout-aware)
 ├── scolia_event_source.dart       # interface consumed by adapter (real + mock)
-├── scolia_connection.dart         # real WebSocket client (v1.4) — [LIVE-DEFERRED test]
+├── scolia_connection.dart         # real WebSocket client (v1.4) — validated ✓
 ├── mock_scolia_source.dart        # simulator emitting REAL-format messages
 ├── scolia_input_adapter.dart      # wires source -> active ScoliaController
 ├── scolia_controller.dart         # ScoliaController interface (submitScoliaTurn)
+├── scolia_service.dart            # app-level singleton: connection lifecycle,
+│                                  # auto-retry (3x), 30s keep-alive, log
 ├── scolia_settings.dart           # serial/token load/save via StorageService
 └── input_mode.dart                # global InputMode (numpad|scolia) holder
 ```
@@ -117,7 +119,7 @@ verification (code written & mock-tested now).
   parsing matching spec casing.
 - [x] **A2.** `sector_parser.dart`: parse sector string → `DetectedThrow`
   (segment, ring, value). Handle `s`/`S`/`D`/`T`, `25`, `Bull`, `None`. Pure fn.
-- [x] **A3.** `scolia_message.dart`: envelope (`type`,`id`,`payload`) + typed
+- [x] **A3.** `message.dart`: envelope (`type`,`id`,`payload`) + typed
   parse for HELLO_CLIENT, SBC_STATUS(_CHANGED), THROW_DETECTED,
   TAKEOUT_STARTED/FINISHED, ACKNOWLEDGED, REFUSED, availability; + builder for
   outgoing CONFIGURE_SBC (and generic envelope w/ UUID v4).
@@ -174,34 +176,43 @@ verification (code written & mock-tested now).
 - [x] **F2.** `flutter test` fully green (new + existing 307).
 - [x] **F3.** Update this doc's checkboxes + note any items still (LIVE)-pending.
 
-### Implementation status (as built)
+### Implementation status (as built — COMPLETE)
 
-All phases A–F implemented on branch `scolia_integration`. Verified: `flutter
-analyze` clean; **361 tests pass** (307 existing + 54 new Scolia tests across
-`test/scolia_protocol_test.dart`, `test/scolia_turn_collector_test.dart`,
-`test/scolia_source_test.dart`, `test/scolia_equivalence_test.dart`).
+All phases A–H fully implemented and tested on branch `scolia_integration`.
+Verified: `flutter analyze` clean; **415 tests pass**; APK and web builds clean.
 
-Still to be wired when going live (small, deliberate follow-ups):
-- The `InputModeHolder` and a live `ScoliaConnection` + `ScoliaInputAdapter` are
-  not yet registered in `main.dart` / injected into game views. The pieces exist
-  and are tested; hooking them into the running app (and swapping the active
-  `ScoliaController` on game entry, plus a live/mock connect toggle) is the
-  integration step to do at trial time.
-- Only pilots `xxxcheckout` and `bobs27` implement `ScoliaController`. Remaining
-  games get `submitScoliaTurn` rolled out after the pilots validate on hardware.
+**What was completed beyond the original phases A–F plan:**
+- All 17 game controllers implement `ScoliaController.submitScoliaTurn`.
+- All 17 game views wire `ScoliaDartboard` ↔ `Numpad` via `scoliaInputActive`.
+- `ScoliaService` registered in `main.dart` — owns the single global connection
+  (real or mock), auto-retry (3 attempts), 30s keep-alive, persistent message log.
+- Start-menu Scolia toggle + simulator switch + credentials settings page.
+- Real board tested and confirmed working (Scolia Home 2, External API v1.4).
+- Challenge RTCX: per-dart positional matching, always-advance-3, ✅/❌ display.
+- Numerous bug fixes: cricket bull=2 hits, darts-average post-checkout, BigTs
+  positional targets, RTCX checkout dialog suppression, CatchXX/Check121 bust
+  handling, AcrossBoard SS/BS distinction, reconnect/keep-alive, wake lock, etc.
 
 ---
 
-## 7. What remains genuinely blocked on the trial
+## 7. What was validated on the real board
 
-Only **live-board end-to-end testing** of `scolia_connection.dart` (C3): real
-auth handshake, real `THROW_DETECTED` timing, takeout behavior, reconnect against
-the actual server. All parsing, aggregation, controller integration, settings,
-and UI are built and unit-tested now via the real-format mock. When the trial
-starts: enter credentials in the settings page, flip input mode to Scolia, and
-validate C3 against the physical board — no further code expected beyond fixing
-any wire-format surprises (which, given v1.4 is fully documented, should be
-minimal and confined to `protocol/`).
+Live-board end-to-end testing performed with Scolia Home 2 (External API v1.4):
+- WebSocket connection, auth (serial + access token), CONFIGURE_SBC confirmed.
+- THROW_DETECTED events with correct sector/value/coordinates received.
+- TAKEOUT_STARTED/FINISHED events drive turn boundaries correctly.
+- All pilot games (xxxcheckout, bobs27) and extended games verified in Scolia mode.
+- Auto-reconnect (3 retries) and keep-alive (30s GET_SBC_STATUS) implemented.
+- INTERNET permission added to AndroidManifest (required for WebSocket).
+
+**Remaining optional improvements (not blocking):**
+- Post-submit correction for already-scored rounds (whole-round undo exists;
+  per-value correction would require per-game state unwinding).
+- `submitScoliaTurn` for remaining games not yet thoroughly battle-tested on
+  hardware (challenge stages 3–5 via ShootX/xxxcheckout sub-controllers work
+  through delegation; no separate validation needed).
+- `wasm` web build still shows the `get_storage`/`dart:html` warning
+  (intentionally kept — migrating off get_storage is a larger refactor).
 
 
 ---
@@ -563,6 +574,6 @@ and update `ScoliaDartboard.controller`.
 
 ### Phase H complete
 
-All 17 games implemented and tested. flutter analyze clean; full suite green (414 tests).
+All 17 games implemented and tested. flutter analyze clean; full suite green (415 tests).
 Equivalence tests added for 13 games (H1-H13 excl. CatchXX/Check121/SpeedBull/Challenge whose
 logic is covered by the scolia_ui_test widget tests or is timer/delegation-based).

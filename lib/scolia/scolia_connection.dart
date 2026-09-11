@@ -1,20 +1,10 @@
 /// Real Scolia External API v1.4 WebSocket client.
 ///
-/// Connects to `wss://game.scoliadarts.com/api/v1/external` with the board
-/// serial number and access token as query parameters (§2.2, §4.1), parses
-/// incoming frames via [ScoliaMessage.parse], and on connect sends
-/// CONFIGURE_SBC to disable message forwarding to the Scolia app (so our
-/// throws never create phantom games).
-///
-/// This is receive-only for gameplay; the only outgoing message is the
-/// one-shot CONFIGURE_SBC.
-///
-/// >>> LIVE-DEFERRED <<<
-/// The code is complete and unit-testable with an injected fake channel, but
-/// full end-to-end verification against a physical board requires the trial
-/// credentials. Anything that needs adjustment after live testing should be
-/// confined to the protocol parsing (lib/scolia/protocol/) and the connect
-/// handshake below.
+/// Validated against Scolia Home 2 hardware. Connects to
+/// `wss://game.scoliadarts.com/api/v1/external` with the board serial number
+/// and access token as query parameters (§2.2, §4.1), parses incoming frames
+/// via [ScoliaMessage.parse], and on connect sends CONFIGURE_SBC to disable
+/// message forwarding to the Scolia app (so throws never create phantom games).
 library;
 
 import 'dart:async';
