@@ -9,6 +9,12 @@ class ViewStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const statsButtonStyle = ButtonStyle(
+      backgroundColor: WidgetStatePropertyAll(Colors.black),
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
+      side: WidgetStatePropertyAll(
+          BorderSide(color: Colors.white38)),
+    );
     return Consumer<ControllerStats>(
       builder: (context, controller, child) {
         // Refresh stats when view is built
@@ -52,7 +58,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.shareExportedStats(context),
                           child: const Text('Teilen'),
                         ),
@@ -61,7 +68,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.saveExportedStatsToFile(context),
                           child: const Text('Exportieren'),
                         ),
@@ -70,7 +78,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.importStatsFromFile(context, (jsonData) {
                             showDialog(
                               context: context,
@@ -105,7 +114,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const ViewScoliaSettings(),
@@ -132,6 +142,11 @@ class ViewStats extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
+      color: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.white38),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -143,7 +158,9 @@ class ViewStats extends StatelessWidget {
                   child: Text(
                     gameData['name'] as String,
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 IconButton(
@@ -174,7 +191,7 @@ class ViewStats extends StatelessWidget {
                 ),
               ],
             ),
-            const Divider(),
+            const Divider(color: Colors.white24),
             // Display stats in rows with fixed 6 columns
             for (int i = 0; i < statKeys.length; i += 6)
               Padding(
@@ -186,7 +203,8 @@ class ViewStats extends StatelessWidget {
                         child: j + i < statKeys.length
                             ? Text(
                                 '${statKeys[i + j]}: ${_formatValue(stats[statKeys[i + j]])}',
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.white70),
                                 textAlign: TextAlign.left,
                               )
                             : const SizedBox(),

@@ -96,7 +96,13 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
+            OutlinedButton(
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+                side: WidgetStatePropertyAll(
+                    BorderSide(color: Colors.white38)),
+              ),
               onPressed: _save,
               child: const Text('Speichern'),
             ),
@@ -111,6 +117,11 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
                 style: TextStyle(color: Colors.white54, fontSize: 12),
               ),
               value: _simulator,
+              activeThumbColor: const Color.fromARGB(255, 215, 198, 132),
+              activeTrackColor: const Color.fromARGB(120, 215, 198, 132),
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: Colors.black,
+              trackOutlineColor: WidgetStateProperty.all(Colors.white38),
               onChanged: (v) {
                 setState(() => _simulator = v);
                 _settings.simulatorEnabled = v;
@@ -123,7 +134,13 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ElevatedButton.icon(
+                  OutlinedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: const WidgetStatePropertyAll(Colors.black),
+                      foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                      side: WidgetStatePropertyAll(
+                          BorderSide(color: canMonitor ? Colors.white38 : Colors.white12)),
+                    ),
                     icon: const Icon(Icons.monitor_heart),
                     label: const Text('Monitor öffnen'),
                     onPressed: canMonitor ? _openMonitor : null,
