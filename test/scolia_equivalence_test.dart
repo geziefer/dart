@@ -254,22 +254,26 @@ void main() {
       c.init(MenuItem(id: 'bt', name: 'BigTs', view: const ViewBigTs(title: 'BigTs'), getController: (_) => c, params: const {}));
       return c;
     }
-    test('T20 in round 1 == pressing 1', () {
+    test('T20 T19 T18 all hit == pressing 3', () {
+      final n = make()..pressNumpadButton(3);
+      final s = make()..submitScoliaTurn(TurnResult([t('T20'), t('T19'), t('T18')]));
+      expect(s.hitCounts, n.hitCounts);
+    });
+    test('T20 T19 miss == pressing 2', () {
+      final n = make()..pressNumpadButton(2);
+      final s = make()..submitScoliaTurn(TurnResult([t('T20'), t('T19'), t('S18')]));
+      expect(s.hitCounts, n.hitCounts);
+    });
+    test('wrong order (T19 first, T18 still scores) == pressing 1', () {
       final n = make()..pressNumpadButton(1);
-      final s = make()..submitScoliaTurn(TurnResult([t('T20')]));
-      expect(s.currentRound, n.currentRound);
+      // dart1=T19 (needs T20)=miss, dart2=T20 (needs T19)=miss, dart3=T18 (needs T18)=hit
+      final s = make()..submitScoliaTurn(TurnResult([t('T19'), t('T20'), t('T18')]));
       expect(s.hitCounts, n.hitCounts);
     });
-    test('non-target (T19 in round 1) == pressing 0', () {
-      final n = make()..pressNumpadButton(0);
-      final s = make()..submitScoliaTurn(TurnResult([t('T19')]));
+    test('only T20 hit (darts 2+3 miss) == pressing 1', () {
+      final n = make()..pressNumpadButton(1);
+      final s = make()..submitScoliaTurn(TurnResult([t('T20'), t('S19'), t('S18')]));
       expect(s.hitCounts, n.hitCounts);
-    });
-    test('round 2 target is T19', () {
-      final s = make();
-      s.submitScoliaTurn(TurnResult([t('T20')])); // round 1 -> T20
-      s.submitScoliaTurn(TurnResult([t('T19')])); // round 2 -> T19
-      expect(s.hitCounts[1], 1);
     });
   });
 

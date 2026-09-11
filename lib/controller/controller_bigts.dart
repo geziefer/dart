@@ -209,13 +209,16 @@ class ControllerBigTs extends ControllerBase
   @override
   void submitScoliaTurn(TurnResult turn) {
     if (item == null) return;
-    // Target rotates T20 → T19 → T18 per round (repeating).
-    const targets = [20, 19, 18];
-    final targetSegment = targets[currentRound % 3];
-    // Only triples of the target segment count as a hit.
-    final hits = turn.darts
-        .where((d) => d.ring == DartRing.triple && d.segment == targetSegment)
-        .length;
+    // Each round: dart 1 aims at T20, dart 2 at T19, dart 3 at T18.
+    // Count how many darts hit their required triple in order.
+    const roundTargets = [20, 19, 18];
+    int hits = 0;
+    for (int i = 0; i < turn.darts.length && i < roundTargets.length; i++) {
+      final dart = turn.darts[i];
+      if (dart.ring == DartRing.triple && dart.segment == roundTargets[i]) {
+        hits++;
+      }
+    }
     pressNumpadButton(hits);
   }
 }
