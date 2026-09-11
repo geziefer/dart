@@ -39,6 +39,12 @@ class ControllerSpeedBull extends ControllerBase
   bool gameEnded = false; // flag to track if game has ended
   bool lastThrowAllowed = false; // flag for final throw after timer ends
 
+  /// Called when the timer reaches 0 (Scolia mode: submit partial turn immediately).
+  VoidCallback? onTimerExpired;
+
+  /// Notifier fired when timer expires — passed to ScoliaDartboard to force-submit partial turn.
+  final ValueNotifier<bool> timerExpiredNotifier = ValueNotifier(false);
+
   // Timer related
   int gameDurationSeconds = 60; // configurable game duration
   int remainingSeconds = 0; // remaining time
@@ -87,6 +93,8 @@ class ControllerSpeedBull extends ControllerBase
       if (remainingSeconds <= 0) {
         timer.cancel();
         lastThrowAllowed = true;
+        onTimerExpired?.call();
+        timerExpiredNotifier.value = !timerExpiredNotifier.value;
         notifyListeners();
       }
     });
@@ -281,6 +289,8 @@ class ControllerSpeedBull extends ControllerBase
       if (remainingSeconds <= 0) {
         timer.cancel();
         lastThrowAllowed = true;
+        onTimerExpired?.call();
+        timerExpiredNotifier.value = !timerExpiredNotifier.value;
         notifyListeners();
       }
     });

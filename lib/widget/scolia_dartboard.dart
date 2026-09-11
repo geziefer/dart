@@ -36,6 +36,7 @@ class ScoliaDartboard extends StatefulWidget {
     this.onUndoRound,
     this.onCorrectionModeChanged,
     this.onFirstDart,
+    this.onTimerExpiredNotifier,
   });
 
   /// The active game controller (must support Scolia input).
@@ -61,6 +62,11 @@ class ScoliaDartboard extends StatefulWidget {
   /// turn completes — allows time-sensitive games to start their timer on the
   /// first throw rather than waiting for the takeout.
   final VoidCallback? onFirstDart;
+
+  /// When provided, the dartboard listens to this notifier and immediately
+  /// submits the current partial turn when it fires. Used by Speed Bull to
+  /// submit buffered darts when the timer reaches 0.
+  final ValueNotifier<bool>? onTimerExpiredNotifier;
 
   @override
   State<ScoliaDartboard> createState() => _ScoliaDartboardState();
@@ -94,6 +100,8 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   void initState() {
     super.initState();
     _collector = TurnCollector(onTurnComplete: _onTurnComplete);
+    // Listen to timer-expired notifier (Speed Bull: submit partial turn at 0).
+    widget.onTimerExpiredNotifier?.addListener(_onTimerExpired);
     // Trigger connect after first frame so context is available.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -132,9 +140,17 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
   @override
   void dispose() {
+    widget.onTimerExpiredNotifier?.removeListener(_onTimerExpired);
     _flashTimer?.cancel();
     _sub?.cancel();
     super.dispose();
+  }
+
+  void _onTimerExpired() {
+    // Timer reached 0 — submit whatever darts are buffered immediately.
+    if (_collector.pending.isNotEmpty) {
+      _endTurn();
+    }
   }
 
   // --- Real-mode message handling ---

@@ -132,6 +132,7 @@ class ViewSpeedBull extends StatelessWidget {
                     onCorrectionModeChanged: (correcting) => correcting
                         ? controller.pauseTimer()
                         : controller.resumeTimer(),
+                    onTimerExpiredNotifier: controller.timerExpiredNotifier,
                   )
                 : Numpad(
                     controller: controller,
