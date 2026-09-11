@@ -58,8 +58,9 @@ class ControllerPlanHit extends ControllerBase
   }
 
   String _generateTargetSequence() {
-    List<int> numbers = List.generate(3, (_) => _random.nextInt(20) + 1);
-    return numbers.join('-');
+    // Pick 3 distinct numbers from 1-20 (no duplicates).
+    final pool = List<int>.generate(20, (i) => i + 1)..shuffle(_random);
+    return pool.take(3).join('-');
   }
 
   @override

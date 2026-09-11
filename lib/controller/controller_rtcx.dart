@@ -36,6 +36,7 @@ class ControllerRTCX extends ControllerBase
   bool isChallengeMode = false; // if true, running in challenge mode
   Function(int)? onGameCompleted; // callback to report score to parent controller
   String? challengeStepInfo; // challenge step info for display
+  bool _scoliaAutoCheckout = false;
 
   List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
   int currentNumber = 1; // current number to throw at
@@ -145,10 +146,14 @@ class ControllerRTCX extends ControllerBase
             // Normal mode: only show checkout dialog if game was actually completed
             // Calculate how many targets were actually hit in this final input
             int targetsHit = advancement;
-            
-            // Show checkout dialog - pass the number of targets hit as remaining parameter
-            // This ensures the checkout dialog shows the correct dart options
-            onShowCheckout?.call(targetsHit, 0);
+
+            if (_scoliaAutoCheckout) {
+              // Scolia mode: skip the dart-count dialog, end game directly.
+              handleCheckoutClosed();
+            } else {
+              // Show checkout dialog - pass the number of targets hit as remaining parameter
+              onShowCheckout?.call(targetsHit, 0);
+            }
           } else {
             // Game not completed but hit round limit - go straight to game end
             triggerGameEnd();
@@ -307,8 +312,7 @@ class ControllerRTCX extends ControllerBase
   @override
   void submitScoliaTurn(TurnResult turn) {
     if (item == null || finished) return;
-    // Process darts one by one, updating the target after each hit —
-    // so hitting S1 then S2 correctly advances twice (to 1, then to 2).
+    _scoliaAutoCheckout = true;
     int advances = 0;
     int target = currentNumber;
     for (final dart in turn.darts) {
@@ -319,6 +323,7 @@ class ControllerRTCX extends ControllerBase
       }
     }
     pressNumpadButton(advances);
+    _scoliaAutoCheckout = false;
   }
 
   bool _qualifiesFor(DetectedThrow dart, int target) {

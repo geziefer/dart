@@ -332,20 +332,22 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     final selected = _editIndex == index;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
-      child: TextButton(
-        onPressed: () => _toggleEdit(index),
-        style: TextButton.styleFrom(
-          backgroundColor:
-              selected ? const Color.fromARGB(80, 215, 198, 132) : null,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: selected
-                ? const BorderSide(
-                    color: Color.fromARGB(255, 215, 198, 132), width: 3)
-                : const BorderSide(
-                    color: Color.fromARGB(120, 215, 198, 132), width: 1.5),
+      child: SizedBox(
+        width: double.infinity, // fill the right column width uniformly
+        child: TextButton(
+          onPressed: () => _toggleEdit(index),
+          style: TextButton.styleFrom(
+            backgroundColor:
+                selected ? const Color.fromARGB(80, 215, 198, 132) : null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: selected
+                  ? const BorderSide(
+                      color: Color.fromARGB(255, 215, 198, 132), width: 3)
+                  : const BorderSide(
+                      color: Color.fromARGB(120, 215, 198, 132), width: 1.5),
+            ),
           ),
-        ),
         child: Text(
           t.sectorLabel,
           style: const TextStyle(
@@ -354,6 +356,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
             fontSize: 56,
           ),
         ),
+      ),
       ),
     );
   }
