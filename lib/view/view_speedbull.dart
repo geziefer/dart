@@ -1,8 +1,10 @@
 import 'package:dart/controller/controller_speedbull.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scolia_dartboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/menu.dart';
@@ -119,17 +121,27 @@ class ViewSpeedBull extends StatelessWidget {
           ),
           const VerticalDivider(color: Colors.white, thickness: 3),
 
-          // ########## Right column with num pad
+          // ########## Right column with num pad or Scolia dartboard
           Expanded(
             flex: 5,
-            child: Numpad(
-              controller: controller,
-              showUpper: false,
-              showMiddle: false,
-              showLower: true,
-              showExtraButtons: false,
-              showYesNo: false,
-            ),
+            child: scoliaInputActive(context)
+                ? ScoliaDartboard(
+                    controller: controller,
+                    onFirstDart: () => controller.startGame(),
+                    onUndoRound: () => controller.pressNumpadButton(-2),
+                    onCorrectionModeChanged: (correcting) => correcting
+                        ? controller.pauseTimer()
+                        : controller.resumeTimer(),
+                    onTimerExpiredNotifier: controller.timerExpiredNotifier,
+                  )
+                : Numpad(
+                    controller: controller,
+                    showUpper: false,
+                    showMiddle: false,
+                    showLower: true,
+                    showExtraButtons: false,
+                    showYesNo: false,
+                  ),
           ),
         ],
       ),

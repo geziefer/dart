@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerKillBull extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -189,5 +191,21 @@ class ControllerKillBull extends ControllerBase
         'P': longtermScore, // Durchschnittspunkte
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || gameEnded) return;
+    // Count bull hits: inner bull (DB/50) = 2 bulls, outer bull (SB/25) = 1 bull.
+    // Max 6 per round (3 × inner bull).
+    int bulls = 0;
+    for (final dart in turn.darts) {
+      if (dart.ring == DartRing.innerBull) {
+        bulls += 2;
+      } else if (dart.ring == DartRing.outerBull) {
+        bulls += 1;
+      }
+    }
+    pressNumpadButton(bulls);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -9,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerBobs27 extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -177,6 +179,20 @@ class ControllerBobs27 extends ControllerBase
     } else {
       return 21; // bull
     }
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    // Category 3 (interpreted hit-count): Bob's 27 is a doubles game. Count how
+    // many darts hit the DOUBLE of the current target (inner bull counts as the
+    // bull's double). Then drive the existing hits path (0-3).
+    if (item == null || gameEnded) return;
+    final target = _getCurrentTargetNumber();
+    // isDoubleOf expects 25 for the bull; the controller uses 21 internally.
+    final doubleTarget = target == 21 ? 25 : target;
+    final hits =
+        turn.darts.where((d) => d.isDoubleOf(doubleTarget)).length;
+    pressNumpadButton(hits);
   }
 
   String _getCurrentTargetDisplay() {

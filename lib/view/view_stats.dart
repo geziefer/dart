@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_stats.dart';
+import 'package:dart/view/view_scolia_settings.dart';
 import 'package:dart/widget/game_layout.dart';
 
 class ViewStats extends StatelessWidget {
@@ -8,6 +9,12 @@ class ViewStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const statsButtonStyle = ButtonStyle(
+      backgroundColor: WidgetStatePropertyAll(Colors.black),
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
+      side: WidgetStatePropertyAll(
+          BorderSide(color: Colors.white38)),
+    );
     return Consumer<ControllerStats>(
       builder: (context, controller, child) {
         // Refresh stats when view is built
@@ -16,7 +23,7 @@ class ViewStats extends StatelessWidget {
         });
         
         return GameLayout(
-          title: 'Statistik',
+          title: 'Statistik / Einstellungen',
           mainContent: controller.allStats.isEmpty
               ? const Center(
                   child: Text(
@@ -37,7 +44,7 @@ class ViewStats extends StatelessWidget {
                           ..sort((a, b) => controller.allStats[a]!['name']
                               .toString()
                               .compareTo(controller.allStats[b]!['name'].toString())))
-                          _buildGameStats(gameId, controller.allStats[gameId]!),
+                          _buildGameStats(context, controller, gameId, controller.allStats[gameId]!),
                       ],
                     ),
                   ),
@@ -51,7 +58,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.shareExportedStats(context),
                           child: const Text('Teilen'),
                         ),
@@ -60,7 +68,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.saveExportedStatsToFile(context),
                           child: const Text('Exportieren'),
                         ),
@@ -69,7 +78,8 @@ class ViewStats extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ElevatedButton(
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
                           onPressed: () => controller.importStatsFromFile(context, (jsonData) {
                             showDialog(
                               context: context,
@@ -101,6 +111,20 @@ class ViewStats extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: OutlinedButton(
+                          style: statsButtonStyle,
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ViewScoliaSettings(),
+                            ),
+                          ),
+                          child: const Text('Scolia'),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -111,22 +135,63 @@ class ViewStats extends StatelessWidget {
     );
   }
 
-  Widget _buildGameStats(String gameId, Map<String, dynamic> gameData) {
+  Widget _buildGameStats(BuildContext context, ControllerStats controller,
+      String gameId, Map<String, dynamic> gameData) {
     final stats = gameData['stats'] as Map<String, dynamic>;
     final statKeys = stats.keys.toList();
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
+      color: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.white38),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              gameData['name'] as String,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    gameData['name'] as String,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  tooltip: 'Statistik löschen',
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Statistik löschen'),
+                      content: Text(
+                          'Statistik für "${gameData['name']}" wirklich löschen?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('Nein'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            controller.deleteStatsForGame(gameId);
+                          },
+                          child: const Text('Ja',
+                              style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Divider(),
+            const Divider(color: Colors.white24),
             // Display stats in rows with fixed 6 columns
             for (int i = 0; i < statKeys.length; i += 6)
               Padding(
@@ -138,7 +203,8 @@ class ViewStats extends StatelessWidget {
                         child: j + i < statKeys.length
                             ? Text(
                                 '${statKeys[i + j]}: ${_formatValue(stats[statKeys[i + j]])}',
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.white70),
                                 textAlign: TextAlign.left,
                               )
                             : const SizedBox(),

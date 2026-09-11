@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -9,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerTwoDarts extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -174,5 +176,17 @@ class ControllerTwoDarts extends ControllerBase
         'C': longtermSuccesses, // Checks
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+    final target = 61 + currentTargetIndex;
+    // Success: exactly 2 darts, sum == target, 2nd dart is inner bull (DB/50).
+    // All targets 61-70 are finished as: single X + double bull (50).
+    final success = turn.dartCount == 2 &&
+        turn.total == target &&
+        turn.darts[1].ring == DartRing.innerBull;
+    pressNumpadButton(success ? 1 : 0);
   }
 }

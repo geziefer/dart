@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerCheck121 extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -41,6 +43,22 @@ class ControllerCheck121 extends ControllerBase
   int round = 1; // current round number
   bool gameEnded = false; // flag to track if game has ended
 
+  // Scolia: multi-turn accumulator for one attempt (up to 9 darts / 3 rounds).
+  List<DetectedThrow> _scoliaAccDarts = [];
+  int _scoliaTurnsUsed = 0;
+  void resetScoliaAttempt() {
+    _scoliaAccDarts = [];
+    _scoliaTurnsUsed = 0;
+  }
+
+  /// Remaining score during an active Scolia attempt, or null when idle.
+  int? get scoliaRemainder {
+    if (_scoliaAccDarts.isEmpty) return null;
+    final acc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
+    final rem = currentTarget - acc;
+    return rem > 0 ? rem : null;
+  }
+
   @override
   void init(MenuItem item) {
     this.item = item;
@@ -59,6 +77,8 @@ class ControllerCheck121 extends ControllerBase
     highestTarget = 121;
     round = 1;
     gameEnded = false;
+    _scoliaAccDarts = [];
+    _scoliaTurnsUsed = 0;
   }
 
   @override
@@ -193,6 +213,12 @@ class ControllerCheck121 extends ControllerBase
   }
 
   String getCurrentTargets() {
+    final rem = scoliaRemainder;
+    if (rem != null && targets.isNotEmpty) {
+      final displayTargets = List<int>.from(targets);
+      displayTargets[displayTargets.length - 1] = rem;
+      return createMultilineString(displayTargets, [], '', '', [], 5, false);
+    }
     return createMultilineString(targets, [], '', '', [], 5, false);
   }
 
@@ -296,5 +322,46 @@ class ControllerCheck121 extends ControllerBase
     // Update records
     statsService.updateRecord<int>('highestTarget', highestTarget);
     statsService.updateRecord<int>('highestSavePoint', savePoint);
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || gameEnded) return;
+    _scoliaTurnsUsed++;
+    final preTurnAcc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
+    final turnTotal = turn.total;
+    final newAcc = preTurnAcc + turnTotal;
+
+    if (newAcc == currentTarget) {
+      // Successful checkout: last scoring dart must be a double.
+      final lastScoring = turn.darts.lastWhere(
+          (d) => d.value > 0, orElse: () => DetectedThrow.miss());
+      final onDouble = lastScoring.ring == DartRing.double ||
+          lastScoring.ring == DartRing.innerBull ||
+          lastScoring.ring == DartRing.outerBull;
+      if (onDouble) {
+        pressNumpadButton(_scoliaTurnsUsed.clamp(1, 3));
+        resetScoliaAttempt();
+        return;
+      }
+    }
+
+    if (newAcc > currentTarget || currentTarget - newAcc == 1) {
+      // Bust (overshot) or exactly 1 remaining (unreachable by double):
+      // discard this turn's darts, keep pre-turn accumulated total.
+    } else {
+      // Under target: keep accumulating.
+      _scoliaAccDarts.addAll(turn.darts);
+    }
+
+    // After 3 turns without finishing → miss.
+    if (_scoliaTurnsUsed >= 3) {
+      pressNumpadButton(0);
+      resetScoliaAttempt();
+      return;
+    }
+
+    // Still attempts remaining — update view with current remainder.
+    notifyListeners();
   }
 }

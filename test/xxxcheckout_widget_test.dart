@@ -435,6 +435,45 @@ void main() {
       expect(controller.results[0], equals(initialDarts - 1));
     });
 
+    /// Regression: a mid-round finish corrected to fewer than 3 darts must be
+    /// reflected in the darts AVERAGE (uses lastTotalDarts), not only in
+    /// totalDarts/results. (Previously the average stayed at 3-per-round.)
+    testWidgets('XXXCheckout darts average reflects finish dart correction',
+        (WidgetTester tester) async {
+      disableOverflowError();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ControllerXXXCheckout>(
+          create: (_) => controller,
+          child: MaterialApp(
+            home: const ViewXXXCheckout(title: '501 Test'),
+          ),
+        ),
+      );
+      controller.onShowCheckout = (remaining, score) {};
+
+      // 170 game state: round 1 already scored 138 (3 darts), 32 remaining.
+      controller.remaining = 32;
+      controller.remainings = [170, 32];
+      controller.dart = 3;
+      controller.totalDarts = 3;
+      controller.totalRounds = 1;
+      controller.totalScore = 138;
+
+      // Round 2: finish 32.
+      controller.pressNumpadButton(3);
+      controller.pressNumpadButton(2);
+      controller.pressNumpadButton(-1); // checkout, counted as 3 darts (6 total)
+      await tester.pump();
+
+      // The checkout dialog reports a single dart finish -> correct by 2.
+      controller.correctDarts(2);
+      await tester.pump();
+
+      // Leg used 4 darts (3 + 1); average over 1 completed leg must be 4.0.
+      expect(controller.getCurrentStats()['avgDarts'], equals('4.0'));
+    });
+
     /// Tests XXXCheckout average calculations
     /// Verifies: average score and darts are calculated correctly during game and at end
     testWidgets('XXXCheckout average calculations',

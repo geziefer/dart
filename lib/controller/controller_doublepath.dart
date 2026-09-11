@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerDoublePath extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -245,5 +247,21 @@ class ControllerDoublePath extends ControllerBase
         'P': longtermAverage, // Langzeit-Durchschnitt
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || currentRound >= 5) return;
+    // Double Path: 3 targets per round (e.g. "16-8-4", last round "18-9-B").
+    // Each dart matched in order; only the exact double of the target counts.
+    // 'B' = inner bull (isDoubleOf(25)).
+    final parts = targetSequences[currentRound].split('-');
+    int hits = 0;
+    for (int i = 0; i < turn.darts.length && i < parts.length; i++) {
+      final dart = turn.darts[i];
+      final target = parts[i] == 'B' ? 25 : int.parse(parts[i]);
+      if (dart.isDoubleOf(target)) hits++;
+    }
+    pressNumpadButton(hits);
   }
 }

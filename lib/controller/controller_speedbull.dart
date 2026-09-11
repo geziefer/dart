@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -10,7 +12,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerSpeedBull extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -36,6 +38,12 @@ class ControllerSpeedBull extends ControllerBase
   bool gameStarted = false; // flag to track if game has started
   bool gameEnded = false; // flag to track if game has ended
   bool lastThrowAllowed = false; // flag for final throw after timer ends
+
+  /// Called when the timer reaches 0 (Scolia mode: submit partial turn immediately).
+  VoidCallback? onTimerExpired;
+
+  /// Notifier fired when timer expires — passed to ScoliaDartboard to force-submit partial turn.
+  final ValueNotifier<bool> timerExpiredNotifier = ValueNotifier(false);
 
   // Timer related
   int gameDurationSeconds = 60; // configurable game duration
@@ -85,6 +93,8 @@ class ControllerSpeedBull extends ControllerBase
       if (remainingSeconds <= 0) {
         timer.cancel();
         lastThrowAllowed = true;
+        onTimerExpired?.call();
+        timerExpiredNotifier.value = !timerExpiredNotifier.value;
         notifyListeners();
       }
     });
@@ -261,5 +271,36 @@ class ControllerSpeedBull extends ControllerBase
   void dispose() {
     gameTimer?.cancel();
     super.dispose();
+  }
+
+  /// Pause the countdown (e.g. while the player is correcting a dart).
+  void pauseTimer() {
+    gameTimer?.cancel();
+    gameTimer = null;
+  }
+
+  /// Resume the countdown after a pause.
+  void resumeTimer() {
+    if (!gameStarted || gameEnded || lastThrowAllowed) return;
+    if (gameTimer != null) return; // already running
+    gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      remainingSeconds--;
+      notifyListeners();
+      if (remainingSeconds <= 0) {
+        timer.cancel();
+        lastThrowAllowed = true;
+        onTimerExpired?.call();
+        timerExpiredNotifier.value = !timerExpiredNotifier.value;
+        notifyListeners();
+      }
+    });
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || gameEnded) return;
+    // Count bull hits: each dart on bull (inner or outer) = 1 hit. Max 3.
+    int bulls = turn.darts.where((d) => d.isBull).length;
+    pressNumpadButton(bulls);
   }
 }

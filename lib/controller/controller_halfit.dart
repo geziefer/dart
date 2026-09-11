@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -9,7 +11,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerHalfit extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -240,5 +242,39 @@ class ControllerHalfit extends ControllerBase
         'P': longtermScore, // Durchschnittspunkte
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+    // Current label determines which darts score this round.
+    // Number labels ('15'..'20'): darts hitting that segment, any ring.
+    // 'D': any double-ring dart (any number).
+    // 'T': any triple-ring dart (any number).
+    // 'B': bull darts (outer bull 25 or inner bull 50).
+    final label = labels[round - 1];
+    int roundScore = 0;
+    for (final dart in turn.darts) {
+      roundScore += _scoreForLabel(dart, label);
+    }
+    // Submit as typed score via the existing enter path (same as xxcheckout).
+    input = roundScore.toString();
+    pressNumpadButton(-1);
+  }
+
+  int _scoreForLabel(DetectedThrow dart, String label) {
+    if (dart.ring == DartRing.miss) return 0;
+    switch (label) {
+      case 'D':
+        return dart.ring == DartRing.double ? dart.value : 0;
+      case 'T':
+        return dart.ring == DartRing.triple ? dart.value : 0;
+      case 'B':
+        return dart.isBull ? dart.value : 0;
+      default:
+        // Number label: dart must hit that segment (any ring scores normally).
+        final target = int.tryParse(label);
+        return (target != null && dart.segment == target) ? dart.value : 0;
+    }
   }
 }

@@ -32,6 +32,14 @@ class ControllerStats extends ChangeNotifier {
     loadAllStats();
   }
 
+  /// Delete all stats for a single game (erase its storage container).
+  Future<void> deleteStatsForGame(String gameId) async {
+    final storage = GetStorage(gameId);
+    await storage.erase();
+    loadAllStats();
+    notifyListeners();
+  }
+
   Future<void> loadAllStats() async {
     _allStats.clear();
 

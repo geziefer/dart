@@ -30,7 +30,7 @@ class _VersionInfoState extends State<VersionInfo> {
       version,
       style: TextStyle(
         color: Colors.grey[400],
-        fontSize: 12,
+        fontSize: 20,
       ),
     );
   }

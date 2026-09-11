@@ -1,7 +1,9 @@
 import 'package:dart/controller/controller_catchxx.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/numpad.dart';
+import 'package:dart/widget/scolia_dartboard.dart';
 import 'package:dart/widget/scorecolumn.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
@@ -59,12 +61,11 @@ class ViewCatchXX extends StatelessWidget {
                           color: Colors.white, thickness: 1),
                       const SizedBox(width: 10),
 
-                      // ########## Target
+                      // ########## Target (shows remainder during Scolia multi-turn attempt)
                       ScoreColumn(
                           label: 'Z',
                           content: controller.getCurrentTargets(),
-                          color:
-                              const Color.fromARGB(255, 215, 198, 132)),
+                          color: const Color.fromARGB(255, 215, 198, 132)),
                       const SizedBox(width: 10),
                       const VerticalDivider(
                           color: Colors.white, thickness: 1),
@@ -99,14 +100,22 @@ class ViewCatchXX extends StatelessWidget {
                 // ########## Right column with num pad
                 Expanded(
                   flex: 5,
-                  child: Numpad(
-                    controller: controller,
-                    showUpper: false,
-                    showMiddle: true,
-                    showLower: true,
-                    showExtraButtons: false,
-                    showYesNo: false,
-                  ),
+                  child: scoliaInputActive(context)
+                      ? ScoliaDartboard(
+                          controller: controller,
+                          onUndoRound: () {
+                            controller.resetScoliaAttempt();
+                            controller.pressNumpadButton(-2);
+                          },
+                        )
+                      : Numpad(
+                          controller: controller,
+                          showUpper: false,
+                          showMiddle: true,
+                          showLower: true,
+                          showExtraButtons: false,
+                          showYesNo: false,
+                        ),
                 ),
               ],
             ),

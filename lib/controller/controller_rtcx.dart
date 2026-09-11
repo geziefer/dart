@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerRTCX extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -34,12 +36,18 @@ class ControllerRTCX extends ControllerBase
   bool isChallengeMode = false; // if true, running in challenge mode
   Function(int)? onGameCompleted; // callback to report score to parent controller
   String? challengeStepInfo; // challenge step info for display
+  bool _scoliaAutoCheckout = false;
 
   List<int> throws = <int>[]; // list of checked doubles per round (index - 1)
   int currentNumber = 1; // current number to throw at
   int round = 1; // round number in game
   int dart = 0; // darts played in game
   bool finished = false; // flag if round the clock was finished
+
+  /// Per-dart hit/miss results for challenge mode Scolia display.
+  /// Index = dart position (0-based, 0=number1 .. 19=number20).
+  /// true=hit, false=miss, null=not yet thrown.
+  List<bool?> dartResults = List.filled(20, null);
 
   @override
   void init(MenuItem item) {
@@ -63,6 +71,7 @@ class ControllerRTCX extends ControllerBase
     round = 1;
     dart = 0;
     finished = false;
+    dartResults = List.filled(20, null);
   }
 
   void setMode(String mode, int maxValue) {
@@ -143,10 +152,14 @@ class ControllerRTCX extends ControllerBase
             // Normal mode: only show checkout dialog if game was actually completed
             // Calculate how many targets were actually hit in this final input
             int targetsHit = advancement;
-            
-            // Show checkout dialog - pass the number of targets hit as remaining parameter
-            // This ensures the checkout dialog shows the correct dart options
-            onShowCheckout?.call(targetsHit, 0);
+
+            if (_scoliaAutoCheckout) {
+              // Scolia mode: skip the dart-count dialog, end game directly.
+              handleCheckoutClosed();
+            } else {
+              // Show checkout dialog - pass the number of targets hit as remaining parameter
+              onShowCheckout?.call(targetsHit, 0);
+            }
           } else {
             // Game not completed but hit round limit - go straight to game end
             triggerGameEnd();
@@ -299,6 +312,97 @@ class ControllerRTCX extends ControllerBase
       return challengeStepInfo ?? "Challenge Mode";
     } else {
       return '#S: $numberGames  ♛D: $recordDarts  #G: $numberFinishes  ØC: ${longtermChecks.toStringAsFixed(1)}';
+    }
+  }
+
+  bool _qualifiesFor(DetectedThrow dart, int target) {
+    switch (selectedMode) {
+      case 'RTCD':
+        return dart.isDoubleOf(target);
+      case 'RTCT':
+        return dart.ring == DartRing.triple && dart.segment == target;
+      default: // RTCS: singles only
+        return dart.ring == DartRing.single && dart.segment == target;
+    }
+  }
+
+  /// Challenge-mode Scolia round submission.
+  /// [results] = per-dart hit/miss for this turn (up to 3 darts).
+  /// Advances by dartsThrown (always 3, or 2 on the final round),
+  /// stores results for per-dart display, submits hit count to game logic.
+  void submitChallengeRound(List<bool> results) {
+    if (item == null || finished) return;
+    final startPos = currentNumber - 1; // 0-based position in dartResults
+
+    // Always advance by 3 (one per dart slot), treating undetected darts
+    // as misses — so a bounced/undetected dart still consumes its slot.
+    const dartsPerRound = 3;
+    final paddedResults = List<bool>.generate(
+      dartsPerRound,
+      (i) => i < results.length ? results[i] : false,
+    );
+
+    // Store per-dart results for display.
+    for (int i = 0; i < dartsPerRound && startPos + i < 20; i++) {
+      dartResults[startPos + i] = paddedResults[i];
+    }
+
+    // Submit hit count via existing pressNumpadButton.
+    _scoliaAutoCheckout = true;
+    final hits = paddedResults.where((r) => r).length;
+    final misses = dartsPerRound - hits;
+
+    pressNumpadButton(hits);
+
+    // Force-advance past missed positions.
+    if (misses > 0 && !finished) {
+      currentNumber += misses;
+      dart += misses;
+      if (currentNumber > 20) {
+        currentNumber = 21;
+        finished = true;
+      }
+      notifyListeners();
+    }
+
+    _scoliaAutoCheckout = false;
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || finished) return;
+    _scoliaAutoCheckout = true;
+
+    if (isChallengeMode) {
+      // Challenge RTCX: each dart targets its fixed positional number.
+      // Always 3 slots per turn — undetected darts counted as misses.
+      final results = <bool>[];
+      for (int i = 0; i < 3; i++) {
+        final target = currentNumber + i;
+        if (target > 20) break;
+        if (i < turn.darts.length) {
+          final d = turn.darts[i];
+          results.add(d.ring == DartRing.single && d.segment == target);
+        } else {
+          results.add(false); // undetected dart = miss
+        }
+      }
+      _scoliaAutoCheckout = false;
+      submitChallengeRound(results);
+    } else {
+      // Normal RTC: sequential advancement — each dart checks against
+      // running target which updates after each hit.
+      int advances = 0;
+      int target = currentNumber;
+      for (final dart in turn.darts) {
+        if (target > 20) break;
+        if (_qualifiesFor(dart, target)) {
+          advances++;
+          target++;
+        }
+      }
+      pressNumpadButton(advances);
+      _scoliaAutoCheckout = false;
     }
   }
 }

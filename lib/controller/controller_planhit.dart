@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -10,7 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:math';
 
 class ControllerPlanHit extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -56,8 +58,9 @@ class ControllerPlanHit extends ControllerBase
   }
 
   String _generateTargetSequence() {
-    List<int> numbers = List.generate(3, (_) => _random.nextInt(20) + 1);
-    return numbers.join('-');
+    // Pick 3 distinct numbers from 1-20 (no duplicates).
+    final pool = List<int>.generate(20, (i) => i + 1)..shuffle(_random);
+    return pool.take(3).join('-');
   }
 
   @override
@@ -180,5 +183,23 @@ class ControllerPlanHit extends ControllerBase
       displayTotals.add('');
     }
     return createMultilineString(displayTotals, [], '', '', [], 5, false);
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null || currentRound >= 10) return;
+    // Plan Hit: 3 target numbers per round (e.g. "4-15-5").
+    // Each dart is matched in order against its corresponding target.
+    // Only singles count; a miss means that position fails (move on).
+    final roundTargets = targets[currentRound].split('-').map(int.parse).toList();
+    int hits = 0;
+    for (int i = 0; i < turn.darts.length && i < roundTargets.length; i++) {
+      final dart = turn.darts[i];
+      final target = roundTargets[i];
+      if (dart.ring == DartRing.single && dart.segment == target) {
+        hits++;
+      }
+    }
+    pressNumpadButton(hits);
   }
 }

@@ -1,6 +1,8 @@
 import 'package:dart/controller/controller_base.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerBigTs extends ControllerBase
-    implements MenuitemController, NumpadController {
+    implements MenuitemController, NumpadController, ScoliaController {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -202,5 +204,21 @@ class ControllerBigTs extends ControllerBase
         'P': longtermAverage,
       },
     );
+  }
+
+  @override
+  void submitScoliaTurn(TurnResult turn) {
+    if (item == null) return;
+    // Each round: dart 1 aims at T20, dart 2 at T19, dart 3 at T18.
+    // Count how many darts hit their required triple in order.
+    const roundTargets = [20, 19, 18];
+    int hits = 0;
+    for (int i = 0; i < turn.darts.length && i < roundTargets.length; i++) {
+      final dart = turn.darts[i];
+      if (dart.ring == DartRing.triple && dart.segment == roundTargets[i]) {
+        hits++;
+      }
+    }
+    pressNumpadButton(hits);
   }
 }

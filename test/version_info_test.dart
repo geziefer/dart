@@ -62,7 +62,7 @@ void main() {
 
       final textWidget = tester.widget<Text>(find.byType(Text));
       expect(textWidget.style?.color, equals(Colors.grey[400]));
-      expect(textWidget.style?.fontSize, equals(12));
+      expect(textWidget.style?.fontSize, equals(20));
     });
 
     testWidgets('VersionInfo widget structure', (WidgetTester tester) async {

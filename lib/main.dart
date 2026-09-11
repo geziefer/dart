@@ -18,6 +18,9 @@ import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/controller/controller_stats.dart';
+import 'package:dart/scolia/input_mode.dart';
+import 'package:dart/scolia/scolia_service.dart';
+import 'package:dart/scolia/scolia_settings.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +38,8 @@ void main() async {
   for (var box in Menu.games) {
     await GetStorage.init(box.id);
   }
+  // Scolia settings storage (credentials + input mode), local only.
+  await GetStorage.init('scolia_settings');
 
   runApp(
     MultiProvider(
@@ -59,6 +64,14 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ControllerCreditFinish.create()),
         ChangeNotifierProvider(create: (context) => ControllerPlanHit.create()),
         ChangeNotifierProvider(create: (context) => ControllerStats()),
+        // Scolia integration: global input-mode toggle + local credentials.
+        ChangeNotifierProvider(create: (context) => InputModeHolder()),
+        Provider<ScoliaSettings>(create: (context) => ScoliaSettings()),
+        ChangeNotifierProxyProvider<ScoliaSettings, ScoliaService>(
+          create: (context) =>
+              ScoliaService(settings: context.read<ScoliaSettings>()),
+          update: (context, settings, prev) => prev!..refresh(),
+        ),
       ],
       child: const MaterialApp(
         title: 'DART - Damit Alex Richtig Trainiert',

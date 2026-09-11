@@ -1,7 +1,7 @@
 name: dart
 description: A new Flutter project.
 publish_to: 'none'
-version: 2.3.1+20
+version: 3.0.0+21
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -20,6 +20,8 @@ dependencies:
   file_picker: ^12.0.0
   web: ^1.1.0
   cupertino_icons: ^1.0.9
+  web_socket_channel: ^3.0.3
+  wakelock_plus: ^1.8.0
 
 dev_dependencies:
   flutter_test:

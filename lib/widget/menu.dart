@@ -18,6 +18,7 @@ import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
+import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
@@ -220,16 +221,7 @@ class Menu extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            // Header with version info
-            Padding(
-              padding: const EdgeInsets.only(top: 20, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const VersionInfo(),
-                ],
-              ),
-            ),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Padding(
@@ -251,22 +243,60 @@ class Menu extends StatelessWidget {
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset('assets/images/dartquiz.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 50 : 100, fit: BoxFit.fitHeight),
+                      child: Image.asset('assets/images/dartquiz.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 40 : 80, fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),
+                // Global Scolia input toggle, placed between left image and logo.
                 Expanded(
                   child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ViewStats()),
-                        );
-                      },
-                      child: Image.asset('assets/images/logo.png', width: ResponsiveUtils.isPhoneSize(context) ? 250 : 500, fit: BoxFit.fitWidth),
+                    child: Consumer<InputModeHolder>(
+                      builder: (context, inputMode, _) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Left = numpad (off), right = Scolia (on): the side
+                          // the switch points to shows what is active.
+                          const Icon(
+                            Icons.dialpad,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          Switch(
+                            value: inputMode.isScolia,
+                            onChanged: (_) => inputMode.toggle(),
+                            activeThumbColor:
+                                const Color.fromARGB(255, 215, 198, 132),
+                            activeTrackColor:
+                                const Color.fromARGB(120, 215, 198, 132),
+                            inactiveThumbColor: Colors.white,
+                            inactiveTrackColor: Colors.black,
+                            trackOutlineColor:
+                                WidgetStateProperty.all(Colors.white),
+                          ),
+                          Image.asset(
+                            'assets/images/scolia.jpg',
+                            height: 40,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                ),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ViewStats()),
+                      );
+                    },
+                    child: Image.asset('assets/images/logo.png', width: ResponsiveUtils.isPhoneSize(context) ? 250 : 500, fit: BoxFit.fitWidth),
+                  ),
+                ),
+                // Version info, placed between logo and right image.
+                const Expanded(
+                  child: Center(child: VersionInfo()),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
@@ -287,7 +317,7 @@ class Menu extends StatelessWidget {
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset('assets/images/bdv.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 50 : 100, fit: BoxFit.fitHeight),
+                      child: Image.asset('assets/images/bdv.jpg', height: ResponsiveUtils.isPhoneSize(context) ? 40 : 80, fit: BoxFit.fitHeight),
                     ),
                   ),
                 ),

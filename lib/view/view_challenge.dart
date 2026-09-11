@@ -8,6 +8,7 @@ import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
 import 'package:dart/widget/summary_dialog.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class ViewChallenge extends StatefulWidget {
   const ViewChallenge({super.key, required this.title});
@@ -19,6 +20,20 @@ class ViewChallenge extends StatefulWidget {
 }
 
 class _ViewChallengeState extends State<ViewChallenge> {
+  @override
+  void initState() {
+    super.initState();
+    // Keep screen on for the entire challenge — sub-game GameLayouts would
+    // otherwise briefly disable the wake lock between stage transitions.
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ControllerChallenge>(
