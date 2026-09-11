@@ -88,7 +88,6 @@ class ViewRTCX extends StatelessWidget {
                     margin: const EdgeInsets.all(3),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      // ########## 5 x 4 items for all numbers
                       children: [
                         for (int i = 1; i <= 3; i++)
                           Column(
@@ -96,10 +95,15 @@ class ViewRTCX extends StatelessWidget {
                             children: [
                               for (int j = 1; j <= 7; j++)
                                 CheckNumber(
-                                  currentNumber:
-                                      controller.getCurrentNumber(),
+                                  currentNumber: controller.getCurrentNumber(),
                                   number: (i - 1) * 7 + j,
-                                )
+                                  // In Scolia challenge mode show per-dart results.
+                                  result: (scoliaInputActive(context) &&
+                                          controller.isChallengeMode &&
+                                          (i - 1) * 7 + j <= 20)
+                                      ? controller.dartResults[(i - 1) * 7 + j - 1]
+                                      : null,
+                                ),
                             ],
                           ),
                       ],
