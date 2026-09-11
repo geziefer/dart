@@ -148,14 +148,12 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
   }
 
   void _openMonitor() {
-    // Use the shared ScoliaService source — one connection for the whole app.
-    // The service manages connect/disconnect; the Monitor just subscribes.
     final svc = context.read<ScoliaService?>();
     if (svc == null) return;
-    svc.connect(); // no-op if already connected
+    svc.connect();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ViewScoliaMonitor(source: svc.source!),
+        builder: (context) => const ViewScoliaMonitor(),
       ),
     );
   }

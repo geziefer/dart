@@ -94,25 +94,40 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   void initState() {
     super.initState();
     _collector = TurnCollector(onTurnComplete: _onTurnComplete);
+    // Trigger connect after first frame so context is available.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final svc = context.read<ScoliaService?>();
+      final isSimulator = widget.source != null
+          ? widget.simulator
+          : (svc?.isSimulator ?? true);
+      if (!isSimulator) svc?.connect();
+      _subscribeToSource();
+    });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Wire the event source: use explicit source if provided, otherwise read
-    // from ScoliaService in the widget tree (real board or mock).
-    _sub?.cancel();
+  ScoliaEventSource? _lastSource;
+
+  void _subscribeToSource() {
+    if (!mounted) return;
     final svc = context.read<ScoliaService?>();
     final effectiveSource = widget.source ?? svc?.source;
     final effectiveSimulator = widget.source != null
         ? widget.simulator
         : (svc?.isSimulator ?? true);
-
-    if (!effectiveSimulator && effectiveSource != null) {
+    if (!effectiveSimulator && effectiveSource != null &&
+        effectiveSource != _lastSource) {
+      _sub?.cancel();
       _sub = effectiveSource.messages.listen(_onMessage);
-      // Let the service manage connect/disconnect (prevents duplicate connections).
-      svc?.connect();
+      _lastSource = effectiveSource;
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Re-subscribe if the service's source changed (e.g. after reconnect).
+    _subscribeToSource();
   }
 
   @override
@@ -365,13 +380,37 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     final phaseText = _phase == null
         ? '-'
         : (_phase == BoardPhase.throwing ? 'Throw' : 'Takeout');
-    final svc = context.read<ScoliaService?>();
+    final svc = context.watch<ScoliaService?>();
     final isSimulator = svc?.isSimulator ?? widget.simulator;
-    final statusColor =
-        _status == BoardStatus.ready ? Colors.green : Colors.orange;
+
+    Color statusColor;
+    String statusText;
+    if (isSimulator) {
+      statusColor = Colors.green;
+      statusText = 'Simulator · Status: ready · Phase: $phaseText';
+    } else {
+      switch (svc?.serviceState) {
+        case ScoliaServiceState.connected:
+          statusColor = _status == BoardStatus.ready ? Colors.green : Colors.orange;
+          statusText = 'Scolia · Status: ${_status.name} · Phase: $phaseText';
+        case ScoliaServiceState.connecting:
+          statusColor = Colors.amberAccent;
+          statusText = 'Scolia · Verbinde...';
+        case ScoliaServiceState.reconnecting:
+          statusColor = Colors.orange;
+          statusText = 'Scolia · Reconnecting (${svc?.retryCount}/${ScoliaService.maxRetries})...';
+        case ScoliaServiceState.failed:
+          statusColor = Colors.red;
+          statusText = 'Scolia · Getrennt ↻ Tippen zum Verbinden';
+        default:
+          statusColor = Colors.grey;
+          statusText = 'Scolia · Inaktiv';
+      }
+    }
+    final showRefresh = !isSimulator && svc?.canManualRetry == true;
+
     return GestureDetector(
-      // Tap the banner to manually reconnect (fallback for auto-reconnect).
-      onTap: !isSimulator ? () => svc?.connect() : null,
+      onTap: showRefresh ? () => svc?.reconnect() : null,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         color: Colors.black26,
@@ -380,12 +419,11 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
           children: [
             Icon(Icons.circle, size: 20, color: statusColor),
             const SizedBox(width: 8),
-            Text(
-              '${isSimulator ? 'Simulator' : 'Scolia'} · Status: '
-              '${_status.name} · Phase: $phaseText',
-              style: const TextStyle(color: Colors.white, fontSize: 26),
+            Flexible(
+              child: Text(statusText,
+                  style: const TextStyle(color: Colors.white, fontSize: 26)),
             ),
-            if (!isSimulator && _status != BoardStatus.ready) ...[
+            if (showRefresh) ...[
               const SizedBox(width: 8),
               const Icon(Icons.refresh, size: 20, color: Colors.white70),
             ],
