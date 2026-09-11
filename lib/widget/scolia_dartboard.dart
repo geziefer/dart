@@ -150,10 +150,13 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   // --- Simulator: dartboard taps ---
   @override
   void pressDartboard(String value) {
-    // In real mode, only accept board taps when correcting a selected dart;
-    // otherwise the real board is authoritative for new throws.
-    if (!widget.simulator && _editIndex == null) return;
-    _flash(value); // brief white highlight of the pressed sector
+    // In real Scolia mode the board is authoritative for new throws;
+    // only accept taps when in correction mode (a dart is selected).
+    final effectiveSimulator = widget.source != null
+        ? widget.simulator
+        : (context.read<ScoliaService?>()?.isSimulator ?? true);
+    if (!effectiveSimulator && _editIndex == null) return;
+    _flash(value);
     final sector = _normalizeSector(value);
     _applyHit(SectorParser.parse(sector));
   }
