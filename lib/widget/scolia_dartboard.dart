@@ -194,14 +194,11 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   }
 
   /// FullCircle emits `DB` (inner bull), `SB` (outer bull), and `s` (inner
-  /// single) for the precise hit. Normalise to what the pipeline/parser
-  /// expects: `DB`->`Bull`, `SB`->`25`, `s`->`S` (both singles score the
-  /// same; the distinction is only used for the highlight, which fires before
-  /// this normalisation).
+  /// single). Normalise only the bull notations so the pipeline parser gets
+  /// valid input. Keep `s` as-is so SectorParser can set isOuterSingle=false.
   String _normalizeSector(String v) {
     if (v == 'DB') return 'Bull';
     if (v == 'SB') return '25';
-    if (v.startsWith('s')) return 'S${v.substring(1)}'; // s20 -> S20
     return v;
   }
 

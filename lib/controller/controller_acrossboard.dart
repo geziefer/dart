@@ -327,13 +327,15 @@ class ControllerAcrossBoard extends ControllerBase
     }
     if (target.startsWith('BS')) {
       final seg = int.tryParse(target.substring(2));
-      // BS = outer/big single (ring S, FullCircle emits 'S')
-      return seg != null && dart.ring == DartRing.single && dart.segment == seg;
+      // BS = outer/big single (Scolia reports 'S', isOuterSingle=true).
+      return seg != null && dart.ring == DartRing.single &&
+          dart.segment == seg && dart.isOuterSingle;
     }
     if (target.startsWith('SS')) {
       final seg = int.tryParse(target.substring(2));
-      // SS = inner/small single (ring s from Scolia, also mapped to single)
-      return seg != null && dart.ring == DartRing.single && dart.segment == seg;
+      // SS = inner/small single (Scolia reports 's', isOuterSingle=false).
+      return seg != null && dart.ring == DartRing.single &&
+          dart.segment == seg && !dart.isOuterSingle;
     }
     return false;
   }

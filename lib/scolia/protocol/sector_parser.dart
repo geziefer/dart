@@ -57,7 +57,9 @@ class SectorParser {
     final ringChar = match.group(1)!;
     final segment = int.parse(match.group(2)!);
     final ring = _ringFor(ringChar);
-    return DetectedThrow.fromSegment(segment, ring, x: x, y: y, angle: angle);
+    return DetectedThrow.fromSegment(segment, ring,
+        x: x, y: y, angle: angle,
+        isOuterSingle: ringChar != 's'); // 's' = inner/small, 'S' = outer/big
   }
 
   static DartRing _ringFor(String ringChar) {

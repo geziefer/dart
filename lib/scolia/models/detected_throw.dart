@@ -28,6 +28,9 @@ class DetectedThrow {
   final double? x;
   final double? y;
   final double? angle;
+  /// For singles (DartRing.single): true = outer/big single (Scolia 'S'),
+  /// false = inner/small single (Scolia 's'). Irrelevant for other rings.
+  final bool isOuterSingle;
 
   const DetectedThrow({
     required this.segment,
@@ -36,6 +39,7 @@ class DetectedThrow {
     this.x,
     this.y,
     this.angle,
+    this.isOuterSingle = true, // default outer (most taps land in big single)
   });
 
   /// Derive [value] from [segment] and [ring].
@@ -45,6 +49,7 @@ class DetectedThrow {
     double? x,
     double? y,
     double? angle,
+    bool isOuterSingle = true,
   }) {
     return DetectedThrow(
       segment: segment,
@@ -53,6 +58,7 @@ class DetectedThrow {
       x: x,
       y: y,
       angle: angle,
+      isOuterSingle: isOuterSingle,
     );
   }
 
