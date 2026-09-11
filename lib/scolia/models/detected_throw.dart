@@ -80,6 +80,25 @@ class DetectedThrow {
   /// True if this dart hit the bull (inner or outer).
   bool get isBull => ring == DartRing.innerBull || ring == DartRing.outerBull;
 
+  /// Human-readable sector label for display, e.g. "T20", "D16", "S10",
+  /// "SB" (outer bull), "DB" (inner bull), "–" (miss).
+  String get sectorLabel {
+    switch (ring) {
+      case DartRing.miss:
+        return '–';
+      case DartRing.outerBull:
+        return 'SB';
+      case DartRing.innerBull:
+        return 'DB';
+      case DartRing.single:
+        return 'S$segment';
+      case DartRing.double:
+        return 'D$segment';
+      case DartRing.triple:
+        return 'T$segment';
+    }
+  }
+
   /// True if this dart is the double of [targetSegment].
   ///
   /// For the bull ([targetSegment] == 25), the inner bull (50) counts as the

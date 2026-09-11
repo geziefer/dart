@@ -38,7 +38,7 @@ class ViewStats extends StatelessWidget {
                           ..sort((a, b) => controller.allStats[a]!['name']
                               .toString()
                               .compareTo(controller.allStats[b]!['name'].toString())))
-                          _buildGameStats(gameId, controller.allStats[gameId]!),
+                          _buildGameStats(context, controller, gameId, controller.allStats[gameId]!),
                       ],
                     ),
                   ),
@@ -125,10 +125,11 @@ class ViewStats extends StatelessWidget {
     );
   }
 
-  Widget _buildGameStats(String gameId, Map<String, dynamic> gameData) {
+  Widget _buildGameStats(BuildContext context, ControllerStats controller,
+      String gameId, Map<String, dynamic> gameData) {
     final stats = gameData['stats'] as Map<String, dynamic>;
     final statKeys = stats.keys.toList();
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -136,9 +137,42 @@ class ViewStats extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              gameData['name'] as String,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    gameData['name'] as String,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  tooltip: 'Statistik löschen',
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Statistik löschen'),
+                      content: Text(
+                          'Statistik für "${gameData['name']}" wirklich löschen?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: const Text('Nein'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            controller.deleteStatsForGame(gameId);
+                          },
+                          child: const Text('Ja',
+                              style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             const Divider(),
             // Display stats in rows with fixed 6 columns

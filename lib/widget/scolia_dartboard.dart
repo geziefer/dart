@@ -347,7 +347,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
           ),
         ),
         child: Text(
-          t.ring == DartRing.miss ? '–' : '${t.value}',
+          t.sectorLabel,
           style: const TextStyle(
             color: Color.fromARGB(255, 215, 198, 132),
             fontWeight: FontWeight.bold,
@@ -362,22 +362,32 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     final phaseText = _phase == null
         ? '-'
         : (_phase == BoardPhase.throwing ? 'Throw' : 'Takeout');
+    final svc = context.read<ScoliaService?>();
+    final isSimulator = svc?.isSimulator ?? widget.simulator;
     final statusColor =
         _status == BoardStatus.ready ? Colors.green : Colors.orange;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-      color: Colors.black26,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.circle, size: 20, color: statusColor),
-          const SizedBox(width: 8),
-          Text(
-            '${(context.read<ScoliaService?>()?.isSimulator ?? widget.simulator) ? 'Simulator' : 'Scolia'} · Status: '
-            '${_status.name} · Phase: $phaseText',
-            style: const TextStyle(color: Colors.white, fontSize: 26),
-          ),
-        ],
+    return GestureDetector(
+      // Tap the banner to manually reconnect (fallback for auto-reconnect).
+      onTap: !isSimulator ? () => svc?.connect() : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        color: Colors.black26,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.circle, size: 20, color: statusColor),
+            const SizedBox(width: 8),
+            Text(
+              '${isSimulator ? 'Simulator' : 'Scolia'} · Status: '
+              '${_status.name} · Phase: $phaseText',
+              style: const TextStyle(color: Colors.white, fontSize: 26),
+            ),
+            if (!isSimulator && _status != BoardStatus.ready) ...[
+              const SizedBox(width: 8),
+              const Icon(Icons.refresh, size: 20, color: Colors.white70),
+            ],
+          ],
+        ),
       ),
     );
   }

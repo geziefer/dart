@@ -90,10 +90,10 @@ void main() {
       expect(c.hits.values.every((v) => v == 0), isTrue);
     });
 
-    test('Bull (inner) counts as 1 hit on 25', () {
+    test('Bull (inner) counts as 2 hits on 25 (double bull in cricket)', () {
       final c = make();
       c.submitScoliaTurn(TurnResult([t('Bull')]));
-      expect(c.hits[25], 1);
+      expect(c.hits[25], 2);
     });
 
     test('endRound advances round on each turn', () {

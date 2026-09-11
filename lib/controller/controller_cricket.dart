@@ -411,8 +411,10 @@ class ControllerCricket extends ControllerBase
         return 2;
       case DartRing.triple:
         return 3;
+      case DartRing.innerBull:
+        return 2; // double bull = 2 hits in cricket
       default:
-        return 1; // single, outerBull, innerBull
+        return 1; // single, outerBull (single bull = 1 hit)
     }
   }
 

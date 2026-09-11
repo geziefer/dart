@@ -174,8 +174,8 @@ void main() {
     await tester.pump();
 
     // Misclick correction: select the 3rd dart (index 2) and set it to T19.
-    // Tap the last "60" button. There are three "60" texts; tap the last.
-    await tester.tap(find.text('60').last);
+    // Tap the last "T20" button (now shows sector label, not score).
+    await tester.tap(find.text('T20').last);
     await tester.pump();
     state.pressDartboard('T19'); // corrects selected dart to 57
     await tester.pump();
