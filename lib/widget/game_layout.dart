@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dart/widget/header.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
-class GameLayout extends StatelessWidget {
+/// Layout shared by all game views. Keeps the screen on while a game is
+/// active (wake lock enabled on init, released on dispose) so the display
+/// doesn't blank during Scolia play when no touch input is happening.
+class GameLayout extends StatefulWidget {
   const GameLayout({
     super.key,
     required this.title,
@@ -14,6 +18,23 @@ class GameLayout extends StatelessWidget {
   final Widget statsContent;
 
   @override
+  State<GameLayout> createState() => _GameLayoutState();
+}
+
+class _GameLayoutState extends State<GameLayout> {
+  @override
+  void initState() {
+    super.initState();
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 17, 17, 17),
@@ -23,7 +44,7 @@ class GameLayout extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             flex: 10,
-            child: Header(gameName: title),
+            child: Header(gameName: widget.title),
           ),
 
           // ########## Main part with game content
@@ -32,7 +53,7 @@ class GameLayout extends StatelessWidget {
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
-                Expanded(child: mainContent),
+                Expanded(child: widget.mainContent),
               ],
             ),
           ),
@@ -43,7 +64,7 @@ class GameLayout extends StatelessWidget {
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
-                Expanded(child: statsContent),
+                Expanded(child: widget.statsContent),
               ],
             ),
           ),

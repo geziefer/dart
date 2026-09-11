@@ -65,7 +65,6 @@ class _ViewScoliaMonitorState extends State<ViewScoliaMonitor> {
           if (err != null) _connError = err;
         }
       });
-      // Log connection state changes so they're visible in the event log.
       final entry = switch (state) {
         ScoliaConnectionState.connecting   => _LogEntry('CONNECTING...', Colors.amberAccent),
         ScoliaConnectionState.connected    => _LogEntry('CONNECTED', Colors.greenAccent),
@@ -77,7 +76,11 @@ class _ViewScoliaMonitorState extends State<ViewScoliaMonitor> {
       setState(() => _log.insert(0, entry));
     });
     _sub = widget.source.messages.listen(_onMessage);
-    widget.source.connect();
+    // Do NOT call connect() here — ScoliaService manages the connection.
+    // Sync current known state.
+    setState(() {
+      _status = widget.source.currentStatus;
+    });
   }
 
   @override
@@ -85,7 +88,7 @@ class _ViewScoliaMonitorState extends State<ViewScoliaMonitor> {
     _flashTimer?.cancel();
     _sub?.cancel();
     _connSub?.cancel();
-    widget.source.disconnect();
+    // Do NOT call disconnect() — the connection is shared via ScoliaService.
     super.dispose();
   }
 

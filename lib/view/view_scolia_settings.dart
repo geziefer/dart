@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:dart/scolia/scolia_connection.dart';
+import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/scolia_settings.dart';
 import 'package:dart/view/view_scolia_monitor.dart';
 import 'package:dart/widget/game_layout.dart';
+import 'package:provider/provider.dart';
 
 /// Settings page for entering the local-only Scolia credentials (board serial
 /// number + access token). Reached via the "Scolia" button on the
@@ -147,14 +148,14 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
   }
 
   void _openMonitor() {
-    // Real board only: connect with the stored credentials.
-    final source = ScoliaConnection(
-      serialNumber: _settings.serialNumber,
-      accessToken: _settings.accessToken,
-    );
+    // Use the shared ScoliaService source — one connection for the whole app.
+    // The service manages connect/disconnect; the Monitor just subscribes.
+    final svc = context.read<ScoliaService?>();
+    if (svc == null) return;
+    svc.connect(); // no-op if already connected
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ViewScoliaMonitor(source: source),
+        builder: (context) => ViewScoliaMonitor(source: svc.source!),
       ),
     );
   }

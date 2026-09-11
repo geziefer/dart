@@ -102,15 +102,16 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     // Wire the event source: use explicit source if provided, otherwise read
     // from ScoliaService in the widget tree (real board or mock).
     _sub?.cancel();
-    final effectiveSource = widget.source ??
-        context.read<ScoliaService?>()?.source;
+    final svc = context.read<ScoliaService?>();
+    final effectiveSource = widget.source ?? svc?.source;
     final effectiveSimulator = widget.source != null
         ? widget.simulator
-        : (context.read<ScoliaService?>()?.isSimulator ?? true);
+        : (svc?.isSimulator ?? true);
 
     if (!effectiveSimulator && effectiveSource != null) {
       _sub = effectiveSource.messages.listen(_onMessage);
-      effectiveSource.connect();
+      // Let the service manage connect/disconnect (prevents duplicate connections).
+      svc?.connect();
     }
   }
 
