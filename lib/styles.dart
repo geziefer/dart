@@ -172,7 +172,9 @@ TextStyle scoreLabelTextStyle(BuildContext context) {
           1.2 // Increased from 1.1 for better readability on small screens
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
+    // Reduced from 60 to 56 to trim the overall left scoring table height so
+    // its last line no longer overflows on shorter tablets (e.g. Galaxy Tab A).
+    fontSize: 56 * scaleFactor,
     color: const Color.fromARGB(255, 215, 198, 132),
   );
 }
@@ -183,7 +185,9 @@ TextStyle scoreTextStyle(BuildContext context) {
           1.2 // Increased from 1.1 for better readability on small screens
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: 60 * scaleFactor, // Reduced from 68 to 60 for better 5-line fit
+    // Reduced from 60 to 56 to trim the overall left scoring table height so
+    // its last line no longer overflows on shorter tablets (e.g. Galaxy Tab A).
+    fontSize: 56 * scaleFactor,
     fontFeatures: const <FontFeature>[
       FontFeature.tabularFigures(),
     ],
@@ -268,7 +272,7 @@ TextStyle emojiLargeTextStyle(BuildContext context) {
           1.2 // Updated to match scoreTextStyle scaling
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: 60 * scaleFactor, // Same base size as scoreTextStyle
+    fontSize: 56 * scaleFactor, // Same base size as scoreTextStyle
     fontFamily: "NotoColorEmoji",
   );
 }
