@@ -116,7 +116,10 @@ TextStyle checkNumberStyle(BuildContext context) {
           1.2 // Increased from 0.85 for better readability
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: 50 * scaleFactor,
+    // Reduced from 50 to 46 to trim overall content height of the multi-line
+    // left displays (RTCX number list, Cricket board, AcrossBoard targets) so
+    // they no longer overflow on shorter tablets (e.g. Galaxy Tab A).
+    fontSize: 46 * scaleFactor,
     color: const Color.fromARGB(255, 215, 198, 132),
   );
 }
@@ -230,7 +233,7 @@ TextStyle emojiTextStyle(BuildContext context) {
           1.2 // Updated to match checkNumberStyle
       : ResponsiveUtils.getTextScaleFactor(context);
   return TextStyle(
-    fontSize: 50 * scaleFactor, // Match checkNumberStyle font size
+    fontSize: 46 * scaleFactor, // Match checkNumberStyle font size
     fontFamily: "NotoColorEmoji",
   );
 }

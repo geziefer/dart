@@ -86,27 +86,37 @@ class ViewRTCX extends StatelessWidget {
                   flex: 5,
                   child: Container(
                     margin: const EdgeInsets.all(3),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (int i = 1; i <= 3; i++)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              for (int j = 1; j <= 7; j++)
-                                CheckNumber(
-                                  currentNumber: controller.getCurrentNumber(),
-                                  number: (i - 1) * 7 + j,
-                                  // In Scolia challenge mode show per-dart results.
-                                  result: (scoliaInputActive(context) &&
-                                          controller.isChallengeMode &&
-                                          (i - 1) * 7 + j <= 20)
-                                      ? controller.dartResults[(i - 1) * 7 + j - 1]
-                                      : null,
-                                ),
-                            ],
-                          ),
-                      ],
+                    // Center the whole 3-column number grid vertically as one
+                    // block. Columns stay top-aligned and equal height (the
+                    // empty 21st cell reserves a full row) so rows line up
+                    // across columns and the block centers cleanly.
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (int i = 1; i <= 3; i++)
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                for (int j = 1; j <= 7; j++)
+                                  CheckNumber(
+                                    currentNumber:
+                                        controller.getCurrentNumber(),
+                                    number: (i - 1) * 7 + j,
+                                    // In Scolia challenge mode show per-dart results.
+                                    result: (scoliaInputActive(context) &&
+                                            controller.isChallengeMode &&
+                                            (i - 1) * 7 + j <= 20)
+                                        ? controller
+                                            .dartResults[(i - 1) * 7 + j - 1]
+                                        : null,
+                                  ),
+                              ],
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

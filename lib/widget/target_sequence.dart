@@ -23,7 +23,11 @@ class TargetSequence extends StatelessWidget {
     
     return Container(
       margin: EdgeInsets.all(containerMargin),
+      alignment: Alignment.center,
+      // Center the grid vertically so freed space is distributed evenly
+      // above and below it (matches the other left-content displays).
       child: GridView.builder(
+        shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           childAspectRatio: aspectRatio,

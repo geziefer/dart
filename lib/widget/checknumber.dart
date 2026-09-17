@@ -30,9 +30,23 @@ class CheckNumber extends StatelessWidget {
     final numberWidth = isPhone ? 60.0 : 100.0;
     final checkWidth = isPhone ? 60.0 : 110.0;
 
-    // exclude numbers > 20
+    // exclude numbers > 20 — render a blank cell of the SAME height as a real
+    // row so the 3-column grid stays a uniform rectangle (the 21st cell is
+    // empty because there are only 20 numbers). A zero-height cell would make
+    // the last column shorter and misalign it.
     if (number > 20) {
-      return const Text('');
+      return Row(
+        children: [
+          SizedBox(
+            width: numberWidth,
+            child: Text('\u{00A0}', style: checkNumberStyle(context)),
+          ),
+          SizedBox(
+            width: checkWidth,
+            child: Text('\u{00A0}', style: checkNumberStyle(context)),
+          ),
+        ],
+      );
     } else {
       return Row(
         children: [
