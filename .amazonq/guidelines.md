@@ -3,6 +3,16 @@
 ## General Behavior
 - Don't say "You are absolutely right" when you are pointed to errors in proposals, just do it correctly then
 
+## Git & Verification Workflow (MUST FOLLOW)
+- **Never commit without explicit user approval.** After making changes, let the
+  user test them first. Only create a git commit once the user has tested and
+  confirmed the changes work.
+- **Always keep build and tests green.** Before presenting any change as done,
+  run `flutter analyze` (must be clean) and `flutter test` (must pass). If either
+  fails, fix it before handing the change back for testing.
+- Order of operations for every change: implement → `flutter analyze` + `flutter test`
+  green → hand over for the user to test → commit only after the user confirms.
+
 ## Coding Standards
 
 ### Dart/Flutter Conventions
@@ -63,3 +73,6 @@ lib/
 
 ### Testing Strategy
 - User will test in simulator and on target device (Google Pixel C)
+- Always let the user test changes before committing them to git
+- Always ensure `flutter analyze` is clean and `flutter test` passes before
+  handing changes over for testing (see Git & Verification Workflow above)
