@@ -9,6 +9,8 @@ import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 import 'package:dart/controller/controller_catchxx.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/scolia/protocol/sector_parser.dart';
 
 import 'catchxx_widget_test.mocks.dart';
 
@@ -529,6 +531,37 @@ void main() {
       // Final: (3 + 2 + 0 + 37*1) / 40 = 42 / 40 = 1.05 = 1.1
       stats = controller.getCurrentStats();
       expect(stats['avgPoints'], equals('1.1'));
+    });
+
+    /// Regression: a bust in the first Scolia turn still consumes its darts.
+    /// Scenario reported: target 61, round 1 = Bull(50)+17+miss = 67 (bust,
+    /// score kept), then a non-finishing round 2 = 6 darts total → must end
+    /// the attempt as a miss. A 3rd round must NEVER be granted.
+    test('Scolia bust in round 1 does not grant a 3rd round', () {
+      TurnResult turn(List<String> sectors) =>
+          TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
+
+      expect(controller.target, equals(61));
+      expect(controller.round, equals(1));
+
+      // Round 1: bust (50 + 17 + miss = 67 > 61). Score not scored yet.
+      controller.submitScoliaTurn(turn(['Bull', 'S17', 'None']));
+      // No round recorded yet (attempt still open), target unchanged.
+      expect(controller.thrownPoints.length, equals(0));
+      expect(controller.target, equals(61));
+
+      // Round 2: 3 more darts, not a finish (20+20+1 = 41). Now 6 darts used
+      // → attempt must close as a miss (0 points), advancing exactly one round.
+      controller.submitScoliaTurn(turn(['S20', 'S20', 'S1']));
+
+      // Exactly one scoring entry, worth 0 points (miss). Target advanced to 62.
+      expect(controller.thrownPoints.length, equals(1),
+          reason: 'bust+miss must count as a single completed attempt');
+      expect(controller.thrownPoints.last, equals(0));
+      expect(controller.points, equals(0));
+      expect(controller.target, equals(62),
+          reason: 'must advance by exactly one target, never grant a 3rd round');
+      expect(controller.round, equals(2));
     });
   });
 }

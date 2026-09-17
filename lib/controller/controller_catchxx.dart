@@ -40,8 +40,16 @@ class ControllerCatchXX extends ControllerBase
   int target = 61; // current finish target
 
   // Scolia: multi-turn accumulator for one checkout attempt (up to 6 darts).
+  // [_scoliaAccDarts] holds only the darts that count toward the SCORE (a
+  // busted turn is discarded from the score). [_scoliaDartsUsed] counts ALL
+  // darts thrown in the attempt (including busted turns), because a busted
+  // round still consumes its darts toward the 6-dart / 2-round limit.
   List<DetectedThrow> _scoliaAccDarts = [];
-  void resetScoliaAttempt() => _scoliaAccDarts = [];
+  int _scoliaDartsUsed = 0;
+  void resetScoliaAttempt() {
+    _scoliaAccDarts = [];
+    _scoliaDartsUsed = 0;
+  }
 
   /// During a Scolia multi-turn attempt, returns the remaining score still
   /// needed (target minus accumulated score so far). Returns null when no
@@ -69,6 +77,7 @@ class ControllerCatchXX extends ControllerBase
     round = 1;
     target = 61;
     _scoliaAccDarts = [];
+    _scoliaDartsUsed = 0;
   }
 
   @override
@@ -279,11 +288,13 @@ class ControllerCatchXX extends ControllerBase
   @override
   void submitScoliaTurn(TurnResult turn) {
     if (item == null || target > 100) return;
-    // Accumulate darts across turns (max 6 darts = 2 takeouts).
-    // Bust or remainder-of-1: discard this turn but keep prior accumulated total.
+    // Every dart thrown counts toward the 6-dart / 2-round limit, even in a
+    // busted turn (a bust keeps the score but still consumes the round).
+    _scoliaDartsUsed += turn.dartCount;
+
+    // Accumulated SCORE excludes busted turns (see below).
     final preTurnAcc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
     final newAcc = preTurnAcc + turn.total;
-    final dartCount = _scoliaAccDarts.length + turn.dartCount;
 
     // Successful checkout: accumulated total == target, last dart is double.
     if (newAcc == target) {
@@ -293,23 +304,23 @@ class ControllerCatchXX extends ControllerBase
           lastScoring.ring == DartRing.innerBull ||
           lastScoring.ring == DartRing.outerBull;
       if (onDouble) {
-        _scoliaAccDarts.addAll(turn.darts);
-        pressNumpadButton(dartCount.clamp(2, 6));
-        _scoliaAccDarts = [];
+        pressNumpadButton(_scoliaDartsUsed.clamp(2, 6));
+        resetScoliaAttempt();
         return;
       }
     }
 
     if (newAcc > target || target - newAcc == 1) {
-      // Bust or 1 remaining: discard this turn's darts, keep prior total.
+      // Bust or 1 remaining: discard this turn's darts from the SCORE, keep the
+      // prior score. The darts are still counted in _scoliaDartsUsed above.
     } else {
       _scoliaAccDarts.addAll(turn.darts);
     }
 
-    // 6 darts exhausted → miss.
-    if (dartCount >= 6) {
+    // 6 darts used (2 rounds) → attempt over, miss. Never allow a 3rd round.
+    if (_scoliaDartsUsed >= 6) {
       pressNumpadButton(0);
-      _scoliaAccDarts = [];
+      resetScoliaAttempt();
       return;
     }
 
