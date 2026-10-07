@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dart/widget/menu.dart';
+import 'package:dart/services/highscore_service.dart';
 import 'package:dart/utils/web_helper_stub.dart'
     if (dart.library.html) 'package:dart/utils/web_helper_web.dart';
 
@@ -48,6 +49,10 @@ class ControllerStats extends ChangeNotifier {
     
     // Add legacy/split game IDs that might have stats but aren't in current menu
     allGameIds.addAll(['RTCD', 'RTCT']);
+    // Add the header-shortcut games (not in the Menu.games grid): the Quiz
+    // (FQ) and the Bayrisches Sportabzeichen (CHALLENGE, which keeps a medal
+    // highscore list).
+    allGameIds.addAll(['FQ', 'CHALLENGE']);
 
     for (final gameId in allGameIds) {
       final storage = GetStorage(gameId);
@@ -74,6 +79,12 @@ class ControllerStats extends ChangeNotifier {
             case 'RTCT':
               gameName = 'RTC Triple max 20';
               break;
+            case 'FQ':
+              gameName = 'FinishQuest';
+              break;
+            case 'CHALLENGE':
+              gameName = 'Bayrisches Sportabzeichen';
+              break;
             default:
               gameName = gameId;
           }
@@ -96,13 +107,46 @@ class ControllerStats extends ChangeNotifier {
   }
 
   Future<String> exportStats() async {
+    // Build export with structured per-game stats. The highscore list is
+    // decoded from its stored JSON string into a real array so the export is
+    // self-describing. Version 2.0 introduces the per-game highscore lists.
+    final games = <String, dynamic>{};
+    _allStats.forEach((gameId, gameData) {
+      final stats = Map<String, dynamic>.from(gameData['stats'] as Map);
+      final exportStatsMap = <String, dynamic>{};
+      for (final entry in stats.entries) {
+        if (entry.key == highscoreStorageKey) {
+          exportStatsMap[entry.key] = _decodeHighscores(entry.value);
+        } else {
+          exportStatsMap[entry.key] = entry.value;
+        }
+      }
+      games[gameId] = {
+        'name': gameData['name'],
+        'stats': exportStatsMap,
+      };
+    });
+
     final exportData = {
-      'version': '1.0',
+      'version': '2.0',
       'exportDate': DateTime.now().toIso8601String(),
-      'games': _allStats,
+      'games': games,
     };
 
     return jsonEncode(exportData);
+  }
+
+  /// Decode a stored highscore JSON string into a list; returns an empty list
+  /// for anything unparseable.
+  List<dynamic> _decodeHighscores(dynamic raw) {
+    if (raw is List) return raw;
+    if (raw is String && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is List) return decoded;
+      } catch (_) {}
+    }
+    return [];
   }
 
   Future<void> shareExportedStats(BuildContext context) async {
@@ -232,7 +276,13 @@ class ControllerStats extends ChangeNotifier {
       await storage.erase();
 
       for (final key in stats.keys) {
-        await storage.write(key, stats[key]);
+        if (key == highscoreStorageKey) {
+          // The highscore list is stored as a JSON string inside the game's
+          // container; re-encode the imported array.
+          await storage.write(key, jsonEncode(stats[key]));
+        } else {
+          await storage.write(key, stats[key]);
+        }
       }
     }
 

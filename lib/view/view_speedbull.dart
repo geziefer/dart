@@ -38,6 +38,8 @@ class ViewSpeedBull extends StatelessWidget {
     
     return GameLayout(
       title: title,
+      highscoreGameId: controller.highscoreGameId,
+      highscoreGameName: title,
       mainContent: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

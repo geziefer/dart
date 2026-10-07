@@ -64,7 +64,7 @@ class ControllerCheck121 extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     rounds = <int>[1]; // start with round 1
     targets = <int>[121]; // start with target 121
@@ -291,7 +291,7 @@ class ControllerCheck121 extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine('Gespielte Runden', round - 1),
       SummaryService.createValueLine('Höchstes Ziel', highestTarget),
       SummaryService.createValueLine('Letzter Safepoint', savePoint),
@@ -299,6 +299,9 @@ class ControllerCheck121 extends ControllerBase
           'Ø Erfolgreiche Runden', _getAverageAttempts(),
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -322,6 +325,9 @@ class ControllerCheck121 extends ControllerBase
     // Update records
     statsService.updateRecord<int>('highestTarget', highestTarget);
     statsService.updateRecord<int>('highestSavePoint', savePoint);
+
+    // Highscore: highest target (higher better), tie-break save point (higher).
+    recordHighscore(highestTarget.toDouble(), value2: savePoint.toDouble());
   }
 
   @override

@@ -37,6 +37,15 @@ class SummaryService {
         emphasized: emphasized);
   }
 
+  /// Create a summary line announcing a new Top-10 highscore at [rank], or
+  /// return null when [rank] is null (no new highscore). Shown emphasized with
+  /// a trophy so it stands out in the summary dialog.
+  static SummaryLine? createHighscoreLine(int? rank) {
+    if (rank == null) return null;
+    return SummaryLine('Neuer Highscore! Platz $rank', '',
+        emphasized: true, checkSymbol: '🏆');
+  }
+
   /// Create summary lines for common game statistics
   static List<SummaryLine> createStandardSummaryLines({
     required String gameName,

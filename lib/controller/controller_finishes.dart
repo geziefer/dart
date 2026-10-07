@@ -473,7 +473,7 @@ class ControllerFinishes extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
     
     // Always start with no range - dialog will be shown
     from = 0;

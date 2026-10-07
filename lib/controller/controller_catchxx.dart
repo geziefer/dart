@@ -66,7 +66,7 @@ class ControllerCatchXX extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     targets = <int>[61];
     thrownPoints = <int>[];
@@ -142,13 +142,16 @@ class ControllerCatchXX extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine('Anzahl Checks', hits),
       SummaryService.createValueLine('Anzahl Punkte', points),
       SummaryService.createValueLine(
           'Punkte/Runde', getCurrentStats()['avgPoints'],
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -164,6 +167,9 @@ class ControllerCatchXX extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermPoints', avgPoints);
+
+    // Highscore: points (higher better), tie-break hits (higher better).
+    recordHighscore(points.toDouble(), value2: hits.toDouble());
   }
 
   /// Calculate points based on number of darts used

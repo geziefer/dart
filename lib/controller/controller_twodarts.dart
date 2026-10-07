@@ -40,7 +40,7 @@ class ControllerTwoDarts extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     targets = <int>[61];
     results = <bool>[];
@@ -93,10 +93,13 @@ class ControllerTwoDarts extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine('Erfolgreiche Versuche', successCount,
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -110,6 +113,9 @@ class ControllerTwoDarts extends ControllerBase
     // Update long-term average
     statsService.updateLongTermAverage(
         'longtermSuccesses', successCount.toDouble());
+
+    // Highscore: successful attempts (higher better).
+    recordHighscore(successCount.toDouble());
   }
 
   String getCurrentTargets() {

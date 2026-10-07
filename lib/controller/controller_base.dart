@@ -2,12 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:dart/services/stats_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/highscore_service.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:dart/utils/stats_formatter.dart';
 
 abstract class ControllerBase extends ChangeNotifier {
   // Common services that all controllers can use
   StatsService? _statsService;
+  HighscoreService? _highscoreService;
+
+  /// The game id this controller was initialized with (storage container id),
+  /// or null before initialization. Used to open the highscore dialog.
+  String? _gameId;
+
+  /// The game id for the highscore dialog, or null when this game has no
+  /// highscore list configured.
+  String? get highscoreGameId =>
+      (_gameId != null && highscoreConfigs.containsKey(_gameId))
+          ? _gameId
+          : null;
+
+  /// 1-based rank of a highscore achieved in the just-finished game, or null
+  /// if no new highscore was recorded. Reset at the start of each game and set
+  /// by [recordHighscore]. Used to show a line in the summary dialog.
+  int? lastHighscoreRank;
 
   // Callback functions for UI interactions (to decouple from BuildContext)
   VoidCallback? onGameEnded;
@@ -16,9 +34,18 @@ abstract class ControllerBase extends ChangeNotifier {
       onShowCheckout; // For games with checkout dialogs
   VoidCallback? onCheckoutClosed; // Called when checkout dialog is closed
 
-  /// Initialize common services (should be called by concrete controllers)
-  void initializeServices(StorageService storageService) {
+  /// Initialize common services (should be called by concrete controllers).
+  ///
+  /// When [gameId] is provided and a [HighscoreConfig] exists for it, a
+  /// [HighscoreService] is created so the controller can record Top-10
+  /// highscores. Games without a highscore (e.g. the Quiz) omit [gameId].
+  void initializeServices(StorageService storageService, {String? gameId}) {
     _statsService = StatsService(storageService);
+    _gameId = gameId;
+    lastHighscoreRank = null;
+    final config = gameId == null ? null : highscoreConfigs[gameId];
+    _highscoreService =
+        config == null ? null : HighscoreService(storageService, config);
   }
 
   /// Get the stats service (protected access for subclasses)
@@ -28,6 +55,25 @@ abstract class ControllerBase extends ChangeNotifier {
           'StatsService not initialized. Call initializeServices() first.');
     }
     return _statsService!;
+  }
+
+  /// The highscore service for this game, or null if the game has no highscore
+  /// list configured.
+  HighscoreService? get highscoreService => _highscoreService;
+
+  /// Record a single-game result into this game's Top-10 highscore list.
+  ///
+  /// [value] is the primary ranking metric, [value2] an optional tie-breaker.
+  /// Sets [lastHighscoreRank] to the achieved 1-based rank (or null if the
+  /// result did not qualify) so the summary can report it. No-op when the game
+  /// has no highscore configured.
+  void recordHighscore(double value, {double? value2}) {
+    final service = _highscoreService;
+    if (service == null) {
+      lastHighscoreRank = null;
+      return;
+    }
+    lastHighscoreRank = service.recordResult(value: value, value2: value2);
   }
 
   /// Common method to update game statistics

@@ -55,7 +55,7 @@ class ControllerSpeedBull extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     // Get duration from params, default to 60 seconds
     gameDurationSeconds = item.params['duration'] ?? 60;
@@ -229,12 +229,15 @@ class ControllerSpeedBull extends ControllerBase
       averageHitsPerRound = totalHits / completedRounds;
     }
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Runden gespielt', completedRounds),
       SummaryService.createValueLine('Bull Treffer', totalHits),
       SummaryService.createAverageLine('Ø Treffer/Runde', averageHitsPerRound,
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -257,6 +260,9 @@ class ControllerSpeedBull extends ControllerBase
 
     // Update records
     statsService.updateRecord<int>('recordHits', totalHits);
+
+    // Highscore: bull hits (higher better).
+    recordHighscore(totalHits.toDouble());
 
     // Calculate and store overall average
     double overallAverage = 0.0;

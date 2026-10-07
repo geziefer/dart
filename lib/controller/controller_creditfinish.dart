@@ -47,7 +47,7 @@ class ControllerCreditFinish extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     // Initialize game state
     currentPhase = GamePhase.scoreInput;
@@ -207,13 +207,16 @@ class ControllerCreditFinish extends ControllerBase
     int checks = finishResults.where((result) => result).length;
     double avgChecks = totalRounds > 0 ? (checks / totalRounds) * 100 : 0;
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Gespielte Runden', totalRounds),
       SummaryService.createValueLine('Checks', checks),
       SummaryService.createValueLine(
           'ØChecks', '${avgChecks.toStringAsFixed(1)}%',
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -228,6 +231,8 @@ class ControllerCreditFinish extends ControllerBase
       if (avgChecks > bestAvgChecks) {
         statsService.updateStats({'bestAvgChecks': avgChecks});
       }
+      // Highscore: average checks percentage (higher better).
+      recordHighscore(avgChecks);
     }
 
     statsService.updateLongTermAverage('longtermAvgChecks', avgChecks);

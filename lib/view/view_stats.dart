@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_stats.dart';
+import 'package:dart/services/highscore_service.dart';
 import 'package:dart/view/view_scolia_settings.dart';
 import 'package:dart/widget/game_layout.dart';
 
@@ -138,7 +141,10 @@ class ViewStats extends StatelessWidget {
   Widget _buildGameStats(BuildContext context, ControllerStats controller,
       String gameId, Map<String, dynamic> gameData) {
     final stats = gameData['stats'] as Map<String, dynamic>;
-    final statKeys = stats.keys.toList();
+    // The highscore list is rendered separately below; keep it out of the
+    // generic key/value grid (it is stored as a JSON string).
+    final statKeys =
+        stats.keys.where((k) => k != highscoreStorageKey).toList();
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -212,10 +218,95 @@ class ViewStats extends StatelessWidget {
                   ],
                 ),
               ),
+            _buildHighscoreSection(gameId, stats),
           ],
         ),
       ),
     );
+  }
+
+  /// Build the highscore block for a game: rank #1 shown inline, ranks 2-10 in
+  /// an expandable section. Returns an empty widget when the game has no
+  /// highscore configuration.
+  Widget _buildHighscoreSection(String gameId, Map<String, dynamic> stats) {
+    final config = highscoreConfigs[gameId];
+    if (config == null) return const SizedBox.shrink();
+
+    final entries = _parseHighscores(stats[highscoreStorageKey]);
+
+    const headerStyle = TextStyle(
+        color: Color.fromARGB(255, 215, 198, 132),
+        fontSize: 13,
+        fontWeight: FontWeight.bold);
+    const entryStyle = TextStyle(color: Colors.white70, fontSize: 12);
+
+    String formatEntry(int rank, HighscoreEntry e) {
+      final v = config.formatValue(e.value);
+      final v2 = config.formatValue2(e.value2);
+      final v2Part = (config.label2 != null && v2.isNotEmpty)
+          ? '  ${config.label2}: $v2'
+          : '';
+      return '$rank. ${config.label}: $v$v2Part  (${e.date})';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(color: Colors.white24),
+        Row(
+          children: [
+            const Icon(Icons.emoji_events,
+                color: Color.fromARGB(255, 215, 198, 132), size: 16),
+            const SizedBox(width: 6),
+            Text(
+              entries.isEmpty
+                  ? 'Highscore: —'
+                  : 'Highscore  ${formatEntry(1, entries.first)}',
+              style: headerStyle,
+            ),
+          ],
+        ),
+        if (entries.length > 1)
+          Theme(
+            data: ThemeData.dark().copyWith(
+              dividerColor: Colors.transparent,
+            ),
+            child: ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(left: 22, bottom: 8),
+              title: const Text('Plätze 2-10',
+                  style: TextStyle(color: Colors.white54, fontSize: 12)),
+              iconColor: Colors.white54,
+              collapsedIconColor: Colors.white54,
+              children: [
+                for (int i = 1; i < entries.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(formatEntry(i + 1, entries[i]),
+                          style: entryStyle),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  List<HighscoreEntry> _parseHighscores(dynamic raw) {
+    if (raw is! String || raw.isEmpty) return [];
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      return decoded
+          .whereType<Map>()
+          .map((e) => HighscoreEntry.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
   
   String _formatValue(dynamic value) {

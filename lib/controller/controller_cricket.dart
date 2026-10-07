@@ -5,6 +5,7 @@ import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class ControllerCricket extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     // Initialize cricket numbers (15-20, Bull=25)
     hits = {15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 25: 0};
@@ -253,6 +254,8 @@ class ControllerCricket extends ControllerBase
     double avgHitsPerRound = _getAvgHitsPerRound();
     lines.add(SummaryLine('ØTreffer/Runde', avgHitsPerRound.toStringAsFixed(1), emphasized: true));
     
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
     return lines;
   }
 
@@ -271,6 +274,9 @@ class ControllerCricket extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermAvgHits', avgHits);
+
+    // Highscore: darts (lower better), tie-break average hits (higher better).
+    recordHighscore(darts.toDouble(), value2: avgHits);
   }
 
   @override

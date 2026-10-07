@@ -39,7 +39,7 @@ class ControllerBigTs extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     hitCounts = <int>[];
     points = <int>[];
@@ -111,10 +111,13 @@ class ControllerBigTs extends ControllerBase
     int totalScore = totalPoints.isNotEmpty ? totalPoints.last : 0;
     double averagePerRound = totalScore / totalRounds.toDouble();
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Punkte', totalScore, emphasized: true),
       SummaryService.createAverageLine('Punkte pro Runde', averagePerRound),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -135,6 +138,9 @@ class ControllerBigTs extends ControllerBase
     statsService.updateRecord<double>('recordRoundAverage', gameAverage);
 
     statsService.updateLongTermAverage('longtermAverage', gameAverage);
+
+    // Highscore: max round points (higher), tie-break round average (higher).
+    recordHighscore(maxRoundPoints.toDouble(), value2: gameAverage);
   }
 
   String getCurrentTargets() {

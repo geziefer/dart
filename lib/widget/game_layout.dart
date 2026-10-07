@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dart/widget/header.dart';
+import 'package:dart/widget/highscore_dialog.dart';
+import 'package:dart/services/highscore_service.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Layout shared by all game views. Keeps the screen on while a game is
@@ -11,11 +13,20 @@ class GameLayout extends StatefulWidget {
     required this.title,
     required this.mainContent,
     required this.statsContent,
+    this.highscoreGameId,
+    this.highscoreGameName,
   });
 
   final String title;
   final Widget mainContent;
   final Widget statsContent;
+
+  /// When set to a game id that has a highscore configuration, a trophy icon is
+  /// shown in the bottom-right of the stats area opening the Top-10 dialog.
+  final String? highscoreGameId;
+
+  /// Display name for the highscore dialog title (defaults to [title]).
+  final String? highscoreGameName;
 
   @override
   State<GameLayout> createState() => _GameLayoutState();
@@ -32,6 +43,25 @@ class _GameLayoutState extends State<GameLayout> {
   void dispose() {
     WakelockPlus.disable();
     super.dispose();
+  }
+
+  /// Whether to show the highscore trophy: only when a configured game id is
+  /// provided (so the stats/settings page and the Quiz do not show it).
+  bool get _showHighscoreIcon {
+    final id = widget.highscoreGameId;
+    return id != null && highscoreConfigs.containsKey(id);
+  }
+
+  void _openHighscores(BuildContext context) {
+    final id = widget.highscoreGameId;
+    if (id == null) return;
+    showDialog(
+      context: context,
+      builder: (_) => HighscoreDialog(
+        gameId: id,
+        gameName: widget.highscoreGameName ?? widget.title,
+      ),
+    );
   }
 
   @override
@@ -64,7 +94,24 @@ class _GameLayoutState extends State<GameLayout> {
             child: Column(
               children: [
                 const Divider(color: Colors.white, thickness: 3),
-                Expanded(child: widget.statsContent),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(child: widget.statsContent),
+                      if (_showHighscoreIcon)
+                        Positioned(
+                          right: 8,
+                          bottom: 8,
+                          child: IconButton(
+                            icon: const Icon(Icons.emoji_events,
+                                color: Color.fromARGB(255, 215, 198, 132)),
+                            tooltip: 'Highscores',
+                            onPressed: () => _openHighscores(context),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

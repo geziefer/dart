@@ -50,7 +50,7 @@ class ControllerDoublePath extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     targets = List.from(targetSequences);
     hitCounts = <int>[];
@@ -129,10 +129,13 @@ class ControllerDoublePath extends ControllerBase
     int totalScore = totalPoints.isNotEmpty ? totalPoints.last : 0;
     double averagePerRound = totalScore / 5.0;
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Punkte', totalScore, emphasized: true),
       SummaryService.createAverageLine('Punkte pro Runde', averagePerRound),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -156,6 +159,9 @@ class ControllerDoublePath extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', gameAverage);
+
+    // Highscore: max round points (higher), tie-break round average (higher).
+    recordHighscore(maxRoundPoints.toDouble(), value2: gameAverage);
   }
 
   String getCurrentTargets() {

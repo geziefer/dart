@@ -45,7 +45,7 @@ class ControllerBobs27 extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     targets = <String>['1']; // start with target 1
     roundScores = <int>[0]; // start with empty round score (0 = empty display)
@@ -303,13 +303,16 @@ class ControllerBobs27 extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createCompletionLine('Bob\'s 27', gameWon),
       SummaryService.createValueLine('Erfolgreiche Runden', successfulRounds),
       SummaryService.createValueLine('Gesamtpunkte', totalScore),
       SummaryService.createValueLine('Punkte/Runde', _getAverageScore(),
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -325,5 +328,8 @@ class ControllerBobs27 extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', currentAverage);
+
+    // Highscore: total points (higher better), tie-break successful rounds.
+    recordHighscore(totalScore.toDouble(), value2: successfulRounds.toDouble());
   }
 }

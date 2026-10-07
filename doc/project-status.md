@@ -11,7 +11,6 @@
 tablet, landscape). No public/multi-user concerns; the single user knows the
 rules, so no "dummy-proofing" is needed.
 
-- **Version:** `3.0.0+21` (see `pubspec.yaml`)
 - **Framework:** Flutter / Dart (SDK `>=3.0.0 <4.0.0`)
 - **State management:** Provider (`ChangeNotifier` controllers)
 - **Persistence:** `get_storage` (local key-value, per-game IDs) — no network DB
@@ -25,6 +24,19 @@ rules, so no "dummy-proofing" is needed.
 - Test suite: 33 test files under `test/` (docs report ~415 tests green).
 - **Scolia Home 2 integration is COMPLETE** (all phases A–H). Real board
   validated (External API v1.4). This was the major recent workstream.
+- **Per-game Top-10 highscores (v3.1.0):** each supporting game keeps a dated
+  Top-10 list of its best single-game result in its own storage container under
+  the `highscores` key. Logic in `lib/services/highscore_service.dart`
+  (`HighscoreEntry`, `highscoreConfigs` per game id, `HighscoreService` with
+  strict-better insertion; equal values allowed as separate dated entries but
+  never displace an equal earlier one). `ControllerBase.recordHighscore(...)`
+  is called from each game's `updateSpecificStats`; `lastHighscoreRank` drives a
+  🏆 summary line. A trophy in `GameLayout`'s stats area opens
+  `HighscoreDialog` (ranks 1–10). The stats page shows rank #1 inline + an
+  expandable 2–10 section. Export/import is version `2.0` (highscores as a JSON
+  array). `tool/migrate_highscores.dart` upgrades an old v1.0 export in place
+  (1 synthesized entry per game). The Quiz (`FQ`) has no highscore; the
+  Sportabzeichen (`CHALLENGE`) stores its awarded medal (failed runs excluded).
 
 ## The two big subsystems
 

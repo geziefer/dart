@@ -42,7 +42,7 @@ class ControllerKillBull extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     roundNumbers = <int>[];
     roundScores = <int>[];
@@ -105,12 +105,15 @@ class ControllerKillBull extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     int roundsPlayed = roundScores.length;
-    return [
+    final lines = [
       SummaryService.createValueLine('Runden', roundsPlayed),
       SummaryService.createValueLine('Punkte', totalScore),
       SummaryService.createAverageLine('Punkte/Runde', _getAvgScore(),
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -125,6 +128,9 @@ class ControllerKillBull extends ControllerBase
 
     // Update long-term average using totalScore (not avgScore) to match old behavior
     statsService.updateLongTermAverage('longtermScore', totalScore.toDouble());
+
+    // Highscore: total score (higher better), tie-break rounds (higher better).
+    recordHighscore(totalScore.toDouble(), value2: roundsPlayed.toDouble());
   }
 
   double _getAvgScore() {

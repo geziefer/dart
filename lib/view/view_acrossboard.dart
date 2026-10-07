@@ -65,6 +65,8 @@ class ViewAcrossBoard extends StatelessWidget {
     
     return GameLayout(
       title: title,
+      highscoreGameId: controller.highscoreGameId,
+      highscoreGameName: title,
       mainContent: Column(
         children: [
           Expanded(

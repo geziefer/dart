@@ -38,7 +38,7 @@ class ControllerPlanHit extends ControllerBase
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     targets = <String>[];
     hitCounts = <int>[];
@@ -113,6 +113,9 @@ class ControllerPlanHit extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', gameAverage);
+
+    // Highscore: points (higher better), tie-break average (higher better).
+    recordHighscore(gameTotal.toDouble(), value2: gameAverage);
   }
 
   String getStats() {
@@ -136,10 +139,13 @@ class ControllerPlanHit extends ControllerBase
     int totalScore = totalHits.isNotEmpty ? totalHits.last : 0;
     double averagePerRound = totalScore / 10.0;
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Punkte', totalScore, emphasized: true),
       SummaryService.createAverageLine('Punkte pro Runde', averagePerRound),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override

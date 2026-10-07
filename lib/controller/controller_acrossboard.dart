@@ -87,7 +87,7 @@ class ControllerAcrossBoard extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     // Generate random start number and create target sequence
     _initializeGame();
@@ -209,12 +209,15 @@ class ControllerAcrossBoard extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine('Anzahl Darts', dart),
       SummaryService.createValueLine(
           'Darts/Target', _getAvgDartsPerTarget().toStringAsFixed(1),
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -234,6 +237,8 @@ class ControllerAcrossBoard extends ControllerBase
       if (recordDarts == 0 || dart < recordDarts) {
         statsService.updateStats({'recordDarts': dart});
       }
+      // Highscore: fewest darts for a finished game.
+      recordHighscore(dart.toDouble());
     }
 
     statsService.updateLongTermAverage('longtermChecks', avgDartsPerTarget);

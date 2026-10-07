@@ -71,7 +71,7 @@ class ControllerXXXCheckout extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
     xxx = item.params['xxx'];
     max = item.params['max'];
     end = item.params['end'];
@@ -338,6 +338,9 @@ class ControllerXXXCheckout extends ControllerBase
         '♛Runde', getCurrentStats()['highestAvg'],
         emphasized: true));
 
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+
     return lines;
   }
 
@@ -367,6 +370,9 @@ class ControllerXXXCheckout extends ControllerBase
     // Update long-term averages
     statsService.updateLongTermAverage('longtermScore', avgScore);
     statsService.updateLongTermAverage('longtermDarts', avgDarts);
+
+    // Highscore: number of finishes (higher better), tie-break average score.
+    recordHighscore(finishCount.toDouble(), value2: avgScore);
   }
 
   @override

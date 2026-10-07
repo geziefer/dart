@@ -63,7 +63,7 @@ class ControllerRTCX extends ControllerBase
       selectedMode = item.id; // Use the item ID as mode
       _dialogShown = true; // No dialog needed
       _storageService = StorageService(item.id, injectedStorage: _injectedStorage);
-      initializeServices(_storageService!);
+      initializeServices(_storageService!, gameId: item.id);
     }
 
     throws = <int>[];
@@ -81,7 +81,7 @@ class ControllerRTCX extends ControllerBase
     
     // Update storage service with the selected mode
     _storageService = StorageService(mode, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: mode);
     
     notifyListeners();
   }
@@ -202,13 +202,16 @@ class ControllerRTCX extends ControllerBase
   @override
   List<SummaryLine> createSummaryLines() {
     String checkSymbol = finished ? "✅" : "❌";
-    return [
+    final lines = [
       SummaryLine('RTC geschafft', '', checkSymbol: checkSymbol),
       SummaryService.createValueLine('Anzahl Darts', dart),
       SummaryService.createValueLine(
           'Darts/Checkout', getCurrentStats()['avgChecks'],
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -247,6 +250,8 @@ class ControllerRTCX extends ControllerBase
       if (recordDarts == 0 || dart < recordDarts) {
         statsService.updateStats({'recordDarts': dart});
       }
+      // Highscore: fewest darts for a finished game.
+      recordHighscore(dart.toDouble());
     }
 
     // Update long-term average

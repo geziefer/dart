@@ -4,6 +4,8 @@ import 'package:dart/controller/controller_shootx.dart';
 import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
+import 'package:dart/services/storage_service.dart';
+import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +56,9 @@ class ControllerChallenge extends ControllerBase
   @override
   void init(MenuItem item) {
     this.item = item;
-    // No storage service needed for challenge
+    // The challenge keeps no per-game stats, but uses its own storage
+    // container ('CHALLENGE') solely to persist the medal highscore list.
+    initializeServices(StorageService(item.id), gameId: item.id);
 
     // Reset challenge state for fresh start
     currentStage = 0;
@@ -172,7 +176,24 @@ class ControllerChallenge extends ControllerBase
   }
 
   void showFinalSummary() {
+    // Record the awarded medal into the highscore list. Failed runs (no medal,
+    // '😢') do not qualify. The ranking value is the medal index (higher is a
+    // better medal). lastHighscoreRank drives the summary highscore line.
+    final medal = calculateBadge();
+    final medalIndex = badgeNames.indexOf(medal);
+    if (medalIndex >= 0) {
+      recordHighscore(medalIndex.toDouble());
+    } else {
+      lastHighscoreRank = null;
+    }
     onGameEnded?.call();
+  }
+
+  /// Map a stored medal highscore [value] (the medal index) back to its emoji.
+  static String medalForValue(double value) {
+    final index = value.round();
+    if (index < 0 || index >= badgeNames.length) return '😢';
+    return badgeNames[index];
   }
 
   String calculateBadge() {
@@ -280,10 +301,13 @@ class ControllerChallenge extends ControllerBase
     if (currentStage >= 5) {
       // Final summary with matrix
       String badge = calculateBadge();
-      return [
+      final lines = [
         SummaryLine('MATRIX', '', isMatrix: true, matrixData: _getMatrixData()),
         SummaryLine('', badge, emphasized: true, isFinalBadge: true),
       ];
+      final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+      if (hs != null) lines.add(hs);
+      return lines;
     }
 
     // Delegate to current controller for individual stage summaries

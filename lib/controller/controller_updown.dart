@@ -43,7 +43,7 @@ class ControllerUpDown extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     rounds = <int>[1];
     targets = <int>[50];
@@ -157,12 +157,15 @@ class ControllerUpDown extends ControllerBase
   List<SummaryLine> createSummaryLines() {
     double averageSuccesses = successCount / 13.0;
 
-    return [
+    final lines = [
       SummaryService.createValueLine('Checks', successCount, emphasized: true),
       SummaryService.createAverageLine('Durchschnitt Checks', averageSuccesses),
       SummaryService.createValueLine('Letztes Ziel', currentTarget),
       SummaryService.createValueLine('Höchstes Ziel', highestTarget),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -183,6 +186,9 @@ class ControllerUpDown extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermAverage', averageSuccesses);
+
+    // Highscore: successes (higher better), tie-break highest target (higher).
+    recordHighscore(successCount.toDouble(), value2: highestTarget.toDouble());
   }
 
   String getCurrentRounds() {

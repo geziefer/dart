@@ -29,7 +29,7 @@ void main() {
         final exportData = await controller.exportStats();
         final parsed = jsonDecode(exportData);
 
-        expect(parsed['version'], '1.0');
+        expect(parsed['version'], '2.0');
         expect(parsed['exportDate'], isNotNull);
         expect(parsed['games'], isNotNull);
         expect(parsed['games']['test_game']['name'], 'Test Game');
@@ -42,8 +42,31 @@ void main() {
         final exportData = await controller.exportStats();
         final parsed = jsonDecode(exportData);
 
-        expect(parsed['version'], '1.0');
+        expect(parsed['version'], '2.0');
         expect(parsed['games'], isEmpty);
+      });
+
+      test('decodes stored highscore string into a structured array', () async {
+        controller.allStats.clear();
+        controller.allStats['501x5'] = {
+          'name': '501 x 5',
+          'stats': {
+            'numberGames': 3,
+            'recordFinishes': 4,
+            'highscores':
+                '[{"value":4.0,"value2":61.5,"date":"22.01.2026"}]',
+          }
+        };
+
+        final exportData = await controller.exportStats();
+        final parsed = jsonDecode(exportData);
+        final hs = parsed['games']['501x5']['stats']['highscores'];
+
+        expect(hs, isA<List>());
+        expect(hs.length, 1);
+        expect(hs[0]['value'], 4.0);
+        expect(hs[0]['value2'], 61.5);
+        expect(hs[0]['date'], '22.01.2026');
       });
     });
 
@@ -142,7 +165,7 @@ void main() {
 
         // Test export file generation
         final exportData = await controller.exportStats();
-        expect(exportData, contains('"version":"1.0"'));
+        expect(exportData, contains('"version":"2.0"'));
         expect(exportData, contains('"test"'));
       });
     });

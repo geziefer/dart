@@ -57,7 +57,7 @@ class ControllerHalfit extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
 
     rounds = <String>[labels.first];
     scores = <int>[];
@@ -156,13 +156,16 @@ class ControllerHalfit extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine(
           'Anzahl Checks', hit.where((h) => h).length),
       SummaryService.createValueLine('Punkte', totalScore),
       SummaryService.createValueLine('ØPunkte', getCurrentStats()['avgScore'],
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -177,6 +180,9 @@ class ControllerHalfit extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermScore', avgScore);
+
+    // Highscore: total score (higher better).
+    recordHighscore(totalScore.toDouble());
   }
 
   @override

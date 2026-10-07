@@ -48,7 +48,7 @@ class ControllerShootx extends ControllerBase
     this.item = item;
     _storageService =
         StorageService(item.id, injectedStorage: _injectedStorage);
-    initializeServices(_storageService!);
+    initializeServices(_storageService!, gameId: item.id);
     x = item.params['x'];
     max = item.params['max'];
 
@@ -117,11 +117,14 @@ class ControllerShootx extends ControllerBase
 
   @override
   List<SummaryLine> createSummaryLines() {
-    return [
+    final lines = [
       SummaryService.createValueLine('Anzahl $x', number),
       SummaryService.createValueLine('$x/Runde', getCurrentStats()['avgHits'],
           emphasized: true),
     ];
+    final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
+    if (hs != null) lines.add(hs);
+    return lines;
   }
 
   @override
@@ -144,6 +147,9 @@ class ControllerShootx extends ControllerBase
 
     // Update long-term average
     statsService.updateLongTermAverage('longtermHits', avgHits);
+
+    // Highscore: numbers hit (higher better).
+    recordHighscore(number.toDouble());
   }
 
   double _getAvgNumbers() {
