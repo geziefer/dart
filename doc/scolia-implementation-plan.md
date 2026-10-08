@@ -206,8 +206,12 @@ Live-board end-to-end testing performed with Scolia Home 2 (External API v1.4):
 - INTERNET permission added to AndroidManifest (required for WebSocket).
 
 **Remaining optional improvements (not blocking):**
-- Post-submit correction for already-scored rounds (whole-round undo exists;
-  per-value correction would require per-game state unwinding).
+- ~~Post-submit correction for already-scored rounds~~ **DONE (v3.1.1):**
+  per-value correction of a dart in the last submitted round. Implemented in
+  `ScoliaDartboard` by retaining the last turn, undoing the round via the
+  existing `onUndoRound`, and re-submitting the edited turn through
+  `submitScoliaTurn` — equivalent by construction, no per-game forking, local
+  only (no `THROW_CORRECTED`). See `doc/training-enhancements-plan.md` step C2.
 - `submitScoliaTurn` for remaining games not yet thoroughly battle-tested on
   hardware (challenge stages 3–5 via ShootX/xxxcheckout sub-controllers work
   through delegation; no separate validation needed).

@@ -83,6 +83,21 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// Index of the pending dart currently selected for correction, or null.
   int? _editIndex;
 
+  /// The darts of the most recently submitted turn, kept visible as a
+  /// "committed" round so the user can correct a misread dart after takeout.
+  /// Null before the first turn is submitted or after a new turn starts.
+  List<DetectedThrow>? _lastTurn;
+
+  /// True while [_lastTurn] is being shown as a committed (already-submitted)
+  /// round and no new darts have been thrown yet. The next new throw clears it
+  /// and starts a fresh turn.
+  bool _showingCommitted = false;
+
+  /// True while a post-submit correction is in progress: the last round has
+  /// been undone and its darts reloaded into the collector for editing. On the
+  /// next takeout the edited turn is re-submitted through the normal path.
+  bool _correctingLastRound = false;
+
   /// Sector currently flashed on the board (brief white highlight), or null.
   String? _highlightSector;
   Timer? _flashTimer;
@@ -164,8 +179,10 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
         });
         _collector.setPhase(phase);
       case ThrowDetectedMessage(:final detectedThrow, :final sector):
-        // While correcting on screen, ignore incoming board detections.
-        if (_editIndex != null) break;
+        // While correcting on screen (per-dart edit or an in-progress
+        // post-submit correction of the last round), ignore incoming board
+        // detections so a stray detection can't disturb the correction.
+        if (_editIndex != null || _correctingLastRound) break;
         _flash(sector ?? 'None'); // mirror the board: flash the detected sector
         _applyHit(detectedThrow);
       case TakeoutStartedMessage():
@@ -213,8 +230,18 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     if (_editIndex != null) {
       _collector.replaceThrow(_editIndex!, t);
       setState(() => _editIndex = null);
-      widget.onCorrectionModeChanged?.call(false);
+      // During post-submit correction we stay in the correcting turn until the
+      // takeout re-submits it; only clear the on-screen edit affordance.
+      if (!_correctingLastRound) {
+        widget.onCorrectionModeChanged?.call(false);
+      }
       return;
+    }
+    // A genuinely new throw: if a committed round is still shown, clear it and
+    // start a fresh turn (the committed darts stay in _lastTurn history only).
+    if (_showingCommitted) {
+      setState(() => _showingCommitted = false);
+      _collector.reset();
     }
     if (_turnFull) return; // no more than 3 darts
     // Fire onFirstDart when the buffer transitions from empty to 1 dart.
@@ -251,7 +278,52 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
   void _onTurnComplete(TurnResult turn) {
     widget.controller.submitScoliaTurn(turn);
-    setState(() {});
+    setState(() {
+      // Keep the just-submitted darts on screen as a "committed" round so the
+      // user can still correct a misread dart (post-submit correction). The
+      // next new throw clears this and starts a fresh turn.
+      _lastTurn = List<DetectedThrow>.of(turn.darts);
+      _showingCommitted = true;
+      _correctingLastRound = false;
+    });
+  }
+
+  /// Whether post-submit correction of the last round is currently offered:
+  /// a committed round is on screen, we are not already editing/correcting,
+  /// the game is still in play, and the view wired a round-undo callback.
+  bool get _canCorrectLastRound =>
+      _showingCommitted &&
+      !_correctingLastRound &&
+      _editIndex == null &&
+      (_lastTurn?.isNotEmpty ?? false) &&
+      widget.onUndoRound != null;
+
+  /// Start correcting the committed last round: undo the whole round in the
+  /// game (the mechanism every Scolia view already wires), then reload that
+  /// round's darts into the collector as the current turn and select dart
+  /// [index] for correction. On the next takeout the edited turn is
+  /// re-submitted through [submitScoliaTurn] — equivalent by construction to
+  /// having thrown the corrected dart in the first place.
+  void _startPostSubmitCorrection(int index) {
+    final last = _lastTurn;
+    if (last == null || last.isEmpty) return;
+    if (widget.onUndoRound == null) return;
+
+    // Roll the game state back by one round.
+    widget.onUndoRound!.call();
+
+    // Reload the round's darts into the collector buffer for editing.
+    _collector.reset();
+    for (final d in last) {
+      _collector.addThrow(d);
+    }
+
+    setState(() {
+      _showingCommitted = false;
+      _correctingLastRound = true;
+      _editIndex = index;
+    });
+    widget.onCorrectionModeChanged?.call(true);
   }
 
   @override
@@ -321,12 +393,16 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
               onPressed: (!editing && _turnFull) ? null : _missThrow,
               icon: const Icon(Icons.block, color: Colors.white),
             ),
-            if (widget.simulator)
+            if (widget.simulator || _correctingLastRound)
               IconButton(
-                tooltip: 'Darts rausnehmen',
+                tooltip: _correctingLastRound
+                    ? 'Korrektur übernehmen'
+                    : 'Darts rausnehmen',
                 iconSize: 36,
                 onPressed: _endTurn,
-                icon: const Icon(Icons.pan_tool, color: Colors.white),
+                icon: Icon(
+                    _correctingLastRound ? Icons.check : Icons.pan_tool,
+                    color: Colors.white),
               ),
           ],
         ),
@@ -338,21 +414,70 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
+          )
+        else if (_canCorrectLastRound)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Dart antippen zum Korrigieren',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
           ),
         const Divider(color: Colors.white24),
-        // The (up to 3) thrown darts, stacked, in a large font. Each is a
-        // button: tap to select it for correction (then tap the board / a
-        // ring / the 0 icon to set the corrected value).
+        // The (up to 3) thrown darts, stacked, in a large font.
+        //
+        // - Live/correcting turn: show the collector's pending darts; each is a
+        //   button to select it for correction, then tap the board/0 icon.
+        // - Committed round (just submitted): show the retained last turn as a
+        //   dimmed, still-tappable list; tapping a dart undoes the round and
+        //   reopens it for correction (post-submit correction).
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              for (int i = 0; i < _collector.pending.length; i++)
-                _pendingDart(i, _collector.pending[i]),
+              if (_showingCommitted && _collector.pending.isEmpty)
+                for (int i = 0; i < (_lastTurn?.length ?? 0); i++)
+                  _committedDart(i, _lastTurn![i])
+              else
+                for (int i = 0; i < _collector.pending.length; i++)
+                  _pendingDart(i, _collector.pending[i]),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  /// A dart of the committed (already-submitted) last round. Tapping it starts
+  /// post-submit correction for that dart. Rendered dimmed to signal it is
+  /// already scored.
+  Widget _committedDart(int index, DetectedThrow t) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: SizedBox(
+        width: double.infinity,
+        child: TextButton(
+          onPressed: _canCorrectLastRound
+              ? () => _startPostSubmitCorrection(index)
+              : null,
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: const BorderSide(
+                  color: Color.fromARGB(60, 215, 198, 132), width: 1.5),
+            ),
+          ),
+          child: Text(
+            t.sectorLabel,
+            style: const TextStyle(
+              color: Color.fromARGB(130, 215, 198, 132),
+              fontWeight: FontWeight.bold,
+              fontSize: 56,
+            ),
+          ),
+        ),
+      ),
     );
   }
 

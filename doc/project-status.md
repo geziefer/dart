@@ -126,8 +126,9 @@ See `doc/training-enhancements-plan.md` for the full plan. Sequence, each a
 separate feature with its own checkpoint (analyze+test+device), commit, and
 version bump:
 
-1. **v3.1.1 — C2:** Scolia per-value post-submit correction (finishes the
-   existing Scolia backlog; only whole-round undo exists today).
+1. **v3.1.1 — C2 ✅ DONE:** Scolia per-value post-submit correction — correct a
+   dart in the last submitted round (undo-round + re-submit edited turn in
+   `ScoliaDartboard`; equivalent by construction, local only).
 2. **v3.2.0 — A:** persist a per-dart throw log, then accuracy metrics + a
    board heatmap (unlocks the Scolia-unique spatial data currently discarded).
    Optional storage refactor off `get_storage` decided at the start of this

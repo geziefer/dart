@@ -5,8 +5,10 @@ import 'package:mockito/annotations.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:dart/controller/controller_xxxcheckout.dart';
+import 'package:dart/controller/controller_rtcx.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
+import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/scolia_dartboard.dart';
 
@@ -347,5 +349,130 @@ void main() {
 
     expect(controller.wins, 0);
     expect(controller.remaining, 20); // unchanged: bust/rejected
+  });
+
+  testWidgets(
+      'post-submit correction: fix a dart in the last round == correct submission',
+      (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_postcorr',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(
+          controller: controller,
+          simulator: true,
+          onUndoRound: () => controller.pressNumpadButton(-2),
+        ),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // Submit a 180 round and take out (turn committed).
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.remaining, 501 - 180);
+
+    // The committed darts stay on screen. Tap the 3rd committed dart to start
+    // post-submit correction (undoes the round + reopens it for editing).
+    await tester.tap(find.text('T20').last);
+    await tester.pump();
+    // Round was undone, so the score is back to the start.
+    expect(controller.remaining, 501);
+
+    // Correct the selected (3rd) dart to T19, then confirm with the check icon.
+    state.pressDartboard('T19'); // 57
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.check)); // re-submit corrected turn
+    await tester.pump();
+
+    // 60 + 60 + 57 = 177 — identical to having thrown T20 T20 T19 originally.
+    expect(controller.remaining, 501 - 177);
+  });
+
+  testWidgets(
+      'post-submit correction is not offered without an undo callback',
+      (tester) async {
+    final controller = ControllerXXXCheckout.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'test_noundo',
+      name: 'x01',
+      view: const ViewXXXCheckout(title: 'x01'),
+      getController: (_) => controller,
+      params: const {'xxx': 501, 'max': -1, 'end': 5},
+    ));
+    // No onUndoRound wired.
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(controller: controller, simulator: true),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    state.pressDartboard('T20');
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.remaining, 501 - 180);
+
+    // Tapping a committed dart does nothing (button disabled, no undo).
+    await tester.tap(find.text('T20').last);
+    await tester.pump();
+    expect(controller.remaining, 501 - 180); // unchanged — no correction started
+  });
+
+  testWidgets(
+      'post-submit correction works for a count-based game (RTCS)',
+      (tester) async {
+    final controller = ControllerRTCX.forTesting(_freshStorage());
+    controller.init(MenuItem(
+      id: 'rtcs',
+      name: 'RTCS',
+      view: const ViewRTCX(title: 'RTCS'),
+      getController: (_) => controller,
+      params: const {'max': 10},
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: ScoliaDartboard(
+          controller: controller,
+          simulator: true,
+          onUndoRound: () => controller.pressNumpadButton(-2),
+        ),
+      ),
+    ));
+    final state =
+        tester.state(find.byType(ScoliaDartboard)) as DartboardController;
+
+    // Throw S1 S2 S3: sequential advancement 1->2->3->4 (currentNumber = 4).
+    state.pressDartboard('S1');
+    state.pressDartboard('S2');
+    state.pressDartboard('S3');
+    await tester.tap(find.byIcon(Icons.pan_tool));
+    await tester.pump();
+    expect(controller.getCurrentNumber(), 4);
+
+    // Correct the 2nd committed dart (S2) to a miss. Equivalent to S1 miss S3:
+    // S1 hits target 1 (->2), miss at 2 (no advance), S3 vs target 2 (no) => 2.
+    await tester.tap(find.text('S2'));
+    await tester.pump();
+    expect(controller.getCurrentNumber(), 1); // round undone, back to start
+    await tester.tap(find.byIcon(Icons.block)); // correct selected dart to miss
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.check)); // re-submit corrected turn
+    await tester.pump();
+
+    expect(controller.getCurrentNumber(), 2);
   });
 }

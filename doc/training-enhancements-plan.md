@@ -48,20 +48,29 @@ commit** (and version bump) before starting the next step.
 round when the board misreads a dart, instead of only whole-round undo.
 
 Tasks:
-- [ ] Review current whole-round undo path and `ScoliaController.submitScoliaTurn`
+- [x] Review current whole-round undo path and `ScoliaController.submitScoliaTurn`
       state mutation per supporting game.
-- [ ] Design a minimal per-dart correction UI (tap a scored dart in the round →
+- [x] Design a minimal per-dart correction UI (tap a scored dart in the round →
       choose corrected sector) reusing the existing correction entry points.
       Keep corrections **local** (no `THROW_CORRECTED` sent to Scolia).
-- [ ] Implement correction in the shared path so every Scolia-supported game
+- [x] Implement correction in the shared path so every Scolia-supported game
       inherits it (translate, don't fork).
-- [ ] Equivalence tests: corrected state == state as if the right dart had been
+- [x] Equivalence tests: corrected state == state as if the right dart had been
       entered originally, for a representative set of games.
-- [ ] Update `doc/scolia-implementation-plan.md` (remove this from "remaining
+- [x] Update `doc/scolia-implementation-plan.md` (remove this from "remaining
       optional improvements").
 
-**✅ Checkpoint C2:** analyze clean · full suite green · device-tested ·
-`doc` updated · **commit + bump to v3.1.1**.
+**✅ Checkpoint C2:** analyze clean · full suite green · device-tested (pending
+hardware) · `doc` updated · **commit + bump to v3.1.1**.
+
+**Implementation note:** post-submit correction lives entirely in
+`ScoliaDartboard`. The just-submitted turn is retained and shown as a dimmed
+"committed" round; tapping a committed dart undoes the whole round via the
+existing `onUndoRound`, reloads the turn into the collector for editing, and the
+takeout/confirm (check icon) re-submits the edited turn through
+`submitScoliaTurn`. Equivalent by construction; no controller changes; single
+round-undo depth. Tests: 3 cases in `test/scolia_ui_test.dart` (x01 score,
+no-undo guard, RTCS count-based).
 
 ---
 
