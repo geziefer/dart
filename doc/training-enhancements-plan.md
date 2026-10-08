@@ -140,11 +140,19 @@ more. Daily training = well over a year on web before any pruning.
       dispose; no-gameId no-op). Full suite green (445); `flutter build web` ok.
 - [ ] (Later) Numpad-path capture, if/when desired (currently Scolia only).
 
-### A2 — Heatmap / grouping visualization
-- [ ] Board-image overlay widget rendering actual landings (x/y) for a session
-      and/or aggregated across sessions, filterable by game/target.
-- [ ] Entry point (e.g. from the stats page or a game's trophy area).
-- [ ] Widget tests for rendering with sample data; graceful empty state.
+### A2 ✅ DONE — Heatmap / grouping visualization
+- [x] Board overlay widget (`lib/widget/heatmap_view.dart`, `HeatmapView` +
+      `_HeatmapPainter`) rendering actual landings (x/y) aggregated across all
+      sessions of a game. Pure Flutter CustomPaint — board backdrop (edge +
+      double/treble/bull reference rings + 20 slice dividers), translucent dots
+      coloured by ring; overlap stacks into a density "heat". No deps.
+      (Per-target filtering can come later.)
+- [x] Entry point: a scatter-plot icon per game card on the stats page opens a
+      dialog with the game's heatmap, reading `ThrowLogService.dartsForGame`.
+- [x] Widget tests (`test/heatmap_view_test.dart`): empty state (no coords /
+      empty list), populated render + count footer, coords-only counting.
+- [ ] (Note) Board y-axis orientation uses a single `flipY` flag; validate
+      against the real Scolia board (coordinates not available in simulator).
 
 ### A3 — Accuracy metrics
 - [ ] Derive mean radial error, scatter/std-dev (mm), and directional bias for

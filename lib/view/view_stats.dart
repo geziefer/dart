@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_stats.dart';
 import 'package:dart/services/highscore_service.dart';
+import 'package:dart/services/throw_log_service.dart';
 import 'package:dart/view/view_scolia_settings.dart';
 import 'package:dart/widget/game_layout.dart';
+import 'package:dart/widget/heatmap_view.dart';
 
 class ViewStats extends StatelessWidget {
   const ViewStats({super.key});
@@ -170,6 +172,13 @@ class ViewStats extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  icon: const Icon(Icons.scatter_plot,
+                      color: Color.fromARGB(255, 215, 198, 132)),
+                  tooltip: 'Wurfbild (Heatmap)',
+                  onPressed: () => _openHeatmap(context, gameId,
+                      gameData['name'] as String),
+                ),
+                IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
                   tooltip: 'Statistik löschen',
                   onPressed: () => showDialog(
@@ -220,6 +229,45 @@ class ViewStats extends StatelessWidget {
               ),
             _buildHighscoreSection(gameId, stats),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Open a dialog showing the throw-landing heatmap for [gameId], reading the
+  /// darts from the in-memory [ThrowLogService]. Shows a graceful empty state
+  /// when no coordinate data has been logged yet (e.g. numpad-only games or
+  /// before any real-board Scolia session).
+  void _openHeatmap(BuildContext context, String gameId, String gameName) {
+    final darts =
+        context.read<ThrowLogService?>()?.dartsForGame(gameId) ?? const [];
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: const Color.fromARGB(255, 17, 17, 17),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(color: Colors.white38),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560, maxHeight: 620),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: HeatmapView(darts: darts, title: 'Wurfbild – $gameName'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Schließen',
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 215, 198, 132))),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

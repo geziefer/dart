@@ -141,8 +141,11 @@ version bump:
      `ThrowSession` model; Scolia darts (incl. x/y/angle) captured in
      `ScoliaDartboard` and flushed once per session on dispose; platform-adaptive
      quota-aware eviction (web evicts oldest; Android keeps all).
-   - **A2 (next):** heatmap/grouping viz. **A3:** accuracy metrics (radial
-     error, scatter, directional bias, inner/outer single).
+   - **A2 ✅** heatmap/grouping viz: `HeatmapView` (CustomPaint board + plotted
+     x/y landings) opened per game from the stats page (scatter-plot icon),
+     reading `ThrowLogService`. Graceful empty state; `flipY` to validate on
+     real board. **A3 (next):** accuracy metrics (radial error, scatter,
+     directional bias, inner/outer single).
 3. **v3.3.0 — B:** adaptive practice & motivation (weakness drills, trend view,
    streaks).
 4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).
