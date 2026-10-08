@@ -8,6 +8,7 @@ import 'package:dart/controller/controller_xxxcheckout.dart';
 import 'package:dart/view/view_rtcx.dart';
 import 'package:dart/view/view_shootx.dart';
 import 'package:dart/view/view_xxxcheckout.dart';
+import 'package:dart/widget/highscore_dialog.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -83,35 +84,73 @@ class _ViewChallengeState extends State<ViewChallenge> {
           );
         }
 
-        // Delegate to the appropriate sub-game view based on current stage
+        // Delegate to the appropriate sub-game view based on current stage.
+        final Widget subView;
         switch (controller.currentStage) {
           case 0:
           case 1:
-            return ChangeNotifierProvider<ControllerRTCX>.value(
+            subView = ChangeNotifierProvider<ControllerRTCX>.value(
               value: controller.currentController as ControllerRTCX,
               child: const ViewRTCX(title: 'RTCX Singles'),
             );
+            break;
           case 2:
-            return ChangeNotifierProvider<ControllerShootx>.value(
+            subView = ChangeNotifierProvider<ControllerShootx>.value(
               value: controller.currentController as ControllerShootx,
               child: const ViewShootx(title: 'Shoot 20'),
             );
+            break;
           case 3:
-            return ChangeNotifierProvider<ControllerShootx>.value(
+            subView = ChangeNotifierProvider<ControllerShootx>.value(
               value: controller.currentController as ControllerShootx,
               child: const ViewShootx(title: 'Shoot Bull'),
             );
+            break;
           case 4:
-            return ChangeNotifierProvider<ControllerXXXCheckout>.value(
+            subView = ChangeNotifierProvider<ControllerXXXCheckout>.value(
               value: controller.currentController as ControllerXXXCheckout,
               child: const ViewXXXCheckout(title: '501 Checkout'),
             );
+            break;
           default:
-            return const Scaffold(
+            subView = const Scaffold(
               body: Center(child: Text('Prüfung abgeschlossen')),
             );
         }
+
+        // Overlay a persistent trophy opening the Challenge's own medal
+        // highscore list, placed bottom-right to match every other game. The
+        // Challenge sub-games run with unconfigured highscore ids
+        // (e.g. 'challenge_rtcx_0'), so their GameLayout shows no trophy of its
+        // own — the bottom-right corner is free for the Challenge trophy.
+        return Stack(
+          children: [
+            subView,
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.emoji_events,
+                      color: Color.fromARGB(255, 215, 198, 132)),
+                  tooltip: 'Sportabzeichen Highscores',
+                  onPressed: () => _openChallengeHighscores(context),
+                ),
+              ),
+            ),
+          ],
+        );
       },
+    );
+  }
+
+  void _openChallengeHighscores(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => const HighscoreDialog(
+        gameId: 'CHALLENGE',
+        gameName: 'Bayrisches Sportabzeichen',
+      ),
     );
   }
 }
