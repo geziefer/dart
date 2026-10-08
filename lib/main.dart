@@ -21,6 +21,7 @@ import 'package:dart/controller/controller_stats.dart';
 import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/scolia_settings.dart';
+import 'package:dart/services/throw_log_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +41,11 @@ void main() async {
   }
   // Scolia settings storage (credentials + input mode), local only.
   await GetStorage.init('scolia_settings');
+  // Throw-log storage (per-session dart records for analytics), local only.
+  await GetStorage.init('throw_log');
+
+  // Load the throw log into the in-memory analytics layer once at startup.
+  final throwLogService = ThrowLogService()..load();
 
   runApp(
     MultiProvider(
@@ -67,6 +73,8 @@ void main() async {
         // Scolia integration: global input-mode toggle + local credentials.
         ChangeNotifierProvider(create: (context) => InputModeHolder()),
         Provider<ScoliaSettings>(create: (context) => ScoliaSettings()),
+        // Throw-log analytics layer (loaded at startup, queried in memory).
+        Provider<ThrowLogService>.value(value: throwLogService),
         ChangeNotifierProxyProvider<ScoliaSettings, ScoliaService>(
           create: (context) =>
               ScoliaService(settings: context.read<ScoliaSettings>()),

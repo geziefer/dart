@@ -44,7 +44,10 @@ rules, so no "dummy-proofing" is needed.
 ~22 single-player training games. Each game is one `MenuItem` wiring a
 **controller** (`lib/controller/controller_*.dart`) to a **view**
 (`lib/view/view_*.dart`). Shared UI lives in `lib/widget/`, business logic in
-`lib/services/` (`StatsService`, `StorageService`, `SummaryService`).
+`lib/services/` (`StatsService`, `StorageService`, `SummaryService`,
+`HighscoreService`, and `ThrowLogService` — the in-memory per-dart throw-log
+analytics layer added in v3.2.0, backed by the `throw_log` get_storage
+container).
 
 Every game: rounds → summary dialog → stats persisted → back to menu.
 Layout convention: logo on top; left = results table/text; right = input
@@ -129,10 +132,17 @@ version bump:
 1. **v3.1.1 — C2 ✅ DONE:** Scolia per-value post-submit correction — correct a
    dart in the last submitted round (undo-round + re-submit edited turn in
    `ScoliaDartboard`; equivalent by construction, local only).
-2. **v3.2.0 — A:** persist a per-dart throw log, then accuracy metrics + a
-   board heatmap (unlocks the Scolia-unique spatial data currently discarded).
-   Optional storage refactor off `get_storage` decided at the start of this
-   step.
+2. **v3.2.0 — A (in progress):** throw-log analytics.
+   - **A0 ✅** storage decision: *keep `get_storage`* + an in-memory analytics
+     layer; drift/SQLite rejected (Android 8 + web native-sqlite risk, overkill
+     for single-user volume).
+   - **A1 ✅** per-dart throw log: `ThrowLogService` (loaded at startup, queried
+     in memory) backed by a dedicated `throw_log` container; `LoggedDart`/
+     `ThrowSession` model; Scolia darts (incl. x/y/angle) captured in
+     `ScoliaDartboard` and flushed once per session on dispose; platform-adaptive
+     quota-aware eviction (web evicts oldest; Android keeps all).
+   - **A2 (next):** heatmap/grouping viz. **A3:** accuracy metrics (radial
+     error, scatter, directional bias, inner/outer single).
 3. **v3.3.0 — B:** adaptive practice & motivation (weakness drills, trend view,
    streaks).
 4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).

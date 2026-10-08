@@ -106,6 +106,7 @@ class ViewCatchXX extends StatelessWidget {
                   child: scoliaInputActive(context)
                       ? ScoliaDartboard(
                           controller: controller,
+                          gameId: controller.item?.id,
                           onUndoRound: () {
                             controller.resetScoliaAttempt();
                             controller.pressNumpadButton(-2);

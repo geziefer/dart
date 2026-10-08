@@ -84,6 +84,7 @@ class ViewTwoDarts extends StatelessWidget {
                   child: scoliaInputActive(context)
                       ? ScoliaDartboard(
                           controller: controller,
+                          gameId: controller.item?.id,
                           onUndoRound: () => controller.pressNumpadButton(-2),
                         )
                       : Numpad(

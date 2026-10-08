@@ -130,6 +130,7 @@ class ViewSpeedBull extends StatelessWidget {
             child: scoliaInputActive(context)
                 ? ScoliaDartboard(
                     controller: controller,
+                    gameId: controller.item?.id,
                     onFirstDart: () => controller.startGame(),
                     onUndoRound: () => controller.pressNumpadButton(-2),
                     onCorrectionModeChanged: (correcting) => correcting

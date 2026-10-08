@@ -11,6 +11,8 @@ import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/scolia/scolia_event_source.dart';
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/turn_collector.dart';
+import 'package:dart/services/throw_log_model.dart';
+import 'package:dart/services/throw_log_service.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/widget/arcsection.dart';
 import 'package:dart/widget/fullcircle.dart';
@@ -37,10 +39,16 @@ class ScoliaDartboard extends StatefulWidget {
     this.onCorrectionModeChanged,
     this.onFirstDart,
     this.onTimerExpiredNotifier,
+    this.gameId,
   });
 
   /// The active game controller (must support Scolia input).
   final ScoliaController controller;
+
+  /// Storage container id of the game being played. When provided, the darts
+  /// thrown this session are logged to the [ThrowLogService] on dispose (one
+  /// [ThrowSession] per game, flushed once at session end — never per dart).
+  final String? gameId;
 
   /// Optional real event source. When null (or [simulator] true), the board is
   /// tap-driven.
@@ -98,6 +106,19 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// next takeout the edited turn is re-submitted through the normal path.
   bool _correctingLastRound = false;
 
+  /// Accumulates every submitted dart of the current session for the throw
+  /// log. Flushed once as a [ThrowSession] on dispose (session end). Each
+  /// submitted turn appends its darts; a post-submit correction removes the
+  /// last turn's darts before the corrected turn re-adds them.
+  final List<DetectedThrow> _sessionDarts = <DetectedThrow>[];
+
+  /// Number of darts the last submitted turn contributed to [_sessionDarts],
+  /// so a post-submit correction can remove exactly those before re-submitting.
+  int _lastTurnDartCount = 0;
+
+  /// Captured once (from context) so dispose can flush without context access.
+  ThrowLogService? _throwLog;
+
   /// Sector currently flashed on the board (brief white highlight), or null.
   String? _highlightSector;
   Timer? _flashTimer;
@@ -151,6 +172,9 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     super.didChangeDependencies();
     // Re-subscribe if the service's source changed (e.g. after reconnect).
     _subscribeToSource();
+    // Capture the throw-log service so dispose() can flush the session without
+    // touching context (which is unavailable during dispose).
+    _throwLog ??= context.read<ThrowLogService?>();
   }
 
   @override
@@ -158,6 +182,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     widget.onTimerExpiredNotifier?.removeListener(_onTimerExpired);
     _flashTimer?.cancel();
     _sub?.cancel();
+    _flushSession();
     super.dispose();
   }
 
@@ -276,8 +301,45 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
     _collector.onTakeoutFinished(falseTakeout: false);
   }
 
+  /// Whole-round undo (undo icon): roll back the game by one round and drop the
+  /// last submitted turn's darts from the session log, so the log mirrors the
+  /// game state.
+  void _undoRound() {
+    widget.onUndoRound?.call();
+    if (_lastTurnDartCount > 0 &&
+        _sessionDarts.length >= _lastTurnDartCount) {
+      _sessionDarts.removeRange(
+          _sessionDarts.length - _lastTurnDartCount, _sessionDarts.length);
+    }
+    _lastTurnDartCount = 0;
+    setState(() {
+      _showingCommitted = false;
+      _lastTurn = null;
+    });
+  }
+
+  /// Flush the accumulated session darts as one [ThrowSession] to the throw
+  /// log. Called once on dispose (session end). No-op without a game id, a
+  /// throw-log service, or any darts.
+  void _flushSession() {
+    final gameId = widget.gameId;
+    final log = _throwLog;
+    if (gameId == null || log == null || _sessionDarts.isEmpty) return;
+    log.logSession(ThrowSession(
+      gameId: gameId,
+      date: DateTime.now(),
+      fromScolia: true,
+      darts: _sessionDarts.map(LoggedDart.fromDetected).toList(),
+    ));
+  }
+
   void _onTurnComplete(TurnResult turn) {
     widget.controller.submitScoliaTurn(turn);
+    // Record the submitted darts for the session throw log (flushed on
+    // dispose). Track this turn's count so a post-submit correction can remove
+    // exactly these darts before the corrected turn re-adds them.
+    _sessionDarts.addAll(turn.darts);
+    _lastTurnDartCount = turn.darts.length;
     setState(() {
       // Keep the just-submitted darts on screen as a "committed" round so the
       // user can still correct a misread dart (post-submit correction). The
@@ -311,6 +373,16 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
 
     // Roll the game state back by one round.
     widget.onUndoRound!.call();
+
+    // Remove the darts this turn contributed to the session log; the corrected
+    // turn will re-add its darts when it is re-submitted, so the log reflects
+    // the corrected round (not the original misread).
+    if (_lastTurnDartCount > 0 &&
+        _sessionDarts.length >= _lastTurnDartCount) {
+      _sessionDarts.removeRange(
+          _sessionDarts.length - _lastTurnDartCount, _sessionDarts.length);
+      _lastTurnDartCount = 0;
+    }
 
     // Reload the round's darts into the collector buffer for editing.
     _collector.reset();
@@ -384,7 +456,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
             IconButton(
               tooltip: 'Runde zurück',
               iconSize: 36,
-              onPressed: widget.onUndoRound,
+              onPressed: widget.onUndoRound == null ? null : _undoRound,
               icon: const Icon(Icons.undo, color: Colors.white),
             ),
             IconButton(

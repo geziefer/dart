@@ -79,23 +79,66 @@ no-undo guard, RTCS count-based).
 **Goal:** Persist per-dart data and surface it as real precision analytics and a
 visual heatmap. The high-value payoff of owning a camera board.
 
-### A0 (optional, decide first) — Storage refactor off `get_storage`
-- [ ] Decide: does the throw log justify moving to a row-friendly local store
-      (`drift`/`sqflite` or `hive`) now? (Also silences the wasm/`dart:html`
-      web-build warning.) If yes, do this **before** A1.
-- [ ] If adopted: migrate existing per-game stats + highscores + import/export
-      with a one-time migration; keep export/import working. Bump export schema
-      only if the on-disk shape changes.
+### A0 ✅ DONE — Storage decision: keep `get_storage` + in-memory analytics layer
 
-### A1 — Persist a per-dart throw log (foundational)
-- [ ] New model + store for session throw records: per game, a bounded history
-      (e.g. ring buffer of last N sessions) of `DetectedThrow`s incl. x/y/angle
-      when present. Numpad sessions log scored value only; Scolia sessions log
-      the full spatial record.
-- [ ] Hook capture into the Scolia pipeline (and numpad path where meaningful)
-      without changing scoring behaviour.
-- [ ] Respect storage limits (bound size; document the cap).
-- [ ] Tests: log write/read, bounding, and that scoring is unaffected.
+**Decision (made 2026-10-08): no storage-technology change.** We keep
+`get_storage`/`StorageService` for everything (existing stats/highscores/
+import-export AND the new throw log). We add an in-memory analytics layer loaded
+at startup.
+
+**Why not drift/SQLite (evaluated and rejected):**
+- The only reason to switch was better *queries* over per-dart rows. But the
+  data is single-user and bounded, so loading everything into memory at startup
+  and querying in pure Dart is more than fast enough.
+- `sqflite` has no web support; `drift` works on web but needs a
+  `sqlite3.wasm` + worker and the current `sqlite3` v3 stack uses experimental
+  build hooks with a newer SDK floor and **drops the old-Android workaround** —
+  a real risk for the **Pixel C (Android 8)** primary device. Not worth it.
+- `hive` would work everywhere but is still key-value, so it buys nothing over
+  `get_storage` for our query needs.
+
+**Architecture:**
+- **Persistence:** a dedicated `throw_log` `get_storage` container holding a list
+  of per-**session** records. Written **once at game/session end** — never per
+  dart (no hot-path writes).
+- **In-memory:** a `ThrowLogService` loads all sessions at startup into
+  query-friendly structures (indexed per game / per target) for A2/A3. All
+  queries hit memory; pure Dart (`where`/`fold`/`groupBy`). Provider-registered
+  like the other services, initialized in `main()` after `GetStorage.init`.
+- **Capture:** a session accumulates its darts during play; on game/session end
+  (the existing end-of-game lifecycle) it is appended to the in-memory list and
+  persisted.
+
+**Platform-adaptive eviction (no fixed cap):**
+- Writes go through a **quota-aware helper**: attempt the write; on web, a
+  `localStorage` `QuotaExceededError` triggers dropping the **oldest** whole
+  session(s) and retrying, repeating until it fits or the log is empty. Pruning
+  is oldest-first (FIFO) and logged — never silent.
+- **Android** (file-backed, no small quota) effectively never prunes → primary
+  devices keep full history. **Web** (localStorage ≈ 5 MB) self-limits to
+  whatever fits. The **same quota-aware path** is reused when importing an
+  exported session, so an over-large import caps web by evicting oldest.
+
+**Rough sizing:** ~50 bytes/dart with x/y/angle → ~10 KB per 200-dart session.
+Web ≈ 5 MB localStorage ≈ ~500 sessions before eviction kicks in; Android far
+more. Daily training = well over a year on web before any pruning.
+
+### A1 ✅ DONE — Persist a per-dart throw log (foundational)
+- [x] New model + store for session throw records: `LoggedDart`/`ThrowSession`
+      (`lib/services/throw_log_model.dart`, compact JSON) persisted via
+      `ThrowLogService` (`lib/services/throw_log_service.dart`) in a dedicated
+      `throw_log` get_storage container. Scolia sessions carry x/y/angle.
+- [x] Hook capture into the Scolia pipeline without changing scoring: darts are
+      accumulated in `ScoliaDartboard` and flushed once as one `ThrowSession`
+      on dispose (session end). Undo/post-submit-correction trim the log to
+      match game state. All 17 Scolia views pass `gameId: controller.item?.id`.
+- [x] Respect storage limits: platform-adaptive quota-aware write — on web
+      `QuotaExceededError`, evict oldest (FIFO) and retry; Android keeps all.
+      (Async persist catches both sync throws and Future rejections.)
+- [x] Tests: `throw_log_service_test.dart` (load/round-trip/queries/quota
+      eviction/clear) + `throw_log_capture_widget_test.dart` (capture→flush on
+      dispose; no-gameId no-op). Full suite green (445); `flutter build web` ok.
+- [ ] (Later) Numpad-path capture, if/when desired (currently Scolia only).
 
 ### A2 — Heatmap / grouping visualization
 - [ ] Board-image overlay widget rendering actual landings (x/y) for a session
