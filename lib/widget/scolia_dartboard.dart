@@ -11,6 +11,7 @@ import 'package:dart/scolia/scolia_controller.dart';
 import 'package:dart/scolia/scolia_event_source.dart';
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/turn_collector.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/services/throw_log_model.dart';
 import 'package:dart/services/throw_log_service.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +111,7 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   /// log. Flushed once as a [ThrowSession] on dispose (session end). Each
   /// submitted turn appends its darts; a post-submit correction removes the
   /// last turn's darts before the corrected turn re-adds them.
-  final List<DetectedThrow> _sessionDarts = <DetectedThrow>[];
+  final List<LoggedDart> _sessionDarts = <LoggedDart>[];
 
   /// Number of darts the last submitted turn contributed to [_sessionDarts],
   /// so a post-submit correction can remove exactly those before re-submitting.
@@ -329,16 +330,24 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
       gameId: gameId,
       date: DateTime.now(),
       fromScolia: true,
-      darts: _sessionDarts.map(LoggedDart.fromDetected).toList(),
+      darts: List<LoggedDart>.of(_sessionDarts),
     ));
   }
 
   void _onTurnComplete(TurnResult turn) {
     widget.controller.submitScoliaTurn(turn);
     // Record the submitted darts for the session throw log (flushed on
-    // dispose). Track this turn's count so a post-submit correction can remove
-    // exactly these darts before the corrected turn re-adds them.
-    _sessionDarts.addAll(turn.darts);
+    // dispose), pairing each with the controller's intended target (if any).
+    // Track this turn's count so a post-submit correction can remove exactly
+    // these darts before the corrected turn re-adds them.
+    final controller = widget.controller;
+    final targets = controller is AimTargetReporting
+        ? (controller as AimTargetReporting).targetsForLastTurn()
+        : const <DartTarget?>[];
+    for (int i = 0; i < turn.darts.length; i++) {
+      final target = i < targets.length ? targets[i] : null;
+      _sessionDarts.add(LoggedDart.fromDetected(turn.darts[i], target: target));
+    }
     _lastTurnDartCount = turn.darts.length;
     setState(() {
       // Keep the just-submitted darts on screen as a "committed" round so the

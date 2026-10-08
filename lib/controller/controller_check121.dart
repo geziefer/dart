@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -11,7 +12,11 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerCheck121 extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -341,6 +346,11 @@ class ControllerCheck121 extends ControllerBase
     final turnTotal = turn.total;
     final newAcc = preTurnAcc + turnTotal;
 
+    // Accuracy target: only when the remaining-to-target is a direct double is
+    // the intended double unambiguous; otherwise this is free scoring (null).
+    _lastTargets = List<DartTarget?>.filled(turn.darts.length,
+        DartTarget.doubleTargetForRemaining(currentTarget - preTurnAcc));
+
     if (newAcc == currentTarget) {
       // Successful checkout: last scoring dart must be a double.
       final lastScoring = turn.darts.lastWhere(
@@ -373,4 +383,9 @@ class ControllerCheck121 extends ControllerBase
     // Still attempts remaining — update view with current remainder.
     notifyListeners();
   }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
 }

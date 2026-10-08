@@ -4,6 +4,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
@@ -12,7 +13,11 @@ import 'package:dart/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerSpeedBull extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -310,6 +315,13 @@ class ControllerSpeedBull extends ControllerBase
     if (item == null || gameEnded) return;
     // Count bull hits: each dart on bull (inner or outer) = 1 hit. Max 3.
     int bulls = turn.darts.where((d) => d.isBull).length;
+    _lastTurnDartCount = turn.darts.length;
     pressNumpadButton(bulls);
   }
+
+  int _lastTurnDartCount = 0;
+
+  @override
+  List<DartTarget?> targetsForLastTurn() =>
+      List<DartTarget?>.filled(_lastTurnDartCount, const DartTarget.bull());
 }

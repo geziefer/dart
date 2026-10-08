@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -11,7 +12,11 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerXXXCheckout extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -289,10 +294,20 @@ class ControllerXXXCheckout extends ControllerBase
     // the assumed 3 darts automatically and skip the checkout dialog.
     _scoliaAutoCheckout = true;
     _scoliaDartCount = turn.dartCount;
+    // Accuracy target: only when the remaining is a direct double finish is the
+    // intended double unambiguous; otherwise scoring is free (null). The
+    // ≥2-sector exclusion drops setup darts that didn't aim at that double.
+    final aim = DartTarget.doubleTargetForRemaining(remaining);
+    _lastTargets = List<DartTarget?>.filled(turn.darts.length, aim);
     input = total.toString();
     pressNumpadButton(-1);
     _scoliaAutoCheckout = false;
   }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
 
   // Checkout and summary dialogs are now handled by the view via callbacks
 

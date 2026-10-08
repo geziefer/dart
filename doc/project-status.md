@@ -132,20 +132,22 @@ version bump:
 1. **v3.1.1 — C2 ✅ DONE:** Scolia per-value post-submit correction — correct a
    dart in the last submitted round (undo-round + re-submit edited turn in
    `ScoliaDartboard`; equivalent by construction, local only).
-2. **v3.2.0 — A (in progress):** throw-log analytics.
+2. **v3.2.0 — A ✅ DONE (pending real-board validation):** throw-log analytics.
    - **A0 ✅** storage decision: *keep `get_storage`* + an in-memory analytics
      layer; drift/SQLite rejected (Android 8 + web native-sqlite risk, overkill
      for single-user volume).
    - **A1 ✅** per-dart throw log: `ThrowLogService` (loaded at startup, queried
      in memory) backed by a dedicated `throw_log` container; `LoggedDart`/
-     `ThrowSession` model; Scolia darts (incl. x/y/angle) captured in
-     `ScoliaDartboard` and flushed once per session on dispose; platform-adaptive
-     quota-aware eviction (web evicts oldest; Android keeps all).
+     `ThrowSession` model; Scolia darts (incl. x/y/angle + intended target)
+     captured in `ScoliaDartboard` and flushed once per session on dispose;
+     platform-adaptive quota-aware eviction (web evicts oldest; Android keeps all).
    - **A2 ✅** heatmap/grouping viz: `HeatmapView` (CustomPaint board + plotted
-     x/y landings) opened per game from the stats page (scatter-plot icon),
-     reading `ThrowLogService`. Graceful empty state; `flipY` to validate on
-     real board. **A3 (next):** accuracy metrics (radial error, scatter,
-     directional bias, inner/outer single).
+     x/y landings) opened per game from the stats page (scatter-plot icon).
+   - **A3 ✅** accuracy metrics: `DartTarget`/`BoardGeometry` + per-controller
+     `AimTargetReporting` (intended target per dart) + `ThrowAccuracy` (distance
+     to target, scatter σ, directional bias in mm/clock, inner/outer single
+     share; ≥2-sector exclusion). Shown in the heatmap metrics panel.
+   - **Pending on real board:** coordinate y-orientation (`flipY`) + mm scale.
 3. **v3.3.0 — B:** adaptive practice & motivation (weakness drills, trend view,
    streaks).
 4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).

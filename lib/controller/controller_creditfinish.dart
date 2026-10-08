@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,7 +13,11 @@ import 'package:dart/services/summary_service.dart';
 enum GamePhase { scoreInput, finishInput }
 
 class ControllerCreditFinish extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -311,6 +316,8 @@ class ControllerCreditFinish extends ControllerBase
     if (currentPhase == GamePhase.scoreInput) {
       // Phase 1: sum the 3 darts, submit via existing enter path.
       final total = turn.total.clamp(0, 180);
+      // Phase 1 is free scoring — no intended target.
+      _lastTargets = List<DartTarget?>.filled(turn.darts.length, null);
       input = total.toString();
       pressNumpadButton(-1);
     } else {
@@ -323,7 +330,15 @@ class ControllerCreditFinish extends ControllerBase
           (lastScoring.ring == DartRing.double ||
            lastScoring.ring == DartRing.innerBull ||
            lastScoring.ring == DartRing.outerBull);
+      // Accuracy target only when the finish is a direct double.
+      final aim = DartTarget.doubleTargetForRemaining(target);
+      _lastTargets = List<DartTarget?>.filled(turn.darts.length, aim);
       pressNumpadButton(success ? 1 : 0);
     }
   }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
 }

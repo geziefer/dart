@@ -55,19 +55,21 @@ void main() {
     expect(find.textContaining('Noch keine Wurfdaten'), findsNothing);
     // The board is drawn via a CustomPaint.
     expect(find.byType(CustomPaint), findsWidgets);
-    // Footer reports the number of plottable darts.
-    expect(find.text('3 Darts'), findsOneWidget);
+    // Metrics panel reports the number of plottable darts.
+    expect(find.text('Darts'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
     // Title is shown.
     expect(find.text('Wurfbild'), findsOneWidget);
   });
 
-  testWidgets('counts only darts with coordinates in the footer',
+  testWidgets('counts only darts with coordinates in the panel',
       (tester) async {
     await _pump(tester, [
       _dart(x: 0, y: 0),
       _dart(x: 10, y: 10),
       _dart(), // no coords -> excluded
     ]);
-    expect(find.text('2 Darts'), findsOneWidget);
+    expect(find.text('Darts'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
   });
 }

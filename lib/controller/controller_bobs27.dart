@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -11,7 +12,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerBobs27 extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -196,8 +201,19 @@ class ControllerBobs27 extends ControllerBase
     final doubleTarget = target == 21 ? 25 : target;
     final hits =
         turn.darts.where((d) => d.isDoubleOf(doubleTarget)).length;
+    // Every dart this round aims at the double of the current target (the bull
+    // for the final "21" target).
+    final aim = doubleTarget == 25
+        ? const DartTarget.bull()
+        : DartTarget.double_(doubleTarget);
+    _lastTargets = List<DartTarget?>.filled(turn.darts.length, aim);
     pressNumpadButton(hits);
   }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
 
   String _getCurrentTargetDisplay() {
     int target = _getCurrentTargetNumber();

@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,7 +13,11 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class ControllerAcrossBoard extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -308,15 +313,51 @@ class ControllerAcrossBoard extends ControllerBase
     _scoliaDartCount = turn.dartCount;
     int advances = 0;
     int idx = currentTargetIndex;
+    final targets = <DartTarget?>[];
     for (final dart in turn.darts) {
-      if (idx >= targetSequence.length) break;
+      if (idx >= targetSequence.length) {
+        targets.add(null);
+        continue;
+      }
+      // The dart was aimed at the current sequence target (whether or not hit).
+      targets.add(_targetFor(targetSequence[idx]));
       if (_matchesTarget(dart, targetSequence[idx])) {
         advances++;
         idx++;
       }
     }
+    _lastTargets = targets;
     pressNumpadButton(advances);
     _scoliaAutoCheckout = false;
+  }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
+
+  /// Convert an Across Board target string (`DB`/`SB`/`Dn`/`Tn`/`BSn`/`SSn`) to
+  /// a [DartTarget] aim point.
+  DartTarget? _targetFor(String target) {
+    if (target == 'DB') return const DartTarget.bull();
+    if (target == 'SB') return const DartTarget(25, TargetRing.outerBull);
+    if (target.startsWith('BS')) {
+      final seg = int.tryParse(target.substring(2));
+      return seg == null ? null : DartTarget.outerSingle(seg);
+    }
+    if (target.startsWith('SS')) {
+      final seg = int.tryParse(target.substring(2));
+      return seg == null ? null : DartTarget.innerSingle(seg);
+    }
+    if (target.startsWith('D')) {
+      final seg = int.tryParse(target.substring(1));
+      return seg == null ? null : DartTarget.double_(seg);
+    }
+    if (target.startsWith('T')) {
+      final seg = int.tryParse(target.substring(1));
+      return seg == null ? null : DartTarget.triple(seg);
+    }
+    return null;
   }
 
   /// Check whether [dart] matches the encoded target string.

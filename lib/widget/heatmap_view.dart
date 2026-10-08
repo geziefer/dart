@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'package:dart/services/throw_accuracy.dart';
 import 'package:dart/services/throw_log_model.dart';
 
 /// A dartboard overlay that plots actual dart landings (x/y) from the throw
@@ -82,13 +83,59 @@ class HeatmapView extends StatelessWidget {
                   ),
                 ),
         ),
-        if (_plottable > 0)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text('$_plottable Darts',
-                style: const TextStyle(color: Colors.white54, fontSize: 13)),
-          ),
+        if (_plottable > 0) _metricsPanel(),
       ],
+    );
+  }
+
+  /// Compact German accuracy panel shown under the board. Only lines with
+  /// meaningful data are shown; a game with no intended targets (free-choice
+  /// scoring) shows just the dart count.
+  Widget _metricsPanel() {
+    final acc = ThrowAccuracy.compute(darts);
+
+    const label = TextStyle(color: Colors.white54, fontSize: 13);
+    const value = TextStyle(
+        color: Color.fromARGB(255, 215, 198, 132),
+        fontSize: 14,
+        fontWeight: FontWeight.bold);
+
+    Widget row(String l, String v) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 1),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l, style: label),
+              Text(v, style: value),
+            ],
+          ),
+        );
+
+    final rows = <Widget>[
+      row('Darts', '$_plottable'),
+    ];
+
+    if (acc.hasData && acc.meanDistanceMm != null) {
+      rows.add(row('Ø Abstand zum Ziel', '${acc.meanDistanceMm!.round()} mm'));
+      if (acc.stdDistanceMm != null) {
+        rows.add(row('Streuung (σ)', '${acc.stdDistanceMm!.round()} mm'));
+      }
+      final mag = acc.biasMagnitudeMm;
+      final clock = acc.biasClock;
+      if (mag != null && mag >= 1 && clock != null) {
+        rows.add(row('Versatz', '${mag.round()} mm Richtung $clock Uhr'));
+      }
+    }
+
+    if (acc.outerSingleShare != null) {
+      final outer = (acc.outerSingleShare! * 100).round();
+      rows.add(row('Singles außen/innen', '$outer% / ${100 - outer}%'));
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Column(mainAxisSize: MainAxisSize.min, children: rows),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/widget/menu.dart';
@@ -11,7 +12,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 class ControllerHalfit extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -266,9 +271,40 @@ class ControllerHalfit extends ControllerBase
     for (final dart in turn.darts) {
       roundScore += _scoreForLabel(dart, label);
     }
+    // Intended target per dart:
+    // - number label ('15'..'20'): the number's triple (scoring high on it);
+    // - 'D'/'T': the correct ring, number-agnostic — use the dart's own wedge
+    //   so the distance measures the radial offset to that ring;
+    // - 'B': the bull.
+    _lastTargets = [
+      for (final dart in turn.darts) _targetFor(label, dart),
+    ];
     // Submit as typed score via the existing enter path (same as xxcheckout).
     input = roundScore.toString();
     pressNumpadButton(-1);
+  }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
+
+  DartTarget? _targetFor(String label, DetectedThrow dart) {
+    switch (label) {
+      case 'D':
+        return dart.segment >= 1 && dart.segment <= 20
+            ? DartTarget.double_(dart.segment)
+            : null;
+      case 'T':
+        return dart.segment >= 1 && dart.segment <= 20
+            ? DartTarget.triple(dart.segment)
+            : null;
+      case 'B':
+        return const DartTarget.bull();
+      default:
+        final n = int.tryParse(label);
+        return n == null ? null : DartTarget.triple(n);
+    }
   }
 
   int _scoreForLabel(DetectedThrow dart, String label) {

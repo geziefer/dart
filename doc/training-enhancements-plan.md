@@ -153,15 +153,33 @@ more. Daily training = well over a year on web before any pruning.
       empty list), populated render + count footer, coords-only counting.
 - [ ] (Note) Board y-axis orientation uses a single `flipY` flag; validate
       against the real Scolia board (coordinates not available in simulator).
+### A3 ✅ DONE — Accuracy metrics
+Per-game aiming model: an intended target is recorded **per dart** only where
+the game defines one; free-choice phases (x01 scoring, Credit Finish round 1)
+record no target. Grouping/bias is meaningful where darts repeat a target;
+distance-to-target applies wherever a target is known.
+- [x] `DartTarget` + `BoardGeometry` (`lib/services/dart_target.dart`): intended
+      aim point → geometric sector centre in mm. Rules: unspecified single →
+      big single; scoring-to-number → triple; scoring-to-centre → double bull.
+- [x] Each supporting controller reports per-dart targets via the optional
+      `AimTargetReporting` capability (killbull/speedbull → bull; shootx →
+      T(x)/bull; bobs27 → round double; bigts → T20/T19/T18; doublepath → round
+      doubles; planhit → round singles; rtcx → single/double/triple of the
+      running number by mode; acrossboard → per-dart D/T/big-single/small-single
+      /bull; twodarts → single+bull; halfit → number triple or ring-only for
+      the arbitrary D/T rounds; xxxcheckout/creditfinish-r2/check121 → the
+      required double only when the remaining is a direct double finish).
+- [x] `ThrowAccuracy` (`lib/services/throw_accuracy.dart`): mean distance to
+      target (+σ), directional bias (mm + clock), inner/outer single share.
+      Darts ≥ 2 sectors from their target are excluded (setups/strays); misses
+      carry no coordinates so are excluded automatically.
+- [x] Shown in the heatmap dialog metrics panel; tests:
+      `throw_accuracy_test.dart` (math/geometry/exclusion) +
+      `target_reporting_test.dart` (per-controller target selection).
 
-### A3 — Accuracy metrics
-- [ ] Derive mean radial error, scatter/std-dev (mm), and directional bias for
-      target games where the intended segment is known.
-- [ ] Surface inner-vs-outer single tendency (A4 folded in via `isOuterSingle`).
-- [ ] Show in stats/summary; tests for the math.
-
-**✅ Checkpoint A:** analyze clean · full suite green · device-tested with real
-board data where possible · docs updated · **commit + bump to v3.2.0**.
+**✅ Checkpoint A:** analyze clean · full suite green (471) · `flutter build
+web` ok · device validation of coordinate orientation (`flipY`) + mm scale
+still pending on real board · docs updated · **commit + bump to v3.2.0**.
 
 ---
 

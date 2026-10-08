@@ -3,6 +3,7 @@ import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/interfaces/numpad_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/scolia_controller.dart';
+import 'package:dart/services/dart_target.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:get_storage/get_storage.dart';
@@ -11,7 +12,11 @@ import 'package:dart/services/summary_service.dart';
 import 'package:flutter/material.dart';
 
 class ControllerRTCX extends ControllerBase
-    implements MenuitemController, NumpadController, ScoliaController {
+    implements
+        MenuitemController,
+        NumpadController,
+        ScoliaController,
+        AimTargetReporting {
   StorageService? _storageService;
   final GetStorage? _injectedStorage;
 
@@ -385,16 +390,20 @@ class ControllerRTCX extends ControllerBase
       // Challenge RTCX: each dart targets its fixed positional number.
       // Always 3 slots per turn — undetected darts counted as misses.
       final results = <bool>[];
+      final targets = <DartTarget?>[];
       for (int i = 0; i < 3; i++) {
         final target = currentNumber + i;
         if (target > 20) break;
         if (i < turn.darts.length) {
           final d = turn.darts[i];
           results.add(d.ring == DartRing.single && d.segment == target);
+          targets.add(DartTarget.outerSingle(target));
         } else {
           results.add(false); // undetected dart = miss
+          targets.add(DartTarget.outerSingle(target));
         }
       }
+      _lastTargets = targets;
       _scoliaAutoCheckout = false;
       submitChallengeRound(results);
     } else {
@@ -402,15 +411,39 @@ class ControllerRTCX extends ControllerBase
       // running target which updates after each hit.
       int advances = 0;
       int target = currentNumber;
+      final targets = <DartTarget?>[];
       for (final dart in turn.darts) {
-        if (target > 20) break;
+        if (target > 20) {
+          targets.add(null);
+          continue;
+        }
+        targets.add(_targetFor(target));
         if (_qualifiesFor(dart, target)) {
           advances++;
           target++;
         }
       }
+      _lastTargets = targets;
       pressNumpadButton(advances);
       _scoliaAutoCheckout = false;
+    }
+  }
+
+  List<DartTarget?> _lastTargets = const [];
+
+  @override
+  List<DartTarget?> targetsForLastTurn() => _lastTargets;
+
+  /// Aim point for RTC [number] in the current mode: single (big) for RTCS,
+  /// double for RTCD, triple for RTCT.
+  DartTarget _targetFor(int number) {
+    switch (selectedMode) {
+      case 'RTCD':
+        return DartTarget.double_(number);
+      case 'RTCT':
+        return DartTarget.triple(number);
+      default:
+        return DartTarget.outerSingle(number);
     }
   }
 }

@@ -1,11 +1,13 @@
 import 'package:dart/scolia/models/detected_throw.dart';
+import 'package:dart/services/dart_target.dart';
 
 /// Persisted record of a single dart within a logged session.
 ///
 /// Mirrors the useful fields of [DetectedThrow] in a compact, storage-friendly
 /// shape. Spatial fields ([x], [y], [angle]) are only present for Scolia-driven
 /// throws (the camera board reports landing coordinates); numpad throws carry
-/// scoring data only.
+/// scoring data only. [target] is the intended aim point when the game defines
+/// one for this dart (null when the player chose freely).
 ///
 /// JSON uses short keys to keep the on-disk/in-`localStorage` size small
 /// (see the A0 sizing notes in the training-enhancements plan).
@@ -28,6 +30,10 @@ class LoggedDart {
   /// For singles: true = outer/big single, false = inner/small single.
   final bool isOuterSingle;
 
+  /// Intended aim point for this dart, or null when the game sets no target
+  /// (free-choice phases such as x01 scoring).
+  final DartTarget? target;
+
   const LoggedDart({
     required this.segment,
     required this.ring,
@@ -36,10 +42,12 @@ class LoggedDart {
     this.y,
     this.angle,
     this.isOuterSingle = true,
+    this.target,
   });
 
-  /// Build from a live [DetectedThrow].
-  factory LoggedDart.fromDetected(DetectedThrow t) => LoggedDart(
+  /// Build from a live [DetectedThrow], optionally with an intended [target].
+  factory LoggedDart.fromDetected(DetectedThrow t, {DartTarget? target}) =>
+      LoggedDart(
         segment: t.segment,
         ring: t.ring.name,
         value: t.value,
@@ -47,6 +55,7 @@ class LoggedDart {
         y: t.y,
         angle: t.angle,
         isOuterSingle: t.isOuterSingle,
+        target: target,
       );
 
   /// Whether this dart carries board landing coordinates (Scolia only).
@@ -68,6 +77,7 @@ class LoggedDart {
         // Only store the single-size flag when it is meaningful (singles) and
         // non-default, to keep records compact.
         if (ring == 'single' && !isOuterSingle) 'o': false,
+        if (target != null) 'tg': target!.toJson(),
       };
 
   factory LoggedDart.fromJson(Map<String, dynamic> json) => LoggedDart(
@@ -78,6 +88,8 @@ class LoggedDart {
         y: (json['y'] as num?)?.toDouble(),
         angle: (json['a'] as num?)?.toDouble(),
         isOuterSingle: json['o'] as bool? ?? true,
+        target: DartTarget.fromJson(
+            (json['tg'] as Map?)?.cast<String, dynamic>()),
       );
 }
 
