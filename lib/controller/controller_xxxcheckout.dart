@@ -61,6 +61,9 @@ class ControllerXXXCheckout extends ControllerBase
   double highestAvg = 0.0; // highest 3-dart average achieved in game
   String input = ""; // current input from numbpad
 
+  @override
+  bool get hasGameProgress => rounds.isNotEmpty || input.isNotEmpty;
+
   // Scolia mode: when submitting a turn we know the real dart count, so we
   // auto-handle the checkout (correct dart count + skip the dialog).
   bool _scoliaAutoCheckout = false;

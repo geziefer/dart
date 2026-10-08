@@ -35,6 +35,9 @@ class ControllerBigTs extends ControllerBase
   static const int totalRounds = 10;
 
   @override
+  bool get hasGameProgress => currentRound > 0 || hitCounts.isNotEmpty;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

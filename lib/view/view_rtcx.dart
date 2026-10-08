@@ -77,6 +77,7 @@ class ViewRTCX extends StatelessWidget {
     return GameLayout(
       title: controller.gameTitle,
       highscoreGameId: controller.highscoreGameId,
+      hasProgress: () => controller.hasGameProgress,
       highscoreGameName: controller.gameTitle,
       mainContent: Column(
         children: [

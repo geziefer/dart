@@ -43,6 +43,12 @@ class ControllerCreditFinish extends ControllerBase
   bool gameEnded = false;
 
   @override
+  bool get hasGameProgress =>
+      scores.isNotEmpty ||
+      input.isNotEmpty ||
+      currentPhase == GamePhase.finishInput;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

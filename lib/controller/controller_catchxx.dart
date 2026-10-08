@@ -39,6 +39,10 @@ class ControllerCatchXX extends ControllerBase
   int round = 1; // round number in game
   int target = 61; // current finish target
 
+  @override
+  bool get hasGameProgress =>
+      thrownHits.isNotEmpty || round > 1 || points > 0;
+
   // Scolia: multi-turn accumulator for one checkout attempt (up to 6 darts).
   // [_scoliaAccDarts] holds only the darts that count toward the SCORE (a
   // busted turn is discarded from the score). [_scoliaDartsUsed] counts ALL

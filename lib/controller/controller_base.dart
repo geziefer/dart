@@ -27,6 +27,13 @@ abstract class ControllerBase extends ChangeNotifier {
   /// by [recordHighscore]. Used to show a line in the summary dialog.
   int? lastHighscoreRank;
 
+  /// Whether the player has made any progress in the current game (thrown a
+  /// dart / entered input), used to decide whether leaving the game needs a
+  /// confirmation. Defaults to false (fresh game, safe to leave without
+  /// asking); each concrete controller overrides it with a cheap check of its
+  /// own state (e.g. darts thrown > 0 or a non-initial round).
+  bool get hasGameProgress => false;
+
   // Callback functions for UI interactions (to decouple from BuildContext)
   VoidCallback? onGameEnded;
   Function(String message)? onShowMessage;

@@ -35,6 +35,9 @@ class ControllerPlanHit extends ControllerBase
   final Random _random = Random();
 
   @override
+  bool get hasGameProgress => currentRound > 0 || hitCounts.isNotEmpty;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService = StorageService(item.id, injectedStorage: _injectedStorage);

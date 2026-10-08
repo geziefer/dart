@@ -44,6 +44,9 @@ class ControllerShootx extends ControllerBase
   int round = 1; // round number in game
 
   @override
+  bool get hasGameProgress => rounds.isNotEmpty || round > 1;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

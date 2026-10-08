@@ -36,6 +36,9 @@ class ControllerDoublePath extends ControllerBase
   List<int> totalPoints = <int>[]; // cumulative total points
   int currentRound = 0; // current round (0-4)
 
+  @override
+  bool get hasGameProgress => currentRound > 0 || hitCounts.isNotEmpty;
+
   // Fixed target sequences for the 5 rounds
   static const List<String> targetSequences = [
     '16-8-4',

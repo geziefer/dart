@@ -50,6 +50,9 @@ class ControllerRTCX extends ControllerBase
   List<bool?> dartResults = List.filled(20, null);
 
   @override
+  bool get hasGameProgress => throws.isNotEmpty || dart > 0;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     max = item.params['max'];

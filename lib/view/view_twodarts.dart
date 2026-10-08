@@ -39,6 +39,7 @@ class ViewTwoDarts extends StatelessWidget {
     return GameLayout(
       title: title,
       highscoreGameId: controller.highscoreGameId,
+      hasProgress: () => controller.hasGameProgress,
       highscoreGameName: title,
       mainContent: Column(
         children: [

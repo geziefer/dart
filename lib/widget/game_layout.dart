@@ -16,6 +16,7 @@ class GameLayout extends StatefulWidget {
     required this.statsContent,
     this.highscoreGameId,
     this.highscoreGameName,
+    this.hasProgress,
   });
 
   final String title;
@@ -28,6 +29,11 @@ class GameLayout extends StatefulWidget {
 
   /// Display name for the highscore dialog title (defaults to [title]).
   final String? highscoreGameName;
+
+  /// Predicate evaluated when the back arrow is tapped. When it returns true
+  /// (the player has made progress), a confirmation dialog is shown before
+  /// leaving the game. When null or false, the game is left immediately.
+  final bool Function()? hasProgress;
 
   @override
   State<GameLayout> createState() => _GameLayoutState();
@@ -67,6 +73,43 @@ class _GameLayoutState extends State<GameLayout> {
     );
   }
 
+  /// Handle the back arrow: if the game reports progress, confirm before
+  /// leaving; otherwise leave immediately.
+  Future<void> _onBack(BuildContext context) async {
+    final hasProgress = widget.hasProgress?.call() ?? false;
+    if (!hasProgress) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 17, 17, 17),
+        title: const Text('Spiel verlassen?',
+            style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Das laufende Spiel wird beendet und nicht gewertet. Wirklich zurück zum Menü?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Abbrechen',
+                style: TextStyle(color: Color.fromARGB(255, 215, 198, 132))),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Verlassen',
+                style: TextStyle(color: Color.fromARGB(255, 215, 198, 132))),
+          ),
+        ],
+      ),
+    );
+    if (leave == true && context.mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +120,10 @@ class _GameLayoutState extends State<GameLayout> {
           const SizedBox(height: 20),
           Expanded(
             flex: 10,
-            child: Header(gameName: widget.title),
+            child: Header(
+              gameName: widget.title,
+              onBack: () => _onBack(context),
+            ),
           ),
 
           // ########## Main part with game content

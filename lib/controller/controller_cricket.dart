@@ -53,6 +53,10 @@ class ControllerCricket extends ControllerBase
 
   String input = ""; // current input from numbpad
 
+  @override
+  bool get hasGameProgress =>
+      input.isNotEmpty || round > 1 || currentRoundHits.isNotEmpty;
+
   // Scolia mode: auto-handle the dart-count dialog on game completion.
   bool _scoliaAutoCheckout = false;
   int _scoliaDartCount = 3;

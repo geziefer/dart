@@ -53,6 +53,9 @@ class ControllerHalfit extends ControllerBase
   String input = ""; // current input from numbpad
 
   @override
+  bool get hasGameProgress => rounds.isNotEmpty || input.isNotEmpty;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

@@ -43,6 +43,9 @@ class ControllerCheck121 extends ControllerBase
   int round = 1; // current round number
   bool gameEnded = false; // flag to track if game has ended
 
+  @override
+  bool get hasGameProgress => attempts.isNotEmpty || round > 1;
+
   // Scolia: multi-turn accumulator for one attempt (up to 9 darts / 3 rounds).
   List<DetectedThrow> _scoliaAccDarts = [];
   int _scoliaTurnsUsed = 0;

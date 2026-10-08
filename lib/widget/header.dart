@@ -6,9 +6,14 @@ class Header extends StatelessWidget {
   const Header({
     super.key,
     required this.gameName,
+    this.onBack,
   });
 
   final String gameName;
+
+  /// Called when the back arrow is tapped. Defaults to a plain
+  /// `Navigator.pop` when not provided.
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,11 @@ class Header extends StatelessWidget {
           flex: 5,
           child: OutlinedButton(
             onPressed: () {
-              Navigator.pop(context);
+              if (onBack != null) {
+                onBack!();
+              } else {
+                Navigator.pop(context);
+              }
             },
             style: headerButtonStyle(context),
             child: Icon(

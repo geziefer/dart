@@ -38,6 +38,9 @@ class ControllerKillBull extends ControllerBase
   bool gameEnded = false; // flag to track if game has ended
 
   @override
+  bool get hasGameProgress => roundScores.isNotEmpty || round > 1;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

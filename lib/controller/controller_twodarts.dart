@@ -36,6 +36,9 @@ class ControllerTwoDarts extends ControllerBase
   int successCount = 0; // number of successful attempts
 
   @override
+  bool get hasGameProgress => results.isNotEmpty || currentTargetIndex > 0;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

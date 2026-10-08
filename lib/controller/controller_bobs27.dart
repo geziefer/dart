@@ -41,6 +41,10 @@ class ControllerBobs27 extends ControllerBase
   bool gameWon = false; // flag to track if game was won
 
   @override
+  bool get hasGameProgress =>
+      roundScores.isNotEmpty || currentTargetIndex > 0 || round > 1;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

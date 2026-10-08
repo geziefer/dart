@@ -39,6 +39,9 @@ class ControllerSpeedBull extends ControllerBase
   bool gameEnded = false; // flag to track if game has ended
   bool lastThrowAllowed = false; // flag for final throw after timer ends
 
+  @override
+  bool get hasGameProgress => gameStarted || hits.isNotEmpty || totalHits > 0;
+
   /// Called when the timer reaches 0 (Scolia mode: submit partial turn immediately).
   VoidCallback? onTimerExpired;
 

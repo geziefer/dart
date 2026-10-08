@@ -83,6 +83,9 @@ class ControllerAcrossBoard extends ControllerBase
   int _scoliaDartCount = 3;
 
   @override
+  bool get hasGameProgress => dart > 0 || currentTargetIndex > 0 || round > 1;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =

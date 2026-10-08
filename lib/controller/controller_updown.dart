@@ -39,6 +39,9 @@ class ControllerUpDown extends ControllerBase
   int highestTarget = 50; // highest target reached in current game
 
   @override
+  bool get hasGameProgress => results.isNotEmpty || currentRound > 1;
+
+  @override
   void init(MenuItem item) {
     this.item = item;
     _storageService =
