@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dart/widget/header.dart';
 import 'package:dart/widget/highscore_dialog.dart';
 import 'package:dart/services/highscore_service.dart';
@@ -36,12 +37,14 @@ class _GameLayoutState extends State<GameLayout> {
   @override
   void initState() {
     super.initState();
-    WakelockPlus.enable();
+    // wakelock_plus' web implementation (no_sleep.js) throws a non-fatal
+    // TypeError; the real target is Android, so skip the wake lock on web.
+    if (!kIsWeb) WakelockPlus.enable();
   }
 
   @override
   void dispose() {
-    WakelockPlus.disable();
+    if (!kIsWeb) WakelockPlus.disable();
     super.dispose();
   }
 

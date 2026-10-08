@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_challenge.dart';
@@ -25,12 +26,13 @@ class _ViewChallengeState extends State<ViewChallenge> {
     super.initState();
     // Keep screen on for the entire challenge — sub-game GameLayouts would
     // otherwise briefly disable the wake lock between stage transitions.
-    WakelockPlus.enable();
+    // Skip on web: wakelock_plus' no_sleep.js throws a non-fatal TypeError.
+    if (!kIsWeb) WakelockPlus.enable();
   }
 
   @override
   void dispose() {
-    WakelockPlus.disable();
+    if (!kIsWeb) WakelockPlus.disable();
     super.dispose();
   }
 
