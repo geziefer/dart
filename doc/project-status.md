@@ -114,15 +114,24 @@ Conventions worth remembering (see `.amazonq/guidelines.md`):
 - `doc/scolia-implementation-plan.md` — authoritative Scolia task tracker
   (all A–H checked off) + per-game translation rules. **Update its checkboxes
   if Scolia work resumes.**
+- `doc/training-enhancements-plan.md` — **authoritative roadmap & task tracker
+  for upcoming features** (v3.1.1 → v3.4.0). Start here when resuming feature
+  work; check off tasks and tick the per-step checkpoints.
 - `.amazonq/{context,architecture,guidelines}.md` — business rules, domain
   terms, coding standards.
 
-## Likely next work (not started; candidates)
+## Likely next work (planned roadmap)
 
-From the Scolia plan's "remaining optional improvements":
-- Per-value post-submit correction for already-scored rounds (only whole-round
-  undo exists today).
-- Migrating off `get_storage` to silence the wasm/`dart:html` web build warning
-  (larger refactor — deferred).
+See `doc/training-enhancements-plan.md` for the full plan. Sequence, each a
+separate feature with its own checkpoint (analyze+test+device), commit, and
+version bump:
 
-Otherwise: new training games, stats enhancements, or UI polish as desired.
+1. **v3.1.1 — C2:** Scolia per-value post-submit correction (finishes the
+   existing Scolia backlog; only whole-round undo exists today).
+2. **v3.2.0 — A:** persist a per-dart throw log, then accuracy metrics + a
+   board heatmap (unlocks the Scolia-unique spatial data currently discarded).
+   Optional storage refactor off `get_storage` decided at the start of this
+   step.
+3. **v3.3.0 — B:** adaptive practice & motivation (weakness drills, trend view,
+   streaks).
+4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).
