@@ -188,24 +188,36 @@ still pending on real board · docs updated · **commit + bump to v3.2.0**.
 **Goal:** Turn accumulated stats/throw-log into a feedback loop and light
 motivation layer.
 
-### B1 — Weakness-targeted drills
-- [ ] Compute weakest numbers/doubles from stats (and A1 data when available).
-- [ ] Generate a focused drill session targeting them, reusing existing game
-      logic (e.g. dynamic "worst 3 doubles").
-- [ ] Tests for weakness selection + drill generation.
+### B1 ✅ DONE — Weakness-targeted drills
+- [x] `WeaknessService` ranks the weakest targets from the throw log (grouped by
+      intended `DartTarget`, by hit-rate then mean distance, with a minimum
+      attempts threshold; strays ≥ 2 sectors excluded).
+- [x] `DrillService.suggestDrill` turns the worst targets into labelled focus
+      suggestions (e.g. `T19 (20%)`), shown in the heatmap metrics panel
+      ("Üben"). Dormant until real board data populates the throw log.
+- [x] Tests: `weakness_service_test.dart`, `drill_service_test.dart`.
 
-### B2 — Per-game trend view
-- [ ] Sparkline/trend of recent sessions per game (uses long-term stats; richer
-      with A1).
-- [ ] Add to the stats page; widget test.
+### B2 ✅ DONE — Per-game trend view
+- [x] `ResultHistoryService`: a dated per-game result history (one entry per
+      completed game, recorded alongside the highscore — works for numpad and
+      Scolia), bounded for quota safety.
+- [x] `TrendSparkline` renders the recent results; shown per game on the stats
+      page ("Verlauf"), oriented by the game's higher-is-better config.
+- [x] Tests: `trend_sparkline_widget_test.dart` + history round-trip/bounding
+      in `streak_service_test.dart`.
 
-### B3 — Daily/weekly goals & streaks
-- [ ] Lightweight "trained today / this week" tracker + streak counter on the
-      menu. No new infra.
-- [ ] Tests for streak rollover edge cases (day boundaries).
+### B3 ✅ DONE — Daily/weekly goals & streaks
+- [x] `StreakService` derives the current consecutive-day streak, trained-today,
+      and days-this-week from the union of all games' played-dates (from the
+      result history — no new store).
+- [x] `StreakBadge` on the start menu (flame + streak + days/7), hidden when
+      there's no activity.
+- [x] Tests: `streak_service_test.dart` (rollover, gaps, cross-game union, week
+      boundary) + `streak_badge_widget_test.dart`.
 
-**✅ Checkpoint B:** analyze clean · full suite green · device-tested · docs
-updated · **commit + bump to v3.3.0**.
+**✅ Checkpoint B:** analyze clean · full suite green · docs updated ·
+device-testing of B1 drills pending real-board throw-log data ·
+**commit + bump to v3.3.0**.
 
 ---
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:dart/services/throw_accuracy.dart';
+import 'package:dart/services/drill_service.dart';
 import 'package:dart/services/throw_log_model.dart';
 
 /// A dartboard overlay that plots actual dart landings (x/y) from the throw
@@ -130,6 +131,16 @@ class HeatmapView extends StatelessWidget {
     if (acc.outerSingleShare != null) {
       final outer = (acc.outerSingleShare! * 100).round();
       rows.add(row('Singles außen/innen', '$outer% / ${100 - outer}%'));
+    }
+
+    // Weakness drill suggestions (B1): the weakest targets for this game.
+    final drill = DrillService().suggestDrill(darts, count: 3);
+    if (drill.isNotEmpty) {
+      final text = drill
+          .map((s) => '${s.label} (${(s.hitRate * 100).round()}%)')
+          .join('  ·  ');
+      rows.add(const Divider(color: Colors.white12, height: 12));
+      rows.add(row('Üben', text));
     }
 
     return Container(

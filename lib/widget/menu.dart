@@ -42,6 +42,7 @@ import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/version_info.dart';
+import 'package:dart/widget/streak_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -214,6 +215,15 @@ class Menu extends StatelessWidget {
     ),
   ];
 
+  /// Game storage ids whose result histories feed the training streak: the
+  /// grid games plus the RTC mode split and the header-shortcut Challenge.
+  static final List<String> _streakGameIds = [
+    ...games.map((g) => g.id),
+    'RTCD',
+    'RTCT',
+    'CHALLENGE',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -294,9 +304,18 @@ class Menu extends StatelessWidget {
                     child: Image.asset('assets/images/logo.png', width: ResponsiveUtils.isPhoneSize(context) ? 250 : 500, fit: BoxFit.fitWidth),
                   ),
                 ),
-                // Version info, placed between logo and right image.
-                const Expanded(
-                  child: Center(child: VersionInfo()),
+                // Version info + training streak, between logo and right image.
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const VersionInfo(),
+                        const SizedBox(height: 4),
+                        StreakBadge(gameIds: _streakGameIds),
+                      ],
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 20),

@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dart/controller/controller_stats.dart';
 import 'package:dart/services/highscore_service.dart';
+import 'package:dart/services/result_history_service.dart';
 import 'package:dart/services/throw_log_service.dart';
 import 'package:dart/view/view_scolia_settings.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:dart/widget/heatmap_view.dart';
+import 'package:dart/widget/trend_sparkline.dart';
 
 class ViewStats extends StatelessWidget {
   const ViewStats({super.key});
@@ -228,6 +230,7 @@ class ViewStats extends StatelessWidget {
                 ),
               ),
             _buildHighscoreSection(gameId, stats),
+            _buildTrendSection(gameId, stats),
           ],
         ),
       ),
@@ -340,6 +343,30 @@ class ViewStats extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+
+  /// Build the trend sparkline block for a game from its stored result history.
+  /// Returns an empty widget when fewer than two results exist.
+  Widget _buildTrendSection(String gameId, Map<String, dynamic> stats) {
+    final entries = ResultHistoryService.decode(stats[resultHistoryKey]);
+    if (entries.length < 2) return const SizedBox.shrink();
+
+    final higherIsBetter = highscoreConfigs[gameId]?.higherIsBetter ?? true;
+    final values = entries.map((e) => e.value).toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: [
+          const Icon(Icons.show_chart, color: Colors.white54, size: 16),
+          const SizedBox(width: 6),
+          const Text('Verlauf',
+              style: TextStyle(color: Colors.white54, fontSize: 12)),
+          const SizedBox(width: 10),
+          TrendSparkline(values: values, higherIsBetter: higherIsBetter),
+        ],
+      ),
     );
   }
 

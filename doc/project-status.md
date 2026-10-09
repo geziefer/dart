@@ -148,6 +148,12 @@ version bump:
      to target, scatter σ, directional bias in mm/clock, inner/outer single
      share; ≥2-sector exclusion). Shown in the heatmap metrics panel.
    - **Pending on real board:** coordinate y-orientation (`flipY`) + mm scale.
-3. **v3.3.0 — B:** adaptive practice & motivation (weakness drills, trend view,
-   streaks).
+3. **v3.3.0 — B ✅ DONE:** adaptive practice & motivation.
+   - **B1 ✅** `WeaknessService` + `DrillService`: rank weakest targets from the
+     throw log and suggest focus drills (shown in the heatmap panel; dormant
+     until real-board throw-log data exists).
+   - **B2 ✅** `ResultHistoryService` (dated per-game results, numpad+Scolia,
+     recorded with the highscore) + `TrendSparkline` on the stats page.
+   - **B3 ✅** `StreakService` + `StreakBadge` on the menu (consecutive-day
+     streak, trained-today, days/7) from the union of played-dates.
 4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).

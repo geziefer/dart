@@ -3,6 +3,7 @@ import 'package:dart/services/stats_service.dart';
 import 'package:dart/services/summary_service.dart';
 import 'package:dart/services/storage_service.dart';
 import 'package:dart/services/highscore_service.dart';
+import 'package:dart/services/result_history_service.dart';
 import 'package:dart/widget/summary_dialog.dart';
 import 'package:dart/utils/stats_formatter.dart';
 
@@ -10,6 +11,7 @@ abstract class ControllerBase extends ChangeNotifier {
   // Common services that all controllers can use
   StatsService? _statsService;
   HighscoreService? _highscoreService;
+  ResultHistoryService? _resultHistoryService;
 
   /// The game id this controller was initialized with (storage container id),
   /// or null before initialization. Used to open the highscore dialog.
@@ -53,6 +55,10 @@ abstract class ControllerBase extends ChangeNotifier {
     final config = gameId == null ? null : highscoreConfigs[gameId];
     _highscoreService =
         config == null ? null : HighscoreService(storageService, config);
+    // Result history: dated per-game results powering the trend view (B2) and
+    // training streak (B3). Only games that record a highscore contribute.
+    _resultHistoryService =
+        config == null ? null : ResultHistoryService(storageService);
   }
 
   /// Get the stats service (protected access for subclasses)
@@ -81,6 +87,9 @@ abstract class ControllerBase extends ChangeNotifier {
       return;
     }
     lastHighscoreRank = service.recordResult(value: value, value2: value2);
+    // Also append to the dated result history (trend view + streaks). This
+    // records every completed game, not only new highscores.
+    _resultHistoryService?.record(value);
   }
 
   /// Common method to update game statistics
