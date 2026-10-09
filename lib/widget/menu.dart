@@ -19,6 +19,10 @@ import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/scolia/input_mode.dart';
+import 'package:dart/services/decline_service.dart';
+import 'package:dart/services/highscore_service.dart';
+import 'package:dart/services/result_history_service.dart';
+import 'package:dart/services/storage_service.dart';
 import 'package:dart/view/view_catchxx.dart';
 import 'package:dart/view/view_finishes.dart';
 import 'package:dart/view/view_halfit.dart';
@@ -43,6 +47,7 @@ import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
 import 'package:dart/widget/version_info.dart';
 import 'package:dart/widget/streak_badge.dart';
+import 'package:dart/widget/routine_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -224,6 +229,29 @@ class Menu extends StatelessWidget {
     'CHALLENGE',
   ];
 
+  /// Look up a grid game [MenuItem] by its id, or null if not found.
+  static MenuItem? gameItemById(String id) {
+    for (final g in games) {
+      if (g.id == id) return g;
+    }
+    return null;
+  }
+
+  /// Launch [item] exactly as tapping its menu button would: initialise the
+  /// controller and push the game view. Used by routines to start the next
+  /// game without duplicating navigation logic.
+  static void launchGame(BuildContext context, MenuItem item) {
+    final controller = item.getController(context);
+    controller.init(item);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => item.view,
+        settings: RouteSettings(arguments: item),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -343,6 +371,7 @@ class Menu extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
+            const RoutineBar(),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -407,6 +436,7 @@ class MenuItemButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final declining = _isDeclining(menuItem.id);
     return Container(
       margin: const EdgeInsets.all(2),
       child: OutlinedButton(
@@ -424,19 +454,43 @@ class MenuItemButton extends StatelessWidget {
           );
         },
         style: menuButtonStyle,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Text(
-              ResponsiveUtils.isPhoneSize(context)
-                  ? menuItem.name.replaceAll('\n', ' ') // Single line on phones
-                  : menuItem.name, // Keep newlines on tablets
-              style: menuButtonTextStyle(context),
-              textAlign: TextAlign.center,
+            Center(
+              child: Text(
+                ResponsiveUtils.isPhoneSize(context)
+                    ? menuItem.name.replaceAll('\n', ' ')
+                    : menuItem.name,
+                style: menuButtonTextStyle(context),
+                textAlign: TextAlign.center,
+              ),
             ),
+            // Decline marker (C1 follow-up): a subtle down-arrow when recent
+            // results for this game got worse — a nudge to practise it.
+            if (declining)
+              const Positioned(
+                top: 0,
+                right: 0,
+                child: Icon(Icons.trending_down,
+                    color: Colors.redAccent, size: 18),
+              ),
           ],
         ),
       ),
     );
+  }
+
+  /// Whether this game's recent results declined, for the menu marker. Reads
+  /// the game's result history and orients by its highscore config. Returns
+  /// false for games without a highscore config or with too little history.
+  bool _isDeclining(String gameId) {
+    final config = highscoreConfigs[gameId];
+    if (config == null) return false;
+    final history =
+        ResultHistoryService(StorageService(gameId)).getHistory();
+    if (history.isEmpty) return false;
+    final values = history.map((e) => e.value).toList();
+    return const DeclineService()
+        .isDeclining(values, higherIsBetter: config.higherIsBetter);
   }
 }

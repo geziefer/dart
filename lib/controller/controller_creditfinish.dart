@@ -227,6 +227,7 @@ class ControllerCreditFinish extends ControllerBase
     ];
     final hs = SummaryService.createHighscoreLine(lastHighscoreRank);
     if (hs != null) lines.add(hs);
+    lines.addAll(lastSessionRecap);
     return lines;
   }
 

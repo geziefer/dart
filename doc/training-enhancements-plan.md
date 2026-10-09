@@ -225,19 +225,33 @@ device-testing of B1 drills pending real-board throw-log data ·
 
 **Goal:** Smoother multi-game sessions and better end-of-session feedback.
 
-### C1 — Routine / playlist mode
-- [ ] User-defined chain of games played back-to-back (generalize the Challenge
-      controller's proven sub-controller-sequencing pattern).
-- [ ] Persist a few named routines.
-- [ ] Tests for sequencing + completion.
+### C1 ✅ DONE — Routine / playlist mode (category-based)
+- [x] `RoutineGenerator` builds a routine by picking one random game from each
+      of three fixed categories (scoring: 99x20 / Kill Bull / 501×5-max7;
+      single-setup: Plan Hit / RTC Single / Cricket; checkout: Catch 40 /
+      Bob's 27 / Double Path). Randomness gives varied sessions within defined
+      categories — no editor needed.
+- [x] `ActiveRoutine` (in-memory) tracks position; the menu `RoutineBar` shows
+      a "Routine starten" button (idle) that generates+launches a fresh triplet,
+      and a "next up" prompt (active) through the three games. Each game runs
+      its normal flow; launch reuses normal navigation.
+- [x] **Decline marker:** `DeclineService` flags a game whose recent results
+      got worse (recent vs. previous window average, oriented by
+      higher-is-better, relative margin). Declining games show a subtle
+      down-arrow on their menu tile — a nudge to practise them.
+- [x] Tests: `routine_bar_widget_test.dart` (generator + bar),
+      `active_routine_test.dart` (progression), `decline_service_test.dart`,
+      `menu_decline_marker_test.dart`.
 
-### C3 — Session summary at exit
-- [ ] On leaving a game, show "this session vs. your average / your best" recap
-      (presentation over existing numbers).
-- [ ] Widget test for the recap.
+### C3 ✅ DONE — Session summary at exit
+- [x] The end-of-game summary dialog now appends a recap — "Diese Session" vs.
+      "Bestwert" and "Ø letzte" — computed in `recordHighscore` from the
+      highscore + result history (prior best/average, excluding the current
+      game) and shown via `SummaryService.createRecapLines`.
+- [x] Tests: `session_recap_test.dart` (formatting, null-handling, population).
 
-**✅ Checkpoint C:** analyze clean · full suite green · device-tested · docs
-updated · **commit + bump to v3.4.0**.
+**✅ Checkpoint C:** analyze clean · full suite green (508) · docs updated ·
+**commit + bump to v3.4.0**.
 
 ---
 

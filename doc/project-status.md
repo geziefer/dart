@@ -156,4 +156,15 @@ version bump:
      recorded with the highscore) + `TrendSparkline` on the stats page.
    - **B3 ✅** `StreakService` + `StreakBadge` on the menu (consecutive-day
      streak, trained-today, days/7) from the union of played-dates.
-4. **v3.4.0 — C:** session & flow (user-defined routines, exit recaps).
+4. **v3.4.0 — C ✅ DONE:** session & flow.
+   - **C1 ✅** routines: `RoutineGenerator` (one random game from each of three
+     fixed categories) + `ActiveRoutine` + menu `RoutineBar` ("Routine starten"
+     / next-up prompting; each game runs its normal flow). Plus a
+     `DeclineService` decline marker (down-arrow) on menu tiles for games whose
+     recent results got worse.
+   - **C3 ✅** end-of-game summary recap: "Diese Session" vs. "Bestwert" / "Ø
+     letzte" from highscore + result history.
+
+**Roadmap (v3.1.1 → v3.4.0) complete.** Still pending real-board validation
+(no Scolia board at hand): heatmap `flipY`/mm-scale (A2) and the B1 weakness
+drills — both only exercise with real coordinate data.

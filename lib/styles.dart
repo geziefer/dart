@@ -20,6 +20,9 @@ TextStyle menuButtonTextStyle(BuildContext context) {
   return TextStyle(
     fontSize: 36 * ResponsiveUtils.getMenuButtonTextScale(context),
     color: const Color.fromARGB(255, 215, 198, 132),
+    // Tighten the gap between the two label lines without shrinking the font,
+    // so 2-line items don't crowd the button border.
+    height: 1.0,
   );
 }
 

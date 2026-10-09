@@ -29,6 +29,11 @@ abstract class ControllerBase extends ChangeNotifier {
   /// by [recordHighscore]. Used to show a line in the summary dialog.
   int? lastHighscoreRank;
 
+  /// End-of-game recap lines (this session vs. best / recent average), computed
+  /// by [recordHighscore]. Appended to the summary dialog (C3). Empty when the
+  /// game records no highscore/result.
+  List<SummaryLine> lastSessionRecap = const [];
+
   /// Whether the player has made any progress in the current game (thrown a
   /// dart / entered input), used to decide whether leaving the game needs a
   /// confirmation. Defaults to false (fresh game, safe to leave without
@@ -52,6 +57,7 @@ abstract class ControllerBase extends ChangeNotifier {
     _statsService = StatsService(storageService);
     _gameId = gameId;
     lastHighscoreRank = null;
+    lastSessionRecap = const [];
     final config = gameId == null ? null : highscoreConfigs[gameId];
     _highscoreService =
         config == null ? null : HighscoreService(storageService, config);
@@ -86,10 +92,48 @@ abstract class ControllerBase extends ChangeNotifier {
       lastHighscoreRank = null;
       return;
     }
+    // Build the end-of-game recap BEFORE recording, so "best" and "recent
+    // average" reflect prior sessions, not the one just played.
+    _computeSessionRecap(value);
     lastHighscoreRank = service.recordResult(value: value, value2: value2);
     // Also append to the dated result history (trend view + streaks). This
     // records every completed game, not only new highscores.
     _resultHistoryService?.record(value);
+  }
+
+  /// Number of recent sessions averaged for the recap's "Ø letzte" line.
+  static const int _recapRecentCount = 5;
+
+  /// Populate [lastSessionRecap] comparing [value] to the prior best and the
+  /// average of recent prior sessions. Uses the game's highscore config for
+  /// formatting. No-op (empty) when there's no highscore config.
+  void _computeSessionRecap(double value) {
+    final config = _gameId == null ? null : highscoreConfigs[_gameId];
+    if (config == null) {
+      lastSessionRecap = const [];
+      return;
+    }
+    // Prior best = current rank-1 highscore value (before this result).
+    final entries = _highscoreService?.getHighscores() ?? const [];
+    final double? best = entries.isNotEmpty ? entries.first.value : null;
+
+    // Recent average over the last N prior results.
+    final history = _resultHistoryService?.getHistory() ?? const [];
+    double? recentAvg;
+    if (history.isNotEmpty) {
+      final recent = history.length <= _recapRecentCount
+          ? history
+          : history.sublist(history.length - _recapRecentCount);
+      recentAvg =
+          recent.map((e) => e.value).reduce((a, b) => a + b) / recent.length;
+    }
+
+    lastSessionRecap = SummaryService.createRecapLines(
+      value: value,
+      best: best,
+      recentAvg: recentAvg,
+      decimal: config.decimal,
+    );
   }
 
   /// Common method to update game statistics

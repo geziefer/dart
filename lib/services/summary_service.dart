@@ -46,6 +46,27 @@ class SummaryService {
         emphasized: true, checkSymbol: '🏆');
   }
 
+  /// Build the end-of-game recap lines comparing this session's [value] to the
+  /// personal [best] and the [recentAvg] of recent sessions (C3). Any of
+  /// [best]/[recentAvg] may be null (shown only when available). [decimal]
+  /// controls integer vs. one-decimal formatting to match the game's metric.
+  static List<SummaryLine> createRecapLines({
+    required double value,
+    double? best,
+    double? recentAvg,
+    bool decimal = false,
+  }) {
+    String fmt(double v) => decimal ? v.toStringAsFixed(1) : v.round().toString();
+    final lines = <SummaryLine>[
+      SummaryLine('Diese Session', fmt(value)),
+    ];
+    if (best != null) lines.add(SummaryLine('Bestwert', fmt(best)));
+    if (recentAvg != null) {
+      lines.add(SummaryLine('Ø letzte', fmt(recentAvg)));
+    }
+    return lines;
+  }
+
   /// Create summary lines for common game statistics
   static List<SummaryLine> createStandardSummaryLines({
     required String gameName,

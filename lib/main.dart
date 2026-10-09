@@ -22,6 +22,7 @@ import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/scolia_settings.dart';
 import 'package:dart/services/throw_log_service.dart';
+import 'package:dart/services/active_routine.dart';
 import 'package:dart/widget/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,6 +76,8 @@ void main() async {
         Provider<ScoliaSettings>(create: (context) => ScoliaSettings()),
         // Throw-log analytics layer (loaded at startup, queried in memory).
         Provider<ThrowLogService>.value(value: throwLogService),
+        // Active routine (C1): in-memory playlist progress.
+        ChangeNotifierProvider(create: (context) => ActiveRoutine()),
         ChangeNotifierProxyProvider<ScoliaSettings, ScoliaService>(
           create: (context) =>
               ScoliaService(settings: context.read<ScoliaSettings>()),
