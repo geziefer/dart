@@ -16,14 +16,31 @@ rules, so no "dummy-proofing" is needed.
 - **Persistence:** `get_storage` (local key-value, per-game IDs) — no network DB
 - **Architecture:** Service-oriented MVC (controller / view / widget / service)
 
-## Current state (verified 2026-09-17)
+## Current state (verified 2026-10-09)
 
-- Branch `main`, working tree clean. Latest commit merges the Scolia integration
-  as **v3.0.0**.
+- Branch `main`. Version **v3.4.1+28** (patch staged for real-board bug-fixing;
+  the v3.1.1 → v3.4.0 training-enhancements roadmap is complete and pushed).
 - `flutter analyze` → **No issues found.**
-- Test suite: 33 test files under `test/` (docs report ~415 tests green).
-- **Scolia Home 2 integration is COMPLETE** (all phases A–H). Real board
-  validated (External API v1.4). This was the major recent workstream.
+- Test suite: 50 test files under `test/` (~513 tests green). `flutter build
+  web` builds clean.
+- **Scolia Home 2 integration is COMPLETE** (phases A–H, External API v1.4).
+- **Training-enhancements roadmap COMPLETE (v3.1.1–v3.4.0):**
+  - **v3.1.1 (C2):** Scolia per-value post-submit correction (fix one dart in
+    the last submitted round via undo + re-submit).
+  - **v3.2.0 (A):** per-dart **throw log** (`ThrowLogService`, dated per-session
+    `LoggedDart`/`ThrowSession` records incl. Scolia x/y/angle + intended
+    target), a board **heatmap** (`HeatmapView`), and **accuracy metrics**
+    (`ThrowAccuracy` + `DartTarget`/`BoardGeometry` + per-controller
+    `AimTargetReporting`).
+  - **v3.3.0 (B):** menu **streaks** (`StreakService`/`StreakBadge`), per-game
+    **trend sparkline** (`ResultHistoryService`/`TrendSparkline`), and
+    **weakness drills** (`WeaknessService`/`DrillService`).
+  - **v3.4.0 (C):** category **routines** (`RoutineGenerator`/`ActiveRoutine`/
+    `RoutineBar`), a **decline marker** on menu tiles (`DeclineService`), and an
+    end-of-game **session recap** in the summary dialog.
+- **Pending real-board validation (no Scolia board at hand):** heatmap
+  coordinate y-orientation (`flipY`) + mm scale, and the weakness drills — both
+  only exercise with real coordinate data.
 - **Per-game Top-10 highscores (v3.1.0):** each supporting game keeps a dated
   Top-10 list of its best single-game result in its own storage container under
   the `highscores` key. Logic in `lib/services/highscore_service.dart`
