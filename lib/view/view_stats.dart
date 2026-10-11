@@ -67,18 +67,8 @@ class ViewStats extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: OutlinedButton(
                           style: statsButtonStyle,
-                          onPressed: () => controller.shareExportedStats(context),
-                          child: const Text('Teilen'),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: OutlinedButton(
-                          style: statsButtonStyle,
-                          onPressed: () => controller.saveExportedStatsToFile(context),
-                          child: const Text('Exportieren'),
+                          onPressed: () => controller.exportStatsToFile(context),
+                          child: const Text('Export'),
                         ),
                       ),
                     ),
