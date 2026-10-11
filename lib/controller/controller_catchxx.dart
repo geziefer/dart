@@ -43,16 +43,20 @@ class ControllerCatchXX extends ControllerBase
   bool get hasGameProgress =>
       thrownHits.isNotEmpty || round > 1 || points > 0;
 
-  // Scolia: multi-turn accumulator for one checkout attempt (up to 6 darts).
+  // Scolia: multi-turn accumulator for one checkout attempt (up to 2 rounds).
   // [_scoliaAccDarts] holds only the darts that count toward the SCORE (a
-  // busted turn is discarded from the score). [_scoliaDartsUsed] counts ALL
-  // darts thrown in the attempt (including busted turns), because a busted
-  // round still consumes its darts toward the 6-dart / 2-round limit.
+  // busted turn is discarded from the score). [_scoliaRoundsUsed] counts
+  // completed rounds (takeouts) in the attempt — a round is always a full turn
+  // regardless of how many darts were actually thrown (missing darts = misses),
+  // so Catch 40 allows at most 2 rounds per target. [_scoliaDartsUsed] counts
+  // the real darts thrown, used only to score the darts-to-finish on success.
   List<DetectedThrow> _scoliaAccDarts = [];
   int _scoliaDartsUsed = 0;
+  int _scoliaRoundsUsed = 0;
   void resetScoliaAttempt() {
     _scoliaAccDarts = [];
     _scoliaDartsUsed = 0;
+    _scoliaRoundsUsed = 0;
   }
 
   /// During a Scolia multi-turn attempt, returns the remaining score still
@@ -82,6 +86,7 @@ class ControllerCatchXX extends ControllerBase
     target = 61;
     _scoliaAccDarts = [];
     _scoliaDartsUsed = 0;
+    _scoliaRoundsUsed = 0;
   }
 
   @override
@@ -299,15 +304,19 @@ class ControllerCatchXX extends ControllerBase
   @override
   void submitScoliaTurn(TurnResult turn) {
     if (item == null || target > 100) return;
-    // Every dart thrown counts toward the 6-dart / 2-round limit, even in a
-    // busted turn (a bust keeps the score but still consumes the round).
+
+    // A takeout always closes the round, regardless of how many darts were
+    // actually thrown — unused darts count as misses, exactly like a bounce-out
+    // that wasn't detected. So every submitted turn consumes one of the two
+    // rounds available for the current target.
+    _scoliaRoundsUsed++;
     _scoliaDartsUsed += turn.dartCount;
 
-    // Accumulated SCORE excludes busted turns (see below).
     final preTurnAcc = _scoliaAccDarts.fold(0, (s, d) => s + d.value);
     final newAcc = preTurnAcc + turn.total;
 
-    // Successful checkout: accumulated total == target, last dart is double.
+    // Successful checkout: accumulated total == target, last scoring dart is a
+    // double (inner/outer bull counts as the bull's double).
     if (newAcc == target) {
       final lastScoring = turn.darts.lastWhere(
           (d) => d.value > 0, orElse: () => DetectedThrow.miss());
@@ -315,27 +324,27 @@ class ControllerCatchXX extends ControllerBase
           lastScoring.ring == DartRing.innerBull ||
           lastScoring.ring == DartRing.outerBull;
       if (onDouble) {
+        // Points are based on the real darts used to finish (2 = best).
         pressNumpadButton(_scoliaDartsUsed.clamp(2, 6));
         resetScoliaAttempt();
         return;
       }
+      // Reached the target without finishing on a double → not a valid finish;
+      // falls through and is treated as a consumed round below.
     }
 
-    if (newAcc > target || target - newAcc == 1) {
-      // Bust or 1 remaining: discard this turn's darts from the SCORE, keep the
-      // prior score. The darts are still counted in _scoliaDartsUsed above.
-    } else {
+    final busted = newAcc > target || target - newAcc == 1;
+
+    if (!busted && _scoliaRoundsUsed < 2) {
+      // Under target with a round still left: carry the score into round 2.
       _scoliaAccDarts.addAll(turn.darts);
-    }
-
-    // 6 darts used (2 rounds) → attempt over, miss. Never allow a 3rd round.
-    if (_scoliaDartsUsed >= 6) {
-      pressNumpadButton(0);
-      resetScoliaAttempt();
+      notifyListeners();
       return;
     }
 
-    // Still attempts remaining — update view.
-    notifyListeners();
+    // Otherwise the attempt is over without a finish (busted, or both rounds
+    // used without checking out): score 0 for this target and advance.
+    pressNumpadButton(0);
+    resetScoliaAttempt();
   }
 }

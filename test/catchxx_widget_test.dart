@@ -533,35 +533,90 @@ void main() {
       expect(stats['avgPoints'], equals('1.1'));
     });
 
-    /// Regression: a bust in the first Scolia turn still consumes its darts.
-    /// Scenario reported: target 61, round 1 = Bull(50)+17+miss = 67 (bust,
-    /// score kept), then a non-finishing round 2 = 6 darts total → must end
-    /// the attempt as a miss. A 3rd round must NEVER be granted.
-    test('Scolia bust in round 1 does not grant a 3rd round', () {
+    /// A takeout always closes the round — a bust ends the attempt immediately,
+    /// scoring 0, regardless of how many darts were thrown. The player may take
+    /// the darts out early; the un-thrown darts simply count as misses.
+    test('Scolia bust in round 1 ends the attempt immediately (0 points)', () {
       TurnResult turn(List<String> sectors) =>
           TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
 
       expect(controller.target, equals(61));
       expect(controller.round, equals(1));
 
-      // Round 1: bust (50 + 17 + miss = 67 > 61). Score not scored yet.
+      // Round 1 busts (50 + 17 = 67 > 61). Takeout closes the attempt now.
       controller.submitScoliaTurn(turn(['Bull', 'S17', 'None']));
-      // No round recorded yet (attempt still open), target unchanged.
-      expect(controller.thrownPoints.length, equals(0));
-      expect(controller.target, equals(61));
 
-      // Round 2: 3 more darts, not a finish (20+20+1 = 41). Now 6 darts used
-      // → attempt must close as a miss (0 points), advancing exactly one round.
-      controller.submitScoliaTurn(turn(['S20', 'S20', 'S1']));
-
-      // Exactly one scoring entry, worth 0 points (miss). Target advanced to 62.
       expect(controller.thrownPoints.length, equals(1),
-          reason: 'bust+miss must count as a single completed attempt');
+          reason: 'a bust closes the round immediately');
       expect(controller.thrownPoints.last, equals(0));
       expect(controller.points, equals(0));
-      expect(controller.target, equals(62),
-          reason: 'must advance by exactly one target, never grant a 3rd round');
+      expect(controller.target, equals(62));
       expect(controller.round, equals(2));
+    });
+
+    /// Early bust on 1–2 darts: taking the darts out must still end the round
+    /// (the regression that was reported — it got stuck waiting for 6 darts).
+    test('Scolia bust on two darts (early takeout) closes the round', () {
+      TurnResult turn(List<String> sectors) =>
+          TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
+
+      // Target 61; two darts already overshoot (T20 + T20 = 120). Player takes
+      // out after two darts without throwing a third.
+      controller.submitScoliaTurn(turn(['T20', 'T20']));
+
+      expect(controller.thrownPoints.length, equals(1),
+          reason: 'early bust must not hang waiting for a third dart');
+      expect(controller.thrownPoints.last, equals(0));
+      expect(controller.target, equals(62));
+    });
+
+    /// Early finish on two darts scores the 2-dart (best) points.
+    test('Scolia finish on two darts scores 3 points', () {
+      TurnResult turn(List<String> sectors) =>
+          TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
+
+      // Target 61 = T15(45) + D8(16), finished on a double in two darts.
+      controller.submitScoliaTurn(turn(['T15', 'D8']));
+
+      expect(controller.thrownPoints.length, equals(1));
+      expect(controller.thrownPoints.last, equals(3),
+          reason: 'two-dart finish = 3 points');
+      expect(controller.target, equals(62));
+    });
+
+    /// Under target in round 1 carries over; a finish in round 2 scores by the
+    /// total real darts used.
+    test('Scolia carry to round 2 then finish', () {
+      TurnResult turn(List<String> sectors) =>
+          TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
+
+      // Round 1: 20+20+1 = 41 (under 61, not bust) → carries to round 2.
+      controller.submitScoliaTurn(turn(['S20', 'S20', 'S1']));
+      expect(controller.thrownPoints.length, equals(0),
+          reason: 'round 1 under target: attempt still open');
+      expect(controller.target, equals(61));
+
+      // Round 2: need 20 more → D10 (20) finishes on a double.
+      controller.submitScoliaTurn(turn(['D10']));
+      expect(controller.thrownPoints.length, equals(1));
+      expect(controller.thrownPoints.last, equals(1),
+          reason: '4 darts used to finish = 1 point');
+      expect(controller.target, equals(62));
+    });
+
+    /// Two non-finishing rounds end the attempt as a miss, never a third round.
+    test('Scolia two rounds without finish ends as miss', () {
+      TurnResult turn(List<String> sectors) =>
+          TurnResult(sectors.map((s) => SectorParser.parse(s)).toList());
+
+      controller.submitScoliaTurn(turn(['S20', 'S10', 'S5'])); // 35, carry
+      expect(controller.thrownPoints.length, equals(0));
+      controller.submitScoliaTurn(turn(['S10', 'S5', 'S1'])); // +16=51, no finish
+
+      expect(controller.thrownPoints.length, equals(1));
+      expect(controller.thrownPoints.last, equals(0));
+      expect(controller.target, equals(62),
+          reason: 'never grant a third round');
     });
   });
 }

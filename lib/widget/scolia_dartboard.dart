@@ -335,28 +335,61 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
   }
 
   void _onTurnComplete(TurnResult turn) {
-    widget.controller.submitScoliaTurn(turn);
+    // Trim trailing miss fillers (from a reloaded, padded correction round) so
+    // the controller scores the real dart count. A normal turn has no trailing
+    // fillers, so it is unaffected.
+    final submitted = TurnResult(_trimTrailingMisses(turn.darts));
+    widget.controller.submitScoliaTurn(submitted);
     // Record the submitted darts for the session throw log (flushed on
     // dispose), pairing each with the controller's intended target (if any).
-    // Track this turn's count so a post-submit correction can remove exactly
-    // these darts before the corrected turn re-adds them.
+    //
+    // The committed round is padded to 3 slots with miss fillers for any darts
+    // not thrown this turn (a round is always 3 darts; un-thrown darts are
+    // misses, like an undetected bounce-out). This lets the player post-submit-
+    // correct a slot they didn't realise went uncounted. The padding only
+    // affects the committed display + throw log — the real [turn] handed to
+    // [submitScoliaTurn] above is NOT padded, so dart-count-sensitive scoring
+    // (e.g. x01 checkout darts) is unaffected.
     final controller = widget.controller;
     final targets = controller is AimTargetReporting
         ? (controller as AimTargetReporting).targetsForLastTurn()
         : const <DartTarget?>[];
-    for (int i = 0; i < turn.darts.length; i++) {
+    final padded = _padToThree(turn.darts);
+    for (int i = 0; i < padded.length; i++) {
       final target = i < targets.length ? targets[i] : null;
-      _sessionDarts.add(LoggedDart.fromDetected(turn.darts[i], target: target));
+      _sessionDarts.add(LoggedDart.fromDetected(padded[i], target: target));
     }
-    _lastTurnDartCount = turn.darts.length;
+    _lastTurnDartCount = padded.length;
     setState(() {
-      // Keep the just-submitted darts on screen as a "committed" round so the
-      // user can still correct a misread dart (post-submit correction). The
-      // next new throw clears this and starts a fresh turn.
-      _lastTurn = List<DetectedThrow>.of(turn.darts);
+      // Keep the (padded) just-submitted darts on screen as a "committed" round
+      // so the user can still correct a misread or uncounted dart. The next new
+      // throw clears this and starts a fresh turn.
+      _lastTurn = padded;
       _showingCommitted = true;
       _correctingLastRound = false;
     });
+  }
+
+  /// Pad a turn's darts to three slots with miss fillers (unused darts count as
+  /// misses). Returns a new list; three or more darts are returned unchanged.
+  static List<DetectedThrow> _padToThree(List<DetectedThrow> darts) {
+    final out = List<DetectedThrow>.of(darts);
+    while (out.length < 3) {
+      out.add(DetectedThrow.miss());
+    }
+    return out;
+  }
+
+  /// Drop trailing untouched miss fillers from a corrected turn before
+  /// re-submitting, so a turn that genuinely used fewer darts (e.g. a 2-dart
+  /// checkout) re-submits with its real dart count. A filler the user edited
+  /// into a real hit is no longer a trailing miss, so it is kept.
+  static List<DetectedThrow> _trimTrailingMisses(List<DetectedThrow> darts) {
+    final out = List<DetectedThrow>.of(darts);
+    while (out.isNotEmpty && out.last.ring == DartRing.miss) {
+      out.removeLast();
+    }
+    return out;
   }
 
   /// Whether post-submit correction of the last round is currently offered:

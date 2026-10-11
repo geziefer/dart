@@ -90,13 +90,17 @@ void main() {
     );
     await tester.pump();
 
-    // One session logged, with all four darts, from Scolia.
+    // One session logged, from Scolia. Each round is padded to 3 slots with
+    // miss fillers for un-thrown darts, so two rounds = 6 recorded slots, of
+    // which 4 are real hits (T20 T20 T20 + T19).
     expect(log.sessionCount, 1);
     final session = log.allSessions.single;
     expect(session.gameId, 'CR_test_log');
     expect(session.fromScolia, isTrue);
-    expect(session.darts.length, 4); // T20 T20 T20 + T19
-    expect(log.dartsForGame('CR_test_log').length, 4);
+    expect(session.darts.length, 6); // 3 (round 1) + 3 (round 2, padded)
+    final realHits =
+        session.darts.where((d) => d.ringEnum.name != 'miss').length;
+    expect(realHits, 4);
   });
 
   testWidgets('no game id -> nothing logged', (tester) async {
