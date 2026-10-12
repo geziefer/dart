@@ -44,6 +44,8 @@ void main() async {
   await GetStorage.init('scolia_settings');
   // Throw-log storage (per-session dart records for analytics), local only.
   await GetStorage.init('throw_log');
+  // GitHub sync settings (PAT), local only.
+  await GetStorage.init('github_sync');
 
   // Load the throw log into the in-memory analytics layer once at startup.
   final throwLogService = ThrowLogService()..load();

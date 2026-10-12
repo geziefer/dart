@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/scolia_settings.dart';
+import 'package:dart/services/github_sync_settings.dart';
+import 'package:dart/services/github_sync_service.dart';
 import 'package:dart/view/view_scolia_monitor.dart';
 import 'package:dart/widget/game_layout.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,12 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
   bool _obscureToken = true;
   bool _simulator = true;
 
+  // GitHub sync
+  late final GitHubSyncSettings _ghSettings;
+  late final TextEditingController _ghTokenController;
+  bool _obscureGhToken = true;
+  String? _ghTestResult;
+
   @override
   void initState() {
     super.initState();
@@ -33,12 +41,15 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
     _serialController = TextEditingController(text: _settings.serialNumber);
     _tokenController = TextEditingController(text: _settings.accessToken);
     _simulator = _settings.simulatorEnabled;
+    _ghSettings = GitHubSyncSettings();
+    _ghTokenController = TextEditingController(text: _ghSettings.token);
   }
 
   @override
   void dispose() {
     _serialController.dispose();
     _tokenController.dispose();
+    _ghTokenController.dispose();
     super.dispose();
   }
 
@@ -157,11 +168,111 @@ class _ViewScoliaSettingsState extends State<ViewScoliaSettings> {
                 ],
               );
             }),
+            const Divider(height: 40, color: Colors.white24),
+            // ---------- GitHub Sync ----------
+            const Text(
+              'GitHub Sync',
+              style: TextStyle(
+                  color: Color.fromARGB(255, 215, 198, 132),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Personal Access Token wird nur lokal auf diesem Gerät gespeichert.',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _ghTokenController,
+              obscureText: _obscureGhToken,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'GitHub PAT',
+                labelStyle: const TextStyle(color: Colors.white70),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureGhToken ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.white70,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureGhToken = !_obscureGhToken),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                OutlinedButton(
+                  style: const ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.black),
+                    foregroundColor: WidgetStatePropertyAll(Colors.white),
+                    side: WidgetStatePropertyAll(
+                        BorderSide(color: Colors.white38)),
+                  ),
+                  onPressed: _saveGhToken,
+                  child: const Text('Speichern'),
+                ),
+                const SizedBox(width: 16),
+                OutlinedButton(
+                  style: const ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.black),
+                    foregroundColor: WidgetStatePropertyAll(Colors.white),
+                    side: WidgetStatePropertyAll(
+                        BorderSide(color: Colors.white38)),
+                  ),
+                  onPressed: _ghSettings.isConfigured ? _testSync : null,
+                  child: const Text('Sync testen'),
+                ),
+              ],
+            ),
+            if (_ghTestResult != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  _ghTestResult!,
+                  style: TextStyle(
+                    color: _ghTestResult!.startsWith('✅')
+                        ? Colors.greenAccent
+                        : Colors.redAccent,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
       statsContent: const SizedBox(),
     );
+  }
+
+  void _saveGhToken() {
+    _ghSettings.save(_ghTokenController.text);
+    if (mounted) {
+      setState(() => _ghTestResult = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('GitHub-Token gespeichert')),
+      );
+    }
+  }
+
+  Future<void> _testSync() async {
+    setState(() => _ghTestResult = '⏳ Teste Verbindung…');
+    final svc = GitHubSyncService(_ghSettings);
+    try {
+      // Step 1: read the file (may not exist yet).
+      final readResult = await svc.read();
+
+      // Step 2: write a small test payload (or update the existing file).
+      final testPayload = '{"test": true, "timestamp": "${DateTime.now().toIso8601String()}"}';
+      final newSha = await svc.write(testPayload, sha: readResult.sha);
+
+      setState(() => _ghTestResult =
+          '✅ Verbindung OK. Lesen: ${readResult.content != null ? "${readResult.content!.length} Bytes" : "Datei neu erstellt"}. '
+          'Schreiben: SHA $newSha');
+    } catch (e) {
+      setState(() => _ghTestResult = '❌ Fehler: $e');
+    }
   }
 
   void _openMonitor() {
