@@ -19,6 +19,7 @@ import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/interfaces/menuitem_controller.dart';
 import 'package:dart/scolia/input_mode.dart';
+import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/services/decline_service.dart';
 import 'package:dart/services/highscore_service.dart';
 import 'package:dart/services/result_history_service.dart';
@@ -45,6 +46,7 @@ import 'package:dart/view/view_planhit.dart';
 import 'package:dart/view/view_stats.dart';
 import 'package:dart/styles.dart';
 import 'package:dart/utils/responsive.dart';
+import 'package:dart/widget/takeout_gate.dart';
 import 'package:dart/widget/version_info.dart';
 import 'package:dart/widget/streak_badge.dart';
 import 'package:dart/widget/routine_bar.dart';
@@ -240,16 +242,36 @@ class Menu extends StatelessWidget {
   /// Launch [item] exactly as tapping its menu button would: initialise the
   /// controller and push the game view. Used by routines to start the next
   /// game without duplicating navigation logic.
-  static void launchGame(BuildContext context, MenuItem item) {
+  ///
+  /// [navigator] may be given when [context] is not below a Navigator (e.g.
+  /// the navigator's own context, used for Scolia dart selection).
+  ///
+  /// With [awaitTakeout] (game started by a dart) the view is wrapped in a
+  /// cancelable "remove darts" popup.
+  static void launchGame(BuildContext context, MenuItem item,
+      {NavigatorState? navigator, bool awaitTakeout = false}) {
     final controller = item.getController(context);
     controller.init(item);
-    Navigator.push(
-      context,
+    (navigator ?? Navigator.of(context)).push(
       MaterialPageRoute(
-        builder: (context) => item.view,
+        builder: (context) =>
+            awaitTakeout ? TakeoutGate(child: item.view) : item.view,
         settings: RouteSettings(arguments: item),
       ),
     );
+  }
+
+  /// Dartboard number (1..20) that selects [games] entry [index] in Scolia
+  /// mode: the grid is numbered in reading order, so game no. 20 is the last.
+  static int segmentForIndex(int index) => index + 1;
+
+  /// The game picked by a dart, or null if it picks none (miss, bull). Any
+  /// ring (single/double/triple) of number N picks game no. N.
+  static MenuItem? gameForThrow(DetectedThrow t) {
+    if (t.ring == DartRing.miss || t.isBull) return null;
+    final index = t.segment - 1;
+    if (index < 0 || index >= games.length) return null;
+    return games[index];
   }
 
   @override
@@ -396,9 +418,13 @@ class Menu extends StatelessWidget {
                     mainAxisSpacing: 8,
                     padding: const EdgeInsets.all(8),
                     physics: const NeverScrollableScrollPhysics(),
-                    children: games
-                        .map((game) => MenuItemButton(menuItem: game))
-                        .toList(),
+                    children: [
+                      for (var i = 0; i < games.length; i++)
+                        MenuItemButton(
+                          menuItem: games[i],
+                          segment: segmentForIndex(i),
+                        ),
+                    ],
                   );
                 },
               ),
@@ -430,12 +456,21 @@ class MenuItemButton extends StatelessWidget {
   const MenuItemButton({
     super.key,
     required this.menuItem,
+    this.segment,
   });
 
   final MenuItem menuItem;
 
+  /// Dartboard number that selects this game in Scolia mode; shown inside the
+  /// button (right side) while Scolia input is active.
+  final int? segment;
+
   @override
   Widget build(BuildContext context) {
+    final showSegment = segment != null && scoliaInputActive(context);
+    final labelStyle =
+        menuButtonTextStyle(context).copyWith(color: Colors.white);
+    final labelSize = labelStyle.fontSize ?? 36;
     final declining = _isDeclining(menuItem.id);
     return Container(
       margin: const EdgeInsets.all(2),
@@ -457,14 +492,37 @@ class MenuItemButton extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: Text(
-                ResponsiveUtils.isPhoneSize(context)
-                    ? menuItem.name.replaceAll('\n', ' ')
-                    : menuItem.name,
-                style: menuButtonTextStyle(context),
-                textAlign: TextAlign.center,
+              child: Padding(
+                // Keep the game name clear of the number on the right.
+                padding: EdgeInsets.only(right: showSegment ? labelSize * 1.8 : 0),
+                child: Text(
+                  ResponsiveUtils.isPhoneSize(context)
+                      ? menuItem.name.replaceAll('\n', ' ')
+                      : menuItem.name,
+                  style: menuButtonTextStyle(context),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
+            // Scolia hint: number to hit on the board + small dart emoji.
+            if (showSegment)
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text.rich(
+                    TextSpan(
+                      text: '$segment',
+                      children: [
+                        TextSpan(
+                          text: '🎯',
+                          style: TextStyle(fontSize: labelSize * 0.6),
+                        ),
+                      ],
+                    ),
+                    style: labelStyle,
+                  ),
+                ),
+              ),
             // Decline marker (C1 follow-up): a subtle down-arrow when recent
             // results for this game got worse — a nudge to practise it.
             if (declining)

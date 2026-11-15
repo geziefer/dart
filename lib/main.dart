@@ -18,6 +18,7 @@ import 'package:dart/controller/controller_acrossboard.dart';
 import 'package:dart/controller/controller_creditfinish.dart';
 import 'package:dart/controller/controller_planhit.dart';
 import 'package:dart/controller/controller_stats.dart';
+import 'package:dart/controller/controller_menu.dart';
 import 'package:dart/scolia/input_mode.dart';
 import 'package:dart/scolia/scolia_service.dart';
 import 'package:dart/scolia/scolia_settings.dart';
@@ -28,6 +29,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,10 +88,23 @@ void main() async {
               ScoliaService(settings: context.read<ScoliaSettings>()),
           update: (context, settings, prev) => prev!..refresh(),
         ),
+        // Menu: a dart thrown at number N starts game no. N (Scolia mode).
+        ChangeNotifierProxyProvider2<InputModeHolder, ScoliaService,
+            ControllerMenu>(
+          create: (context) => ControllerMenu(navigatorKey: navigatorKey),
+          update: (context, mode, service, prev) => prev!
+            ..configure(scoliaActive: mode.isScolia, service: service),
+        ),
       ],
-      child: const MaterialApp(
-        title: 'DART - Damit Alex Richtig Trainiert',
-        home: Menu(),
+      child: Builder(
+        builder: (context) => MaterialApp(
+          title: 'DART - Damit Alex Richtig Trainiert',
+          navigatorKey: navigatorKey,
+          navigatorObservers: [
+            context.read<ControllerMenu>().routeObserver,
+          ],
+          home: const Menu(),
+        ),
       ),
     ),
   );

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:dart/controller/controller_menu.dart';
 import 'package:dart/interfaces/dartboard_controller.dart';
 import 'package:dart/scolia/models/detected_throw.dart';
 import 'package:dart/scolia/protocol/board_state.dart';
@@ -209,6 +210,9 @@ class _ScoliaDartboardState extends State<ScoliaDartboard>
         // post-submit correction of the last round), ignore incoming board
         // detections so a stray detection can't disturb the correction.
         if (_editIndex != null || _correctingLastRound) break;
+        // Game was started by a dart from the menu: ignore darts until that
+        // one is taken out, so leftover darts never count as game throws.
+        if (context.read<ControllerMenu?>()?.awaitingTakeout ?? false) break;
         _flash(sector ?? 'None'); // mirror the board: flash the detected sector
         _applyHit(detectedThrow);
       case TakeoutStartedMessage():
